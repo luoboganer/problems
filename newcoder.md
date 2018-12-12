@@ -26,6 +26,7 @@
     bool IsLeftPoint(Point s, Point e, Point p)
     {
         return ((e.x - s.x) * (p.y - s.y)) > ((p.x - s.x) * (e.y - s.y));
+        // 其中xy均指代向量坐标
     }
     ```
 
