@@ -19,7 +19,21 @@
     4 -> 4444\\ 
     5 -> 55555
     \end{matrix}\right.$$
-- []
+- [list comprehensions](https://www.hackerrank.com/challenges/list-comprehensions/problem)
+  
+    Python具有的列表解析特性
+
+- [polar coordinates](https://www.hackerrank.com/challenges/polar-coordinates/problem)
+
+    本题通过极坐标的解析引入了Python中的数学包cmath的介绍
+
+- [string tutorial]
+
+    字符串string的一些神奇操作函数
+
+      - 1. 字符串的左右居中对齐，str.rjust(),str.ljust(),str.center()
+      - 2. 字符串wrap的textwrap包有很多实用的工具
+      - 3. 字符串的分割与联合，str.split()与' '.join(array)
 
 ## about [projecteuler](https://www.hackerrank.com/contests/projecteuler/challenges)
 - [problem 2] [Even Fibonacci numbers](https://www.hackerrank.com/contests/projecteuler/challenges/euler002)
