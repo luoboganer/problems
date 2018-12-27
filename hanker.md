@@ -27,6 +27,16 @@
 
     本题通过极坐标的解析引入了Python中的数学包cmath的介绍
 
+- [numpy array reverse](https://www.hackerrank.com/challenges/np-arrays/problem)
+
+    numpy array 可以通过切片步长为-1的方式实现反转引用，为最快方式
+    ```python
+    x=[1,2,3,4,5]
+    arr1=numpy.array(x.reverse())
+    arr2=numpy.array(x)[::-1]
+    arr1==arr2
+    ```
+
 - [string tutorial]
 
     字符串string的一些神奇操作函数
