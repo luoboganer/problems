@@ -38,7 +38,34 @@
     计算，其中a、b、c分别是三角形三条边的面积。
 
     此方法在逻辑上是严格正确的，但是不适合计算机使用。主要是因为计算过程中很多浮点运算在计算机中会因为double类型的精度问题而出现计算偏差导致判断失误。
-    
 
+- [2] [快速幂的计算](https://ac.nowcoder.com/acm/contest/322/A)
+  
+  快速幂$base^n$的计算应该通过不断取平方的办法在$O(log(n))$时间复杂度内完成。
+  ```cpp
+  int quick_pow_recursive(long base, int power, int m)
+    {
+        // recursive
+        if (power == 0)
+            return 1;
+        long long  tmp = quick_pow_recursive(base, power / 2, m);
+        if (power & 1)
+            tmp = (((tmp * tmp) % m) * (base % m)) % m;
+        else
+            tmp = (tmp * tmp) % m;
+        return tmp;
+    }
+
+    int quick_pow_nonrecursive(long base,int power,int m){
+        long long ans=1;
+        while(power){
+            if(power&1)
+                ans=(ans*base)%m;
+            base=(base*base)%m;
+            power=power>>1;
+        }
+        return ans;
+    }
+  ```
 ## mathematics
 
