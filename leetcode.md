@@ -23,3 +23,14 @@
       - 第i次轮到第二个人拿的时候，他一定拿使对方得分最低的那个数
         $$dp[i+1][j+1]=min(-piles[i]+dp[i+2][j+1],-piles[j]+dp[i+1][j]$$
     - 数学方法可以证明第一个开始游戏的人一定取胜
+
+- [905](https://leetcode.com/problems/sort-array-by-parity/)
+    cpp的两个标准库函数，用于将vector按照一定的条件划分，例如将一个int类型数组按照奇数偶数划分
+    - [partition()](https://en.cppreference.com/w/cpp/algorithm/partition)
+    - [stable_partition()](https://en.cppreference.com/w/cpp/algorithm/stable_partition)
+    
+    eg:
+    ```cpp
+      std::vector<int> v = {0,1,2,3,4,5,6,7,8,9};
+      auto it = std::partition(v.begin(), v.end(), [](int i){return i % 2 == 0;});
+    ```

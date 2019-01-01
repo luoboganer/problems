@@ -56,13 +56,15 @@
         return tmp;
     }
 
-    int quick_pow_nonrecursive(long base,int power,int m){
-        long long ans=1;
-        while(power){
-            if(power&1)
-                ans=(ans*base)%m;
-            base=(base*base)%m;
-            power=power>>1;
+    int quick_pow_nonrecursive(long base, int power, int m)
+    {
+        long long ans = 1;
+        while (power)
+        {
+            if (power & 1)
+                ans = (ans * base) % m;
+            base = (base * base) % m;
+            power = power >> 1;
         }
         return ans;
     }
