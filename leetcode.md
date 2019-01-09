@@ -16,6 +16,11 @@
     - 逐位负数标记法
     - 交换法
 
+- [561](https://leetcode.com/problems/array-partition-i/)
+    
+    2n个给定范围的数据划分成n组使得每组最小值求和最大，基本思路是对所有数排序后对基数位置上的数求和即可，这里类似于NMS非极大值抑制抑制的思路，主要的时间复杂度在排序上。
+    - 基本想法是quick sort，时间复杂度$O(nlog(n))$
+    - 本题给出了数据范围，可以bucket sort，时间复杂度$O(n)$，但是需要$O(N)$的额外空间
 - [877](https://leetcode.com/problems/stone-game/submissions/)
     - 动态规划:假定dp数组表示第一个人的得分，则
       - 第i次轮到第一个人拿的时候，他一定拿使自己得分最高的那个数
