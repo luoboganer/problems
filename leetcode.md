@@ -12,9 +12,15 @@
 
 - [442](https://leetcode.com/problems/find-all-duplicates-in-an-array/)
     
-    在一个数组$a_n,1 \le a_i \le n$中找出出现了两次的数字（其他数字只出现了一次），要求不适用额外的内存空间、$O(n)$时间复杂度
+    在一个数组$a_n,1 \le a_i \le n$中找出出现了两次的数字（其他数字只出现了一次），要求不占用额外的内存空间、$O(n)$时间复杂度
     - 逐位负数标记法
     - 交换法
+
+- [509](https://leetcode.com/problems/fibonacci-number/)
+    
+    斐波那契数列
+    - 递归法
+    - 非递归循环 faster
 
 - [561](https://leetcode.com/problems/array-partition-i/)
     
