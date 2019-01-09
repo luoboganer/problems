@@ -37,6 +37,10 @@
     arr1==arr2
     ```
 
+- [set](https://www.hackerrank.com/challenges/symmetric-difference/problem?h_r=next-challenge&h_v=zen)
+
+    关于Python中一些set的操作，包含**集合**类型数据的创造，增删改查，求交集、并集、差集等操作
+
 - [string tutorial]
 
     字符串string的一些神奇操作函数
