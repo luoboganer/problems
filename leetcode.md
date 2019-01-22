@@ -27,6 +27,12 @@
     2n个给定范围的数据划分成n组使得每组最小值求和最大，基本思路是对所有数排序后对基数位置上的数求和即可，这里类似于NMS非极大值抑制抑制的思路，主要的时间复杂度在排序上。
     - 基本想法是quick sort，时间复杂度$O(nlog(n))$
     - 本题给出了数据范围，可以bucket sort，时间复杂度$O(n)$，但是需要$O(N)$的额外空间
+
+- [876](https://leetcode.com/problems/middle-of-the-linked-list/solution/)
+    寻找单链表的中间节点，两种方法
+    - O(n)时间遍历一遍将所有节点的地址存储到一个数组，则可以在O(1)时间内索引到，O(n)空间复杂度
+    - 用不同步长的两个指针同时遍历，slow每次前进一步，fast每次前进两步，fast到终点时slow即可到中间点，O(n)时间，O(1)空间
+
 - [877](https://leetcode.com/problems/stone-game/submissions/)
     - 动态规划:假定dp数组表示第一个人的得分，则
       - 第i次轮到第一个人拿的时候，他一定拿使自己得分最高的那个数
