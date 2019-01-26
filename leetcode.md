@@ -51,3 +51,13 @@
       std::vector<int> v = {0,1,2,3,4,5,6,7,8,9};
       auto it = std::partition(v.begin(), v.end(), [](int i){return i % 2 == 0;});
     ```
+ - [961](https://leetcode.com/problems/n-repeated-element-in-size-2n-array/)
+    In a array A of size 2N, there are N+1 unique elements, and exactly one of these elements is repeated N time, find and return this element.
+    - HashTable 通过hash统计找到个数不是1的那个数，时间复杂度为O(N)，空间复杂度O(1)
+    - 根据排列组合，相当于把N个不同的数插入到N个重复的数中，因此无论怎么插入连续的两个数作为一组中一定有一个数是那个重复的major element，因此两组、即连续的四个数中一定有两个major element，它们是相等的，因此按照步长为1,2,3,4搜索相等的两个数即可，时间复杂度与hash法相同为O(N)，空间复杂度O(1)
+    ```cpp
+        for (int i=0; i<A.size(); i+=2) {
+            if (A[i] == A[i+1]) return A[i];
+        }
+        return A[0] == A[2] || A[0] == A[3] ? A[0] : A[1];
+    ```
