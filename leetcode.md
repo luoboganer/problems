@@ -51,6 +51,12 @@
       std::vector<int> v = {0,1,2,3,4,5,6,7,8,9};
       auto it = std::partition(v.begin(), v.end(), [](int i){return i % 2 == 0;});
     ```
+
+ - [929](https://leetcode.com/problems/unique-email-addresses/)
+    两个考察点
+    - cpp STL中的string操作，子串、查找、替换等
+    - cpp STL中集合(set)的使用，或者自己实现一个set
+
  - [961](https://leetcode.com/problems/n-repeated-element-in-size-2n-array/)
     In a array A of size 2N, there are N+1 unique elements, and exactly one of these elements is repeated N time, find and return this element.
     - HashTable 通过hash统计找到个数不是1的那个数，时间复杂度为O(N)，空间复杂度O(1)
