@@ -41,6 +41,46 @@
         $$dp[i+1][j+1]=min(-piles[i]+dp[i+2][j+1],-piles[j]+dp[i+1][j]$$
     - 数学方法可以证明第一个开始游戏的人一定取胜
 
+- [884](https://leetcode.com/problems/uncommon-words-from-two-sentences/)
+    问题描述：Uncommon Words from Two Sentences  
+    统计两句话中只出现过一次的单词，主要的点有：
+    - 字符串的分割，使用istringstream进行copy，back_inserter的使用
+    ```cpp
+        vector<string> getWords(const string &s)
+        {
+            istringstream buffer(s);
+            vector<string> ret;
+            copy(istream_iterator<string>(buffer), istream_iterator<string>(), back_inserter(ret));
+            return ret;
+        }
+    ```
+    - 使用unorder_map<string,int>进行word的词频统计
+    ```cpp
+        vector<string> uncommonFromSentences(string A, string B)
+        {
+            vector<string> res;
+            unordered_map<string, int> count;
+            auto a = getWords(A);
+            auto b = getWords(B);
+            for (const auto &x : a)
+            {
+                count[x]++;
+            }
+            for (const auto &x : b)
+            {
+                count[x]++;
+            }
+            for (const auto &[word, freq] : count)
+            {
+                if (freq == 1)
+                {
+                    res.push_back(word);
+                }
+            }
+            return res;
+        }
+    ```
+
 - [905](https://leetcode.com/problems/sort-array-by-parity/)
     cpp的两个标准库函数，用于将vector按照一定的条件划分，例如将一个int类型数组按照奇数偶数划分
     - [partition()](https://en.cppreference.com/w/cpp/algorithm/partition)
