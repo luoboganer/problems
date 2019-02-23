@@ -28,6 +28,10 @@
     - 基本想法是quick sort，时间复杂度$O(nlog(n))$
     - 本题给出了数据范围，可以bucket sort，时间复杂度$O(n)$，但是需要$O(N)$的额外空间
 
+- [852](https://leetcode.com/problems/peak-index-in-a-mountain-array/)
+
+    寻找给定数组中的山峰数下标，所谓山峰数根据题目定义即为**全局最大值**，因此binary search是理论上的最佳算法，time complexity O(log(n))
+
 - [876](https://leetcode.com/problems/middle-of-the-linked-list/solution/)
     寻找单链表的中间节点，两种方法
     - O(n)时间遍历一遍将所有节点的地址存储到一个数组，则可以在O(1)时间内索引到，O(n)空间复杂度
