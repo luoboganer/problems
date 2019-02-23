@@ -111,3 +111,5 @@
         }
         return A[0] == A[2] || A[0] == A[3] ? A[0] : A[1];
     ```
+ - [985](https://leetcode.com/problems/sum-of-even-numbers-after-queries/)
+    注意每次query对应下标的数字在query前后的奇偶性，分别有不同的操作。time complexity O(n+q)，其中n(size of array) and q(the number of queries)。
