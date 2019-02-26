@@ -84,7 +84,10 @@
             return res;
         }
     ```
-
+- [896](https://leetcode.com/problems/monotonic-array/)
+    判断一个数列是否单调，单调包含单调递增和单调递减，非严格单调还包含相等的情况
+    - two pass，第一遍扫描判断是否全部 <= ，第二遍扫描判断是否全部 >=，两次结果取或关系
+    - one pass，一遍扫描过程中用${-1,0,1}$分别表示<,=,>三种状态，然后在第二次出现非零元素的情况下，如果和第一次非零元素不同，即可返回false
 - [905](https://leetcode.com/problems/sort-array-by-parity/)
     cpp的两个标准库函数，用于将vector按照一定的条件划分，例如将一个int类型数组按照奇数偶数划分
     - [partition()](https://en.cppreference.com/w/cpp/algorithm/partition)
