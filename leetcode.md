@@ -10,6 +10,31 @@
   
   牛顿迭代法
 
+- [258](https://leetcode.com/problems/add-digits/)
+  
+  对一个数字求各个数位的和，递归直到这个数是个位数
+  - 循环或者递归的方法
+    ```cpp
+        int addDigitals(int n)
+        {
+            while (n > 9)
+            {
+                int base = n;
+                n = 0;
+                while (base)
+                {
+                    n += base % 10;
+                    base /= 10;
+                }
+            }
+            return n;
+        }
+    ```
+  - O(1)方法，可以[数学证明](https://leetcode.com/problems/add-digits/discuss/241551/Explanation-of-O(1)-Solution-(modular-arithmetic))
+    ```cpp
+        return (n - 1) % 9 + 1
+    ```
+
 - [442](https://leetcode.com/problems/find-all-duplicates-in-an-array/)
     
     在一个数组$a_n,1 \le a_i \le n$中找出出现了两次的数字（其他数字只出现了一次），要求不占用额外的内存空间、$O(n)$时间复杂度
