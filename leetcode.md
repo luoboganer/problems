@@ -35,6 +35,37 @@
         return (n - 1) % 9 + 1
     ```
 
+- [283](https://leetcode.com/problems/move-zeroes/)
+  
+  将一个数列中的0元素全部移动到数列尾部，O(1)空间复杂度和O(n)时间复杂度，保持原数列的稳定性
+    ```cpp
+        void moveZeroes(vector<int> &nums)
+        {
+            // int count = nums.size(), i = 0, k = 0;
+            // for (int i = 0; i < count; i++)
+            // {
+            // 	if (nums[i])
+            // 	{
+            // 		nums[k++] = nums[i];
+            // 	}
+            // }
+            // for (; k < count; k++)
+            // {
+            // 	nums[k++] = 0;
+            // }
+
+            // optimization
+            int count = nums.size(), k = 0, i = 0;
+            for (; i < count; i++)
+            {
+                if (nums[i])
+                {
+                    swap(nums[i], nums[k++]);
+                }
+            }
+        }
+    ```
+
 - [442](https://leetcode.com/problems/find-all-duplicates-in-an-array/)
     
     在一个数组$a_n,1 \le a_i \le n$中找出出现了两次的数字（其他数字只出现了一次），要求不占用额外的内存空间、$O(n)$时间复杂度
