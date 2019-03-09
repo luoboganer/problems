@@ -15,6 +15,32 @@
   
   牛顿迭代法
 
+- [167](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/)
+  
+  在给定的有序数组中寻找两个数使其和为给定的target，O(n)时间复杂度
+  ```cpp
+    vector<int> twoSum(vector<int> &numbers, int target)
+	{
+		int left = 0, right = numbers.size() - 1;
+		while (left < right)
+		{
+			if (numbers.at(left) + numbers.at(right) == target)
+			{
+				break;
+			}
+			else if (numbers.at(left) + numbers.at(right) > target)
+			{
+				right--;
+			}
+			else if (numbers.at(left) + numbers.at(right) < target)
+			{
+				left++;
+			}
+		}
+		return vector<int>{left + 1, right + 1};
+	}
+  ```
+
 - [258](https://leetcode.com/problems/add-digits/)
   
   对一个数字求各个数位的和，递归直到这个数是个位数
