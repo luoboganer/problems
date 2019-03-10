@@ -40,6 +40,45 @@
 		return vector<int>{left + 1, right + 1};
 	}
   ```
+- [217](https://leetcode.com/problems/contains-duplicate/submissions/)
+
+    在给定数组中查找是否有重复值，典型的集合的应用
+
+    - 先排序然后一遍扫描，O(nlog(n))
+    - hash set，近似O(n)
+    ```cpp
+        bool containsDuplicate(vector<int> &nums)
+        {
+            // method 1, sort and check, time complexity O(nlog(n))
+            // sort(nums.begin(), nums.end());
+            // int count = nums.size() - 1;
+            // bool res = false;
+            // for (int i = 0; i < count; i++)
+            // {
+            // 	if (nums.at(i) == nums.at(i + 1))
+            // 	{
+            // 		res = true;
+            // 		break;
+            // 	}
+            // }
+            // return res;
+
+            // method 2, hashset, approximate O(n)
+            unordered_set<int> nums_set;
+            int count = nums.size();
+            bool res = false;
+            for (int i = 0; i < count; i++)
+            {
+                if (nums_set.find(nums.at(i)) != nums_set.end())
+                {
+                    res = true;
+                    break;
+                }
+                nums_set.insert(nums.at(i));
+            }
+            return res;
+        }
+    ```
 
 - [258](https://leetcode.com/problems/add-digits/)
   
