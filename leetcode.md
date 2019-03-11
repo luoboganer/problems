@@ -11,6 +11,11 @@
   
   一维dp(dynamic plan)
 
+- [62](https://leetcode.com/problems/unique-paths/)
+
+    一维dp(dynamic plan)
+    $$dp[m,n]=dp[m-1,n]+dp[m,n-1],\left\{\begin{matrix} dp[0,0]=0\\  dp[0,1]=1\\ dp[1,0]=1 \end{matrix}\right.$$
+    
 - [69](https://leetcode.com/problems/sqrtx/)
   
   牛顿迭代法
