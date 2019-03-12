@@ -115,6 +115,13 @@
     ```cpp
         return (n - 1) % 9 + 1
     ```
+- [268](https://leetcode.com/problems/missing-number/)
+  - Gauss formual
+    
+    从0到n的和是$S_0=\frac{n(n+1)}{2}$，missing一个数x以后的和是$S=\frac{n(n+1)}{2}-x$，则丢失的数是$x=S_0-S$。
+  - bit XOR
+
+    下标是0到n-1，补充一个n作为初始值，然后这些数字是0-n且missing一个数，相当于从0-n除了missing的这个数只出现一次之外其他数字都出现了两次，因此可以用XOR操作找到这个只出现了一次的数即可。
 
 - [283](https://leetcode.com/problems/move-zeroes/)
   
