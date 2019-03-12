@@ -15,7 +15,13 @@
 
     一维dp(dynamic plan)
     $$dp[m,n]=dp[m-1,n]+dp[m,n-1],\left\{\begin{matrix} dp[0,0]=0\\  dp[0,1]=1\\ dp[1,0]=1 \end{matrix}\right.$$
-    
+
+- [63](https://leetcode.com/problems/unique-paths-ii/submissions/)
+
+    在[62-unique-path](https://leetcode.com/problems/unique-paths/)的基础上增加了障碍点，因此需要考虑初始化调价，即第一行、第一列有障碍的问题，同时咱有障碍的点路径数为0。
+
+    另外需要注意由于障碍点的0路径导致最终结果在int表示范围内，但是计算过程中可能会出现超出int表示范围的数字，需要用long long来表示并取模(mod INT_MAX)。
+
 - [69](https://leetcode.com/problems/sqrtx/)
   
   牛顿迭代法
