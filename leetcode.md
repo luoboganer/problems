@@ -154,6 +154,10 @@
         }
     ```
 
+- [338](https://leetcode.com/problems/counting-bits/)
+
+    注意分组统计的办法，类似和二进制表示中1的数量有关的问题和2的倍数有关系
+
 - [442](https://leetcode.com/problems/find-all-duplicates-in-an-array/)
     
     在一个数组$a_n,1 \le a_i \le n$中找出出现了两次的数字（其他数字只出现了一次），要求不占用额外的内存空间、$O(n)$时间复杂度
