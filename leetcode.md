@@ -25,6 +25,13 @@
 - [69](https://leetcode.com/problems/sqrtx/)
   
   牛顿迭代法
+- [136](https://leetcode.com/problems/single-number/)
+
+    一个数组中只有一个数落单、其他数均成对出现，采用异或的按位操作一遍扫描找到那个落单的数。
+    
+    进一步[260](https://leetcode.com/problems/single-number-iii/)中寻找两个落单的数，一遍异或操作可以得到这两个落单数的异或结果，然后其他数按照这个结果二进制表示中第一个非零位是否为1分为两组异或一遍即可。
+    
+    还有[137](https://leetcode.com/problems/single-number-ii/)中除了一个落单的数字、其他数字均出现了三次，可以统计int的32位表示中每一位为1的个数，然后这个统计结果为不能被3整除的那些bit位为1的二进制表示结果即为所求的落单的那个数。
 
 - [167](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/)
   
