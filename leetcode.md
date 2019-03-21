@@ -263,6 +263,25 @@
     - cpp STL中的string操作，子串、查找、替换等
     - cpp STL中集合(set)的使用，或者自己实现一个set
 
+ - [950](https://leetcode.com/problems/reveal-cards-in-increasing-order/)
+
+    按照揭牌的顺序，反向操作模拟
+    题目给定的揭牌操作：
+        
+        - 揭开最上面一张牌
+        - 把下一张牌移到最下面
+  
+    最终得到升序的序列
+
+    因此反向操作，首先对给定数组升序排序，然后
+
+        - 牌堆最后一张移到最上面
+        - 有序数列的最后一个（当前最大值）放到牌堆最上面盖住
+
+    直到给定的数列完全被放到牌堆里
+
+    时间复杂度$O(nlog(n))$
+
  - [961](https://leetcode.com/problems/n-repeated-element-in-size-2n-array/)
     In a array A of size 2N, there are N+1 unique elements, and exactly one of these elements is repeated N time, find and return this element.
     - HashTable 通过hash统计找到个数不是1的那个数，时间复杂度为O(N)，空间复杂度O(1)
