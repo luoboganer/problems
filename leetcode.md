@@ -122,6 +122,19 @@
     ```cpp
         return (n - 1) % 9 + 1
     ```
+- [264](https://leetcode.com/problems/ugly-number-ii/)
+
+    定义：素因子只有2,3,5的数正整数成为ugly数，1是特殊的ugly数。
+
+    问题：寻找第n个ugly数
+
+    方法：
+
+        - 暴力
+            从1开始逐个检查所有正整数序列是否为ugly数直到统计量count达到n
+        - dynamic program
+            除1外，下一个ugly数必然是2,3,5的倍数(倍率分别从1开始，每使用一次倍率增长一次)中较小的一个
+
 - [268](https://leetcode.com/problems/missing-number/)
   - Gauss formual
     
