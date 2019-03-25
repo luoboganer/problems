@@ -178,6 +178,28 @@
 
     注意分组统计的办法，类似和二进制表示中1的数量有关的问题和2的倍数有关系
 
+- [371](https://leetcode.com/problems/sum-of-two-integers/)
+
+    不用加减操作求两个有符号整数的和，使用位操作实现，这里与一些列位操作相关问题[here](https://leetcode.com/problems/sum-of-two-integers/discuss/84278/A-summary%3A-how-to-use-bit-manipulation-to-solve-problems-easily-and-efficiently)
+
+    ```cpp
+        int getSum(int a, int b) {
+            long long c = 0;
+            while (b)
+            {
+                c = a & b;
+                a = a ^ b;
+                b = (c & 0xffffffff) << 1;
+                /* 
+                这里c定义为长整型而又和0xffffffff按位与的目的是
+                1. 避免signed int表示的最小负数左移时溢出的问题
+                2. 将c限制在unsigned int的32 bits内
+                */
+            }
+            return a;
+        }
+    ```
+
 - [442](https://leetcode.com/problems/find-all-duplicates-in-an-array/)
     
     在一个数组$a_n,1 \le a_i \le n$中找出出现了两次的数字（其他数字只出现了一次），要求不占用额外的内存空间、$O(n)$时间复杂度
