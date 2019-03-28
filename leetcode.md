@@ -33,6 +33,10 @@
     
     还有[137](https://leetcode.com/problems/single-number-ii/)中除了一个落单的数字、其他数字均出现了三次，可以统计int的32位表示中每一位为1的个数，然后这个统计结果为不能被3整除的那些bit位为1的二进制表示结果即为所求的落单的那个数。
 
+- [143](https://leetcode.com/problems/reorder-list/)
+
+    链表、树、图等指针操作千千万万要注意空指针甚至是输入根节点为空的情况。
+
 - [167](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/)
   
   在给定的有序数组中寻找两个数使其和为给定的target，O(n)时间复杂度
