@@ -84,6 +84,10 @@
         }
     ```
 
+- [142](https://leetcode.com/problems/linked-list-cycle-ii/)
+
+    在 141判断链表中是否有cycle的基础上找出cycle的入口entry pointer，[detail algorithm](https://leetcode.com/problems/linked-list-cycle-ii/discuss/44781/Concise-O(n)-solution-by-using-C%2B%2B-with-Detailed-Alogrithm-Description)。
+
 - [143](https://leetcode.com/problems/reorder-list/)
 
     链表、树、图等指针操作千千万万要注意空指针甚至是输入根节点为空的情况。
