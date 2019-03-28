@@ -33,6 +33,57 @@
     
     还有[137](https://leetcode.com/problems/single-number-ii/)中除了一个落单的数字、其他数字均出现了三次，可以统计int的32位表示中每一位为1的个数，然后这个统计结果为不能被3整除的那些bit位为1的二进制表示结果即为所求的落单的那个数。
 
+- [141](https://leetcode.com/problems/linked-list-cycle/)
+
+    检查单向链表中是否存在cycle，两种方法，O(n)时间复杂度
+    - hastset 存储节点，不停的检查set中是否存在cur->next
+    - 快慢双指针遍历，当快慢指针相同的时候出现cycle
+  
+    ```cpp
+    	bool hasCycle(ListNode *head)
+        {
+            // method 1, hashset
+            // unordered_set<ListNode *> record;
+            // bool ret = false;
+            // while (head)
+            // {
+            // 	if (record.find(head) != record.end())
+            // 	{
+            // 		ret = true;
+            // 		break;
+            // 	}
+            // 	else
+            // 	{
+            // 		record.insert(head);
+            // 	}
+            // 	head = head->next;
+            // }
+            // return ret;
+
+            // method 2, two pointer (slower and faster)
+            bool ret = false;
+            if (head != NULL && head->next != NULL)
+            {
+                ret = true;
+                ListNode *slow = head, *fast = head->next;
+                while (slow != fast)
+                {
+                    if (slow == NULL || fast == NULL)
+                    {
+                        ret = false;
+                        break;
+                    }
+                    else
+                    {
+                        slow = slow->next;
+                        fast = fast->next->next;
+                    }
+                }
+            }
+            return ret;
+        }
+    ```
+
 - [143](https://leetcode.com/problems/reorder-list/)
 
     链表、树、图等指针操作千千万万要注意空指针甚至是输入根节点为空的情况。
