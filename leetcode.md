@@ -25,6 +25,70 @@
 - [69](https://leetcode.com/problems/sqrtx/)
   
   牛顿迭代法
+
+- [75](https://leetcode.com/problems/sort-colors/)
+
+    即荷兰国旗问题，三色排序，快速排序的基本思想练习
+
+    ```cpp
+        void sortColors(vector<int> &nums)
+        {
+            // method 1, two pass
+
+            // int count[3] = {0, 0, 0};
+            // for (auto x : nums)
+            // {
+            // 	count[x]++;
+            // }
+            // int k = 0;
+            // for (int i = 0; i < 3; i++)
+            // {
+            // 	int j = 0;
+            // 	while (j < count[i])
+            // 	{
+            // 		j++;
+            // 		nums[k++] = count[i];
+            // 	}
+            // }
+
+            // method 2, one pass, quich sort
+
+            // int left = 0, right = nums.size() - 1, cur = 0;
+            // while (cur <= right)
+            // {
+            // 	if (nums[cur] == 0)
+            // 	{
+            // 		swap(nums[left++], nums[cur++]);
+            // 	}
+            // 	else if (nums[cur] == 2)
+            // 	{
+            // 		swap(nums[right--], nums[cur]);
+            // 	}
+            // 	else
+            // 	{
+            // 		cur++;
+            // 	}
+            // }
+
+            // method 3, one pass , [0,i) - 0   [i,j) - 1    [j,k) - 2
+
+            int i = 0, j = 0, tmp = 0;
+            for (int k = 0; k < nums.size(); k++)
+            {
+                tmp = nums[k];
+                nums[k] = 2;
+                if (tmp < 2)
+                {
+                    nums[j++] = 1;
+                }
+                if (tmp == 0)
+                {
+                    nums[i++] = 0;
+                }
+            }
+        }
+    ```
+
 - [136](https://leetcode.com/problems/single-number/)
 
     一个数组中只有一个数落单、其他数均成对出现，采用异或的按位操作一遍扫描找到那个落单的数。
