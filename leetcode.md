@@ -452,3 +452,58 @@
     ```
  - [985](https://leetcode.com/problems/sum-of-even-numbers-after-queries/)
     注意每次query对应下标的数字在query前后的奇偶性，分别有不同的操作。time complexity O(n+q)，其中n(size of array) and q(the number of queries)。
+
+ - [1030](https://leetcode.com/problems/next-greater-node-in-linked-list/)
+
+    用栈可以实现$O(n)$时间复杂度，即对数组从右往左遍历的过程中保持栈顶st[i]<st[i-1]，从栈底到栈顶是严格递增的顺序
+
+    ```cpp
+        vector<int> nextLargerNodes(ListNode *head)
+        {
+            // method 1, O(n^2)
+
+            // vector<int> ret;
+            // while (head)
+            // {
+            // 	ListNode *cur = head->next;
+            // 	int base = 0;
+            // 	while (cur->next)
+            // 	{
+            // 		if (head->val < cur->val)
+            // 		{
+            // 			base = cur->val;
+            // 			break;
+            // 		}
+            // 		else
+            // 		{
+            // 			cur = cur->next;
+            // 		}
+            // 	}
+            // 	ret.push_back(base);
+            // 	head = head->next;
+            // }
+            // return ret;
+
+            // method 2, O(n), using stack
+
+            vector<int> ret, st;
+            while (head)
+            {
+                // convert linked list to array
+                ret.push_back(head->val);
+                head = head->next;
+            }
+            for (int i = ret.size() - 1; i >= 0; i--)
+            {
+                // maintain the stack is decreasing from st.top() to st.bottom()
+                while (!st.empty() && st.back() <= ret[i])
+                {
+                    st.pop_back();
+                }
+                st.push_back(ret[i]);
+                // st[i-1] is the next greater number of st[i]
+                ret[i] = st.size() > 1 ? st[st.size() - 2] : 0;
+            }
+            return ret;
+        }
+    ```
