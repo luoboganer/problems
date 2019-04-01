@@ -373,7 +373,73 @@
     2n个给定范围的数据划分成n组使得每组最小值求和最大，基本思路是对所有数排序后对基数位置上的数求和即可，这里类似于NMS非极大值抑制抑制的思路，主要的时间复杂度在排序上。
     - 基本想法是quick sort，时间复杂度$O(nlog(n))$
     - 本题给出了数据范围，可以bucket sort，时间复杂度$O(n)$，但是需要$O(N)$的额外空间
-  
+
+- [606](https://leetcode.com/problems/construct-string-from-binary-tree/)
+
+    重点是二叉树的非递归先序遍历 preorder
+
+    ```cpp
+        string tree2str(TreeNode *t)
+        {
+            // method 1, recursive
+
+            // string s;
+            // if (t)
+            // {
+            // 	s += t->val + '0';
+            // 	if (t->right)
+            // 	{
+            // 		s = s + '(' + tree2str(t->left) + ")(" + tree2str(t->right) + ')';
+            // 	}
+            // 	else
+            // 	{
+            // 		if (t->left)
+            // 		{
+            // 			s = s + '(' + tree2str(t->left) + ')';
+            // 		}
+            // 	}
+            // }
+            // return s;
+
+            //  method 2, non-recursive with stack
+
+            string s;
+            if (t)
+            {
+                stack<TreeNode *> st;
+                st.push(t);						   // st.top() is the current node
+                unordered_set<TreeNode *> visited; // set visited contain all visited nodes
+                while (!st.empty())
+                {
+                    t = st.top();
+                    if (visited.find(t) != visited.end())
+                    {
+                        // node t has been processed
+                        s += ')';
+                        st.pop();
+                    }
+                    else
+                    {
+                        // node t hasn't been processed
+                        s += '(' + to_string(t->val);
+                        visited.insert(t);
+                        if(t->right){
+                            st.push(t->right);
+                        }
+                        if(t->left){
+                            st.push(t->left);
+                        }
+                        else if(t->right){
+                            s+="()";
+                        }
+                    }
+                }
+                s = s.substr(1, s.length() - 2);
+            }
+            return s;
+        } 
+    ```
+
 - [733](https://leetcode.com/problems/flood-fill/)
     
     类似于图像处理中区域增长的方式，采用DFS递归写法或者用栈stack实现
