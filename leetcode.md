@@ -181,6 +181,39 @@
 		return vector<int>{left + 1, right + 1};
 	}
   ```
+
+- [209](https://leetcode.com/problems/minimum-size-subarray-sum/)
+
+    用左右双指针left、right设置滑动窗口capacity来满足sum和的要求，求滑动窗口可能的最小值即可
+    
+    ```cpp
+    	int minSubArrayLen(int s, vector<int> &nums)
+        {
+            int left = 0, right = 0, capacity = 0, count = nums.size(), ret = numeric_limits<int>::max();
+            while (right < count)
+            {
+                // while (right < count && capacity < s)
+                // {
+                // 	capacity += nums.at(right++);
+                // }
+                // while (left < count && capacity >= s)
+                // {
+                // 	ret = min(right - left, ret);
+                // 	capacity -= nums.at(left++);
+                // }
+
+                capacity += nums[right++];
+                while (capacity >= s)
+                {
+                    ret = min(ret, right - left);
+                    capacity -= nums[left--];
+                }
+            }
+            ret = (ret == numeric_limits<int>::max()) ? 0 : ret;
+            return ret;
+        }
+    ```
+
 - [217](https://leetcode.com/problems/contains-duplicate/submissions/)
 
     在给定数组中查找是否有重复值，典型的集合的应用
