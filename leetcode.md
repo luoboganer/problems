@@ -444,6 +444,114 @@
     
     类似于图像处理中区域增长的方式，采用DFS递归写法或者用栈stack实现
 
+- [788](https://leetcode.com/problems/rotated-digits/)
+
+    判断一个整数的每个位置上数字旋转180度之后是否可以形成一个不等于原来值的有效数字，暴力搜索$O(nlog(n))$，动态规划$O(log(n))$，[here](http://www.frankmadrid.com/ALudicFallacy/2018/02/28/rotated-digits-leet-code-788/)算法描述。
+
+    - [暴力搜索]
+
+    ```cpp
+        int rotatedDigits(int N)
+        {
+            const int count = 10;
+            int *rotated = new int[count];
+            rotated[0] = 0;
+            rotated[1] = 1;
+            rotated[2] = 5;
+            rotated[3] = -1;
+            rotated[4] = -1;
+            rotated[5] = 2;
+            rotated[6] = 9;
+            rotated[7] = -1;
+            rotated[8] = 8;
+            rotated[9] = 6;
+
+            int count_of_good = 0;
+            for (int i = 1; i <= N; i++)
+            {
+                int base = i;
+                vector<int> digits;
+                bool flag = true;
+                while (base)
+                {
+                    if (rotated[base % 10] != -1)
+                    {
+                        digits.push_back(rotated[base % 10]);
+                        base /= 10;
+                    }
+                    else
+                    {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag)
+                {
+                    base = 0;
+                    while (!digits.empty())
+                    {
+                        base = base * 10 + digits.back();
+                        digits.pop_back();
+                    }
+                    if (base != i)
+                    {
+                        count_of_good++;
+                    }
+                }
+            }
+            return count_of_good;
+        }
+    ```
+
+    - [dynamic plan]
+
+    ```cpp
+        int myrotatedDigits(string str, bool new_number)
+        {
+            // some defination of number
+            int type[10] = {0, 0, 1, 2, 2, 1, 1, 2, 0, 1};
+            int differentRotation[10] = {0, 0, 1, 1, 1, 2, 3, 3, 3, 4}; // cumulative new number, 2 5 6 9
+            int validRotation[10] = {1, 2, 3, 3, 3, 4, 5, 5, 6, 7};		// cumulative valid number, 0,1,2,5,6,8,9
+            int sameRotation[10] = {1, 2, 2, 2, 2, 2, 2, 2, 3, 3};		// cumulative same number, 0, 1, 8
+
+            // count rotations
+            int digit = str[0] - '0';
+            int ret = 0;
+
+            // 1-digitals
+            if (str.length() == 1)
+            {
+                ret = new_number ? validRotation[digit] : differentRotation[digit];
+            }
+            else
+            {
+                if (digit != 0)
+                {
+                    ret += validRotation[digit - 1] * pow(7, str.length() - 1);
+                    if (!new_number)
+                    {
+                        ret -= sameRotation[digit - 1] * pow(3, str.length() - 1);
+                    }
+                }
+
+                if (type[digit] == 1)
+                {
+                    new_number = true;
+                }
+                if (type[digit] != 2)
+                {
+                    ret += myrotatedDigits(str.substr(1, string::npos), new_number);
+                }
+            }
+            return ret;
+        }
+
+        int rotatedDigits(int N)
+        {
+            return myrotatedDigits(to_string(N), false);
+        }
+    ```
+
 - [852](https://leetcode.com/problems/peak-index-in-a-mountain-array/)
 
     寻找给定数组中的山峰数下标，所谓山峰数根据题目定义即为**全局最大值**，因此binary search是理论上的最佳算法，time complexity O(log(n))
