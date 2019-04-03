@@ -660,6 +660,75 @@
  - [985](https://leetcode.com/problems/sum-of-even-numbers-after-queries/)
     注意每次query对应下标的数字在query前后的奇偶性，分别有不同的操作。time complexity O(n+q)，其中n(size of array) and q(the number of queries)。
 
+ - [1002](https://leetcode.com/problems/find-common-characters/)
+
+    用两个长度为26的数组来统计两个单词中每个字母出现的次数，然后共同字母的次数为两个单词分别统计结果中的较小值，如果有一方为0则表示没有共同出现过，时间复杂度$O(n)$，其中n是所有单词长度的和，即所有字母的个数。
+
+    ```cpp
+        vector<string> commonChars(vector<string> &A)
+        {
+            // string s = A[0];
+            // sort(s.begin(), s.end());
+            // for (int k = 1; k < A.size(); k++)
+            // {
+            // 	string x, t = A[k];
+            // 	sort(t.begin(), t.end());
+            // 	int i = 0, j = 0;
+            // 	while (i < s.length() && j < t.length())
+            // 	{
+            // 		if (s[i] == t[j])
+            // 		{
+            // 			x += s[i];
+            // 			i++;
+            // 			j++;
+            // 		}
+            // 		else if (s[i] < t[j])
+            // 		{
+            // 			i++;
+            // 		}
+            // 		else
+            // 		{
+            // 			j++;
+            // 		}
+            // 	}
+            // 	s = x;
+            // }
+            // vector<string> ret;
+            // for (string::iterator it = s.begin(); it != s.end(); it++)
+            // {
+            // 	string t;
+            // 	t += *it;
+            // 	ret.push_back(t);
+            // }
+            // return ret;
+
+            // method 2, O(n)
+            const int length_of_lowercases = 26;
+            vector<int> count(length_of_lowercases, numeric_limits<int>::max());
+            for (auto word : A)
+            {
+                vector<int> cnt(length_of_lowercases, 0);
+                for (auto c : word)
+                {
+                    cnt[c - 'a']++;
+                }
+                for (int i = 0; i < length_of_lowercases; i++)
+                {
+                    count[i] = min(count[i], cnt[i]);
+                }
+            }
+            vector<string> ret;
+            for (int i = 0; i < length_of_lowercases; i++)
+            {
+                for (int j = 0; j < count[i]; j++)
+                {
+                    ret.push_back(string(1, i + 'a'));
+                }
+            }
+            return ret;
+        }
+    ```
+
  - [1030](https://leetcode.com/problems/next-greater-node-in-linked-list/)
 
     用栈可以实现$O(n)$时间复杂度，即对数组从右往左遍历的过程中保持栈顶st[i]<st[i-1]，从栈底到栈顶是严格递增的顺序
