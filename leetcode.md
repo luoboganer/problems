@@ -444,6 +444,22 @@
     
     类似于图像处理中区域增长的方式，采用DFS递归写法或者用栈stack实现
 
+- [754](https://leetcode.com/problems/reach-a-number/)
+
+    从$k=1$开始累加直到超过target，根据奇偶性校验的结果来修正最终值
+
+    ```cpp
+        int reachNumber(int target) {
+            int k = 0;
+            target = abs(target);
+            while (target > 0)
+            {
+                target -= ++k;
+            }
+            return (target & 1) ? k + 1 + k % 2 : k; 
+        }
+    ```
+
 - [788](https://leetcode.com/problems/rotated-digits/)
 
     判断一个整数的每个位置上数字旋转180度之后是否可以形成一个不等于原来值的有效数字，暴力搜索$O(nlog(n))$，动态规划$O(log(n))$，[here](http://www.frankmadrid.com/ALudicFallacy/2018/02/28/rotated-digits-leet-code-788/)算法描述。
