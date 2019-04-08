@@ -182,6 +182,69 @@
 	}
   ```
 
+- [169](https://leetcode.com/problems/majority-element/)
+
+    找出给定数组中出现次数超过一半的数，后续还有升级版[229](https://leetcode.com/problems/majority-element-ii/)寻找给定数组中出现次数超过$\frac{1}{3}$的数。
+
+    - 首先遍历数组用hashmap统计每个数出现的次数，然后遍历hashmap来比较是否有出现次数超过一半，假定hashmap的$O(1)$存取效率，可以实现$O(n)$的限行时间复杂度
+    - 首先对数组排序，从而使得相同数字全部相邻，然后从左到右遍历是否有出现次数超过一半的数字，时间复杂度来自排序算法，一般为$O(nlog(n))$
+    - MOOER voting 算法，可以实现真$O(n)$的线性时间和$O(1)$的常量空间，[here](https://www.hijerry.cn/p/45987.html)and[here](https://blog.csdn.net/tinyjian/article/details/79110473)有相关技术博客。
+  
+        > 摩尔投票法的基本原理是数学上可以证明数组中出现次数超过数组长度一半的元素最多仅有一个。在从左向右遍历数组的过程中维护两个变量，当前大多数cur_majority和当前大多数的投票得分cur_votes，在遍历数组的过程中遇到投票vote：
+        - 如果vote和当前大多数相同，则得分cur_votes++
+        - 如果vote和当前大多数不同
+          - 此时如果当前大多数的得分已经为0，则用vote更新当前大多数，且得分更新为1
+          - 此时如果当前大多数的得分尚大于0，则得分cur_vote--
+        > 最终的当前大多数即是得票过半的 majority element。
+    
+    ```cpp
+        int majorityElement(vector<int> &nums)
+        {
+            // method 1, sorting and search
+
+            // sort(nums.begin(), nums.end());
+            // int cur_count = 1, count = nums.size(), half = count / 2, pivot = nums[0];
+            // for (int i = 1; i < count; i++)
+            // {
+            // 	if (cur_count > half)
+            // 	{
+            // 		break;
+            // 	}
+            // 	if (nums[i] == pivot)
+            // 	{
+            // 		cur_count++;
+            // 	}
+            // 	else
+            // 	{
+            // 		cur_count = 1;
+            // 		pivot = nums[i];
+            // 	}
+            // }
+            // return pivot;
+
+            // method 2, mooer voting
+
+            int cur_majority = nums[0], cur_votes = 1;
+            for (int i = 1; i < nums.size(); i++)
+            {
+                if (nums[i] == cur_majority)
+                {
+                    cur_votes++;
+                }
+                else if (cur_votes > 0)
+                {
+                    cur_votes--;
+                }
+                else
+                {
+                    cur_majority = nums[i];
+                    cur_votes = 1;
+                }
+            }
+            return cur_majority;
+        }
+    ```
+
 - [209](https://leetcode.com/problems/minimum-size-subarray-sum/)
 
     用左右双指针left、right设置滑动窗口capacity来满足sum和的要求，求滑动窗口可能的最小值即可
@@ -254,6 +317,102 @@
         }
     ```
 
+- [229](https://leetcode.com/problems/majority-element-ii/)
+  
+    在给定数组中寻找出现次数超过$\frac{1}{3}$的数字，是[169](https://leetcode.com/problems/majority-element/)题的升级版，同样用hashmap进行统计，排序，摩尔投票等方法解决。
+    ```cpp
+        vector<int> majorityElement(vector<int> &nums)
+        {
+            // method 1, hash map counting
+
+            // unordered_map<int, int> count;
+            // for (auto x : nums)
+            // {
+            // 	if (count.find(x) != count.end())
+            // 	{
+            // 		count[x]++;
+            // 	}
+            // 	else
+            // 	{
+            // 		count[x] = 1;
+            // 	}
+            // }
+            // int length_one_of_third = nums.size() / 3;
+            // vector<int> ret;
+            // for (const auto &pair : count)
+            // {
+            // 	if (pair.second > length_one_of_third)
+            // 	{
+            // 		ret.push_back(pair.first);
+            // 	}
+            // }
+            // return ret;
+
+            // method 2, mooer voting
+            vector<int> ret;
+            if (nums.size() > 0)
+            {
+                int cur_majority_A = nums[0], cur_majority_B = nums[0];
+                int cur_votes_A = 0, cur_votes_B = 0;
+                for (auto x : nums)
+                {
+                    // 投票过程
+                    if (x == cur_majority_A)
+                    {
+                        cur_votes_A++;
+                        continue;
+                    }
+                    if (x == cur_majority_B)
+                    {
+                        cur_votes_B++;
+                        continue;
+                    }
+                    if (cur_votes_A == 0)
+                    {
+                        cur_majority_A = x;
+                        cur_votes_A = 1;
+                        continue;
+                    }
+                    if (cur_votes_B == 0)
+                    {
+                        cur_majority_B = x;
+                        cur_votes_B = 1;
+                        continue;
+                    }
+
+                    // 此时AB均为被投票且他们的得票数都大于0，因此都减一分
+                    cur_votes_A--;
+                    cur_votes_B--;
+                }
+                /* 
+                投票结束，题目并未保证给定数组中一定有两个出现次数超过1/3的数字，
+                所以还要检查这两个数出现的次数是否真的超过1/3,
+                这是因为摩尔投票法仅能找出出现次数超过一半的数而不能找出出现次数最多的众数
+            */
+                cur_votes_A = 0, cur_votes_B = 0;
+                for (auto x : nums)
+                {
+                    if (x == cur_majority_A)
+                    {
+                        cur_votes_A++;
+                    }
+                    else if (x == cur_majority_B)
+                    {
+                        cur_votes_B++;
+                    }
+                }
+                if (cur_votes_A > nums.size() / 3)
+                {
+                    ret.push_back(cur_majority_A);
+                }
+                if (cur_votes_B > nums.size() / 3)
+                {
+                    ret.push_back(cur_majority_B);
+                }
+            }
+            return ret;
+        }
+    ```
 - [258](https://leetcode.com/problems/add-digits/)
   
   对一个数字求各个数位的和，递归直到这个数是个位数
