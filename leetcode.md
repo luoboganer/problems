@@ -904,6 +904,83 @@
         }
     ```
 
+ - [1008](https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/)
+
+    从二叉搜索树BST的先序遍历preorder开始重建BST
+
+    - 以preorder[0]为分界线将后面preorder后面的部分划分成两部份，左半部分递归重建左子树，右半部分递归重建右子树，时间复杂度$O(nlog(n))$
+    ```cpp
+        TreeNode *bstFromPreorder(vector<int> &preorder)
+        {
+            if (preorder.size() > 0)
+            {
+                TreeNode *root = new TreeNode(preorder[0]);
+                int index = 1;
+                while (index < preorder.size() && preorder[0] > preorder[index])
+                {
+                    index++;
+                }
+                root->left = bstFromPreorder(vector<int>&(preorder.begin() + 1, preorder.begin() + index));
+                root->right = bstFromPreorder(vector<int>&(preorder.begin() + index, preorder.end()));
+                return root;
+            }
+            else
+            {
+                return NULL;
+            }
+        }
+    ```
+    - 重写函数为bstFromPreorder(vector<int>& preorder,int boundary)，设定一个界boundary，从preorder[i]开始用下标i遍历preorder，小于界boundary的递归建立左子树，大于界的递归建立右子树，可以实现线性时间复杂度$O(n)$
+    ```cpp
+        int i = 0;
+        TreeNode *bstFromPreorder(vector<int> &preorder)
+        {
+            return bstFromPreorder(preorder, numeric_limits<int>::max());
+        }
+        TreeNode *bstFromPreorder(vector<int> &preorder, int boundary)
+        {
+            if (!(i < preorder.size()) || preorder[i] > boundary)
+            {
+                return NULL;
+            }
+            else
+            {
+                TreeNode *root = new TreeNode(preorder[i++]);
+                root->left = bstFromPreorder(preorder, root->val);
+                root->right = bstFromPreorder(preorder, boundary);
+                return root;
+            }
+        }
+    ```
+    - 栈实现，时间复杂度$O(n)$，遍历数组中的每个元素item，找到第一个比item小的数p，然后把item挂到p的右孩子，因此需要维护一个从栈底熬栈顶递减的栈序列，从而为数组迭代过程中的每个数item找到第一个比它小的数p，即栈顶元素；如果栈中不存在p比item小，则item当前最小，成为栈顶元素的左孩子。
+    ```cpp
+        TreeNode *bstFromPreorder(vector<int> &preorder)
+        {
+            TreeNode *cur_root = new TreeNode(numeric_limits<int>::max());
+            stack<TreeNode *> st;
+            st.push(cur_root);
+            for (auto item : preorder)
+            {
+                TreeNode *cur = new TreeNode(item), *p = nullptr;
+                while (st.top()->val < item)
+                {
+                    p = st.top();
+                    st.pop();
+                }
+                if (p)
+                {
+                    p->right = cur;
+                }
+                else
+                {
+                    st.top()->left = cur;
+                }
+                st.push(cur);
+            }
+            return cur_root->left;
+        }
+    ```
+
  - [1030](https://leetcode.com/problems/next-greater-node-in-linked-list/)
 
     用栈可以实现$O(n)$时间复杂度，即对数组从右往左遍历的过程中保持栈顶st[i]<st[i-1]，从栈底到栈顶是严格递增的顺序
