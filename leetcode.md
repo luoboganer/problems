@@ -493,6 +493,23 @@
 
     注意分组统计的办法，类似和二进制表示中1的数量有关的问题和2的倍数有关系
 
+- [367](https://leetcode.com/problems/valid-perfect-square/)
+
+    线性时间内判断一个数是否是完全平方数而不用开方函数，代码如下：
+    ```cpp
+        bool isPerfectSquare(int num) {
+            long long i = 1, sum = 0;
+            while (sum < num)
+            {
+                sum += i;
+                i += 2;
+            }
+            return sum == num; 
+        }
+    ```
+    在数学上可以证明对于任何一个完全平方数有：
+    $$\begin{array}{l}{n^{2}=1+3+5+\ldots+(2 \cdot n-1)=\sum_{i=1}^{n}(2 \cdot i-1)} \\ {\text { 证明如下： }} \\ {\quad 1+3+5+\ldots+(2 \cdot n-1)} \\ {=(2 \cdot 1-1)+(2 \cdot 2-1)+(2 \cdot 3-1)+\ldots+(2 \cdot n-1)} \\ {=2 \cdot(1+2+3+\ldots+n)-(\underbrace{1+1+\ldots+1}_{n \text { times }})} \\ {=2 \cdot \frac{n(n+1)}{2}-n} \\ {=n^{2}+n-n} \\ {=n^{2}}\end{array}$$
+
 - [371](https://leetcode.com/problems/sum-of-two-integers/)
 
     不用加减操作求两个有符号整数的和，使用位操作实现，这里与一些列位操作相关问题[here](https://leetcode.com/problems/sum-of-two-integers/discuss/84278/A-summary%3A-how-to-use-bit-manipulation-to-solve-problems-easily-and-efficiently)
