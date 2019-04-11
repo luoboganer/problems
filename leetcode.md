@@ -537,6 +537,9 @@
     在一个数组$a_n,1 \le a_i \le n$中找出出现了两次的数字（其他数字只出现了一次），要求不占用额外的内存空间、$O(n)$时间复杂度
     - 逐位负数标记法
     - 交换法
+- [448](https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/)
+
+    本题和[442](https://leetcode.com/problems/find-all-duplicates-in-an-array/)很像，在遍历数组的过程中可以简单的用一个bool数组来标记每个下标是否出现即可，在不使用额外空间的情况下，可以用正负标记来代替true和false的bool标记在原数组中标记，只不过每次读取原数组的时候取绝对值即可。
 
 - [509](https://leetcode.com/problems/fibonacci-number/)
     
