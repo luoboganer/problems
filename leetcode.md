@@ -413,6 +413,11 @@
             return ret;
         }
     ```
+
+- [234](https://leetcode.com/problems/palindrome-linked-list/)
+
+    在$O(n)$时间和$O(1)$空间下判断一个链表是否回文，第一次遍历找到重点，然后翻转后半部分和前半部分进行比较即可
+
 - [258](https://leetcode.com/problems/add-digits/)
   
   对一个数字求各个数位的和，递归直到这个数是个位数
