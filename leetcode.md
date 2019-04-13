@@ -507,6 +507,79 @@
         }
     ```
 
+- [337](https://leetcode.com/problems/house-robber-iii/)
+
+    - 最简单版本[198](https://leetcode.com/problems/house-robber/)
+        
+        所有房子的价值以数组nums形式给出，顺序遍历dp即可
+        $$dp[i]=\left\{\begin{matrix} x[0], i=0\\ max(x[0],x[1]), i=1\\ max(dp[i-2]+x[i],dp[i-1]), i\geqslant 2 \end{matrix}\right.$$
+        
+    - 升级版[213](https://leetcode.com/problems/house-robber-ii/)
+
+        此时所有房子形成了一个环，即第一个和最后一个互相接壤，会互相影响，对数组nums[0,n-2],nums[1,n-1]执行两次dp取较大值即可
+
+    - 本题中所有房子价值按照二叉树形式给出，只有一个入口，即根节点root，优质discussion在[这里](https://leetcode.com/problems/house-robber-iii/discuss/79330/Step-by-step-tackling-of-the-problem)
+      - naive dp with recursion **[TLE](Time Limit Exceeded)**
+    ```cpp
+      	int rob(TreeNode* root) {
+              int ret=0;
+              if(root){
+                  int cur_value=root->val;
+                  if(root->left){
+                      cur_value+=rob(root->left->left)+rob(root->left->right);
+                  }
+                  if(root->right){
+                      cur_value+=rob(root->right->left)+rob(root->right->right);
+                  }
+                  ret=max(rob(root->left)+rob(root->right),cur_value);
+              return ret;
+          }
+    ```
+      - 朴素的递归过程中有很多的重复计算问题，可以通过hashmap来记录拜访过的子节点，在递归的过程中相当于实现了自底向上的dp过程，可以在$O(n)$时间和$O(n)$空间限制内解决问题
+    ```cpp
+        unordered_map<TreeNode*,int> visited;
+        int rob(TreeNode* root) {
+            int ret=0;
+            if(root){
+                if(visited.find(root)!=visited.end()){
+                    ret=visited[root];
+                }else{	
+                    int cur_value=root->val;
+                    if(root->left){
+                        cur_value+=rob(root->left->left)+rob(root->left->right);
+                    }
+                    if(root->right){
+                        cur_value+=rob(root->right->left)+rob(root->right->right);
+                    }
+                    ret=max(rob(root->left)+rob(root->right),cur_value);
+                    visited[root]=ret;
+                }
+            }
+            return ret;
+        }
+    ```
+      - 在每个节点计算两个值pair<int,int>，其中pair.first表示当前节点不选择时左右子树获得的最大价值，pair.second代表选择当前节点时当前节点及其子树可以获得的最大价值，递归之后在根节点的两个值中选择最大值即可
+    ```cpp
+        int rob(TreeNode* root) {
+            pair<int,int> res=robsub(root);
+            return max(res.first,res.second);
+        }
+
+        pair<int,int> robsub(TreeNode* root){
+            if(root){
+                /*
+                    pair.first	当前节点不选择的最大价值
+                    pair.second	当前节点选择的最大价值
+                */
+                pair<int,int> left=robsub(root->left);
+                pair<int,int> right=robsub(root->right);
+                return make_pair(max(left.first,left.second)+max(right.first,right.second),root->val+left.first+right.first);
+            }else{
+                return make_pair(0,0);
+            }
+        }
+    ```
+
 - [338](https://leetcode.com/problems/counting-bits/)
 
     注意分组统计的办法，类似和二进制表示中1的数量有关的问题和2的倍数有关系
