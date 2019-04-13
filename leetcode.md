@@ -413,6 +413,21 @@
             return ret;
         }
     ```
+
+- [237](https://leetcode.com/problems/delete-node-in-a-linked-list/)
+
+    给定链表中某个节点，删除该节点，难点在于该节点的前继节点未知。如果该节点有后继，则用后继节点来代替该节点，如果没有后继，则该节点指向空即可。
+    ```cpp
+        void deleteNode(ListNode* node) {
+            if(node->next){
+                node->val=node->next->val;
+                node->next=node->next->next;
+            }else{
+                node=nullptr;
+            }
+        }
+    ```
+
 - [258](https://leetcode.com/problems/add-digits/)
   
   对一个数字求各个数位的和，递归直到这个数是个位数
