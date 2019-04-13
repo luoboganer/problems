@@ -842,6 +842,10 @@
 
     寻找给定数组中的山峰数下标，所谓山峰数根据题目定义即为**全局最大值**，因此binary search是理论上的最佳算法，time complexity O(log(n))
 
+- [874](https://leetcode.com/problems/walking-robot-simulation/)
+
+    用坐标$(0,1)-north,(1,0)-east,(0,-1)-north,(-1,0)-west$来表示四个方向模拟机器人行走过程即可，注意题目要求返回的是机器人在行走过程中距离原点的最远距离，而不是机器人结束行走后距离原点的最终距离。
+
 - [876](https://leetcode.com/problems/middle-of-the-linked-list/solution/)
     寻找单链表的中间节点，两种方法
     - O(n)时间遍历一遍将所有节点的地址存储到一个数组，则可以在O(1)时间内索引到，O(n)空间复杂度
