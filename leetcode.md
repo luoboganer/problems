@@ -913,6 +913,46 @@
       auto it = std::partition(v.begin(), v.end(), [](int i){return i % 2 == 0;});
     ```
 
+ - [908](https://leetcode.com/problems/smallest-range-i/)
+
+    给定数组A和阈值k，在$\pm k$范围内调节数组中的每一个数字，使得A中的最大值和最小值之间的差距尽可能的小。理论上尽量用$\pm k$范围内的数去抹平原数组中最大值和最小值之间的差距就可以了。
+    ```cpp
+    int smallestRangeI(vector<int> &A, int K)
+    {
+        const int count = A.size();
+        int i = 0;
+        int max_value = A[0], min_value = A[0];
+        for (i = 1; i < count; i++)
+        {
+            if (A[i] > max_value)
+            {
+                max_value = A[i];
+            }
+            else if (A[i] < min_value)
+            {
+                min_value = A[i];
+            }
+        }
+        return max(0, max_value - min_value - (K << 1));
+    }
+    ```
+    [here-910](https://leetcode.com/problems/smallest-range-ii/)限定这个题的调节量只能是$-k$和$+k$，而不能是$\pm k$范围内的任意数。
+    ```cpp
+    int smallestRangeII(vector<int>& A, int K) {
+        const int count=A.size();
+		sort(A.begin(),A.end());
+		int ans=A[count-1]-A[0];
+		for(int i = 0; i < count-1; i++)
+		{
+			int a=A[i],b=A[i+1];
+			int high=max(A[count-1]-K,a+K);
+			int low=min(A[0]+K,b-K);
+			ans=min(ans,high-low);
+		}
+		return ans;
+	}
+    ```
+
  - [929](https://leetcode.com/problems/unique-email-addresses/)
     两个考察点
     - cpp STL中的string操作，子串、查找、替换等
