@@ -958,6 +958,30 @@
     - cpp STL中的string操作，子串、查找、替换等
     - cpp STL中集合(set)的使用，或者自己实现一个set
 
+ - [941](https://leetcode.com/problems/valid-mountain-array/)
+
+    重点在于要有increasing的过程，也要有decreasing的过程。
+    ```cpp
+    bool validMountainArray(vector<int>& A) {
+        const int count=A.size()-1;
+		if(count<2){
+			return false;
+		}else{
+			int i=0;
+			bool increasing=false,decreasing=false;
+			while(i<count && A[i]<A[i+1]){
+				i++;
+				increasing=true;
+			}
+			while(i<count && A[i]>A[i+1]){
+				i++;
+				decreasing=true;
+			}
+			return (i==count)&&increasing&&decreasing;
+		}
+    }
+    ```
+
  - [950](https://leetcode.com/problems/reveal-cards-in-increasing-order/)
 
     按照揭牌的顺序，反向操作模拟
