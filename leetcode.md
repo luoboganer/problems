@@ -11,6 +11,53 @@
   
   一维dp(dynamic plan)
 
+- [54](https://leetcode.com/problems/spiral-matrix/)
+
+    spiral matrix，按照蛇形回环遍历一个二维数组，主要难点在数组的小标控制。类似的问题有[59](https://leetcode.com/problems/spiral-matrix-ii/)，将$1-n^2$这$n^2$个数按照蛇形规则填充到一个$n*n$的二维数组中；还有[885](https://leetcode.com/problems/spiral-matrix-iii/)，将指定的数字按照蛇序列从指定位置$(i,j)$开始填充到一个二维数组中。
+    ```cpp
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+		vector<int> ans;
+		if(!(matrix.size()==0 || matrix[0].size()==0)){
+			int up=0,down=matrix.size()-1,left=0,right=matrix[0].size()-1;
+			while(true){
+				for(int i = left; i <= right; i++)
+				{
+					// from left to right
+					ans.push_back(matrix[up][i]);
+				}
+				if(++up>down){
+					break;
+				}
+				for(int i = up; i <= down; i++)
+				{
+					// from up to down
+					ans.push_back(matrix[i][right]);
+				}
+				if(--right<left){
+					break;
+				}
+				for(int i = right; i >= left; i--)
+				{
+					// for right to left
+					ans.push_back(matrix[down][i]);
+				}
+				if(--down<up){
+					break;
+				}
+				for(int i = down; i >= up; i--)
+				{
+					// from down to up
+					ans.push_back(matrix[i][left]);
+				}
+                if(++left>right){
+					break;
+				}
+			}
+		}
+		return ans;
+    }
+    ```
+
 - [62](https://leetcode.com/problems/unique-paths/)
 
     一维dp(dynamic plan)
