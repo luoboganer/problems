@@ -1058,6 +1058,42 @@
         }
         return A[0] == A[2] || A[0] == A[3] ? A[0] : A[1];
     ```
+ 
+ - [976](https://leetcode.com/problems/largest-perimeter-triangle/)
+
+    给定一个$size>3$数组array，求数组中数可以组成的周长最长的三角形，这本质上是个数学题。首先岁数组中所有的数按降序排列有
+    $$a_0>a_1>a_2>...>a_{n-1}>a_n$$
+    则对任意满足
+    $$a_i-a_{i+1}<a_{i+2}$$
+    的三个数可以由数组的降序来保证
+    $$a_i+a_{i+1}>a_{i+2}$$
+    使得这三个数可以构成有效三角形，
+    此时由于数组的降序性有$i$最小时三角形周长$C=a_i+a_{i+1}+a_{i+2}$获得最大值。
+    ```cpp
+    int largestPerimeter(vector<int>& A) {
+	    int ans=0;
+        if(A.size()>=3){
+			sort(A.begin(),A.end(),[](const int a,const int b)->bool{return a>b;});
+			for(int i = 2; i < A.size(); i++)
+			{
+				if(A[i-2]-A[i-1]<A[i]){
+					ans=A[i]+A[i-1]+A[i-2];
+					break;
+				}
+			}
+		}
+		return ans;
+    }
+    ```
+
+    但是对于[812](https://leetcode.com/problems/largest-triangle-area/)这样根据给定的一群点来求面积最大三角形的优化问题则只能是用三重循环暴力搜索，即使可以使用凸包(convex hull)优化，效果不明显，最坏情况下仍然是$O(n^3)$复杂度。另外一个问题，根据给定的点$A,B,C$求三角形面积的公式有：
+    - 海伦公式
+  
+        令$p=\frac{a+b+c}{2}$,则$S=\sqrt{p(p-a)(p-b)(p-c)}$,其中$a,b,c$为三条边边长
+    - [向量外积](https://en.wikipedia.org/wiki/Cross_product)
+
+        $$\begin{array}{c}{\text { Area }=\frac{1}{2}|\vec{AB} \times \vec{AC}|} \\ {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}, y_{b}-y_{a}\right) ) \times\left(x_{c}-x_{a}, y_{c}-y_{a}\right) ) |} \\ {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}\right)\left(y_{c}-y_{a}\right)-\left(x_{c}-x_{a}, y_{b}-y_{a}\right) ) |} \\ {\text {Area}=\frac{1}{2}\left|x_{a} y_{b}+x_{b} y_{c}+x_{c} y_{a}-x_{a} y_{c}-x_{c} y_{b}-x_{b} y_{a}\right|}\end{array}$$
+ 
  - [985](https://leetcode.com/problems/sum-of-even-numbers-after-queries/)
     注意每次query对应下标的数字在query前后的奇偶性，分别有不同的操作。time complexity O(n+q)，其中n(size of array) and q(the number of queries)。
 
