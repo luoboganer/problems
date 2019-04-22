@@ -1301,3 +1301,8 @@
             return ret;
         }
     ```
+  - [1032](https://leetcode.com/problems/stream-of-characters/)
+  
+    本题主要练习字典树的的构建与查询，tire tree是一种高效的单词存储与查询数据结构，比如可以完成IDE的代码自动提示语补全功能，[here](https://blog.csdn.net/v_july_v/article/details/6897097)有相关博客。
+
+  - [...]()
