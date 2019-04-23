@@ -1218,7 +1218,7 @@
             }
         }
     ```
-    - 栈实现，时间复杂度$O(n)$，遍历数组中的每个元素item，找到第一个比item小的数p，然后把item挂到p的右孩子，因此需要维护一个从栈底熬栈顶递减的栈序列，从而为数组迭代过程中的每个数item找到第一个比它小的数p，即栈顶元素；如果栈中不存在p比item小，则item当前最小，成为栈顶元素的左孩子。
+    - 栈实现，时间复杂度$O(n)$，遍历数组中的每个元素item，找到第一个比item小的数p，然后把item挂到p的右孩子，因此需要维护一个从栈底到栈顶递减的栈序列，从而为数组迭代过程中的每个数item找到第一个比它小的数p，即栈顶元素；如果栈中不存在p比item小，则item当前最小，成为栈顶元素的左孩子。
     ```cpp
         TreeNode *bstFromPreorder(vector<int> &preorder)
         {
@@ -1247,7 +1247,7 @@
         }
     ```
 
- - [1030](https://leetcode.com/problems/next-greater-node-in-linked-list/)
+ - [1019](https://leetcode.com/problems/next-greater-node-in-linked-list/)
 
     用栈可以实现$O(n)$时间复杂度，即对数组从右往左遍历的过程中保持栈顶st[i]<st[i-1]，从栈底到栈顶是严格递增的顺序
 
@@ -1301,7 +1301,12 @@
             return ret;
         }
     ```
-  - [1032](https://leetcode.com/problems/stream-of-characters/)
+  
+ - [1024](https://leetcode.com/problems/video-stitching/)
+
+    一开始设定当前右端点$cur_right$，然后按照贪心策略寻找左端点小于等于当前右端点(保证可以连接而没有断点)且右端点最远(贪心原则，以便使用最少的视频片段)的没有用过的视频片段，直到所有视频片段被用完或者当前右端点$cur_right$超过了总时间长度要求$T$。
+
+ - [1032](https://leetcode.com/problems/stream-of-characters/)
   
     本题主要练习字典树的的构建与查询，tire tree是一种高效的单词存储与查询数据结构，比如可以完成IDE的代码自动提示语补全功能，[here](https://blog.csdn.net/v_july_v/article/details/6897097)有相关博客。
 
