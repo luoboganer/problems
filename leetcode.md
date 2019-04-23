@@ -889,6 +889,91 @@
         }
     ```
 
+- [849](https://leetcode.com/problems/maximize-distance-to-closest-person/)
+  
+    给定一排座位，0表示空，1表示有人，新来一个人要安排到某个空的座位，使得新人到原来座位上的人(1)的距离尽可能的远，输出这最远距离。整体思路在于某一点到1的最远距离为该点到左边1的距离和到右边1的距离的较小值。
+    - left[i]表示点i到到左边最近1的距离，right[i]表示点i到右边最近1的距离，则点i到1的最远距离为$min(left[i],right[i])$。特别注意处理边界点的距离，即左边界的0到其左边的1的距离为无穷大，右边界的0到右边的1的距离为无穷。
+  	```cpp
+    int maxDistToClosest(vector<int>& seats) {
+        const int count=seats.size();
+        int ans=0;
+        if(count>=2){
+            vector<int> left(count,0),right(count,0);
+            left[0]=seats[0]?0:count;
+            for (int i = 1; i < count; i++)
+            {
+                left[i]=seats[i]?0:left[i-1]+1;
+            }
+            right[count-1]=seats[count-1]?0:count;
+            for (int i = count-1; i > 0; i--)
+            {
+                right[i-1]=seats[i-1]?0:right[i]+1;
+            }
+            for (int i = 0; i < count; i++)
+            {
+                ans=max(ans,min(left[i],right[i]));
+            }			
+        }
+        return ans;
+    }
+	```
+    - 对于左右被1围困的连续的k个0，其距离最近的1的距离为$\frac{k+1}{2}$，边界情况特殊讨论
+```cpp
+	int maxDistToClosest(vector<int>& seats) {
+		const int count=seats.size();
+		int ans=0;
+		if(count>=2){
+			int k=0,i=0;
+			for (i = 0; i < count; i++)
+			{
+				if(seats[i]){
+					ans=max(ans,(k+1)/2);
+					k=0;
+				}else{
+					k++;
+				}
+			}
+			// left border
+			i=0;
+			while(seats[i]==0){
+				i++;
+			}
+			ans=max(ans,i);
+			i=0;
+			while (seats[count-1-i]==0)
+			{
+				i++;
+			}
+			ans=max(ans,i);
+		}
+		return ans;
+	}
+	```
+    - two pointer法，用两个指针prev和future，pre指向点i的左边一个1，future指向点i的右边一个1，在该点i到最近1的距离即为$min(i-prev,future-i)$，同样要注意边界点上是0的情况的处理0。
+	```cpp
+	int maxDistToClosest(vector<int>& seats) {
+		const int count=seats.size();
+		int ans=0;
+		if(count>=2){
+		int prev=-1,future=0; // two pointer
+		for (int i = 0; i < count; i++)
+		{
+			if(seats[i]){
+				prev=i;
+			}else{
+				while(future<count && seats[future]==0 || future<i){
+						// 保证future指针不回溯
+					future++;
+				}
+				int left=(prev==-1)?count:i-prev;
+				int right=(future==count)?count:future-i;
+				ans=max(ans,min(left,right));
+				}
+			}
+		}
+		return ans;
+	}
+	```
 - [852](https://leetcode.com/problems/peak-index-in-a-mountain-array/)
 
     寻找给定数组中的山峰数下标，所谓山峰数根据题目定义即为**全局最大值**，因此binary search是理论上的最佳算法，time complexity O(log(n))
