@@ -669,6 +669,9 @@
             return a;
         }
     ```
+- [401](https://leetcode.com/problems/binary-watch/)
+
+    有些问题要用逆向思维来解决，本题本来是要用给定二进制位中1的个数来拼凑出可能的时间表示，组合数过程不好写，可以反过来写所有$00:00 - 23:59$中所有可能的时间中二进制位中1的个数符合题目要求的时间点。
 
 - [442](https://leetcode.com/problems/find-all-duplicates-in-an-array/)
     
