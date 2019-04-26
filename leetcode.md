@@ -7,6 +7,11 @@
   
   题目要求在一个数组中寻找两个和为给定值的数，暴力枚举时两层遍历的时间复杂度为$O(n^2)$，因此使用**unorder_map**的接近$O(1)$的查询效率来实现$O(n)$一遍扫描的做法，这里注意cpp中STL template **unorder_map** 的用法
 
+- [46](https://leetcode.com/problems/permutations/)
+
+    - 注意全排列的实现，递归的和非递归的，字典序的和非字典序的
+    - cpp的STL中有*next_permutation*和*prev_permutation*两个函数，注意他们的实现方式
+
 - [53](https://leetcode.com/problems/maximum-subarray/)
   
   一维dp(dynamic plan)
