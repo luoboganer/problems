@@ -1151,6 +1151,79 @@
         return A[0] == A[2] || A[0] == A[3] ? A[0] : A[1];
     ```
  
+ - [966](https://leetcode.com/problems/vowel-spellchecker/)
+
+    给定一个字典wordlist，给定查询单词word：
+    - word在wordlist中有完全匹配的单词s，返回s
+    - 忽略大小写之后word在wordlist中有匹配的单词s，返回s
+    - 忽略大小写并将元音字母全部替换为任意的其它元音字母之后word在wordlist中存在匹配的单词s，返回s
+    - 以上三种情况均不符合在返回空字符串
+    ```cpp
+    vector<string> spellchecker(vector<string>& wordlist, vector<string>& queries) {
+		/*
+			three pass scan:
+			first pass for completely matched
+			second pass for match up to capitalization
+			three pass for match with vowel error
+			brute force scan will get a TLE, so we need store wordlist with hashset and hashmap
+		*/
+		unordered_set<string> wordlist_correct;
+		unordered_map<string,string> wordlist_lowercase;
+		unordered_map<string,string> wordlist_without_vowel;
+		string vowels="aoeiu";
+		// re-struct the wordlist
+		for (int i = wordlist.size()-1; i>=0; i--)
+		{
+			wordlist_correct.insert(wordlist[i]);
+			string lowercase,no_vewel;
+			for(const auto c:wordlist[i]){
+				char lowercase_c=tolower(c);
+				lowercase+=lowercase_c;
+				if(vowels.find(lowercase_c)==string::npos){
+					no_vewel+=lowercase_c;
+				}else{
+					no_vewel+='*';
+					// to guarantee length of word is equal
+				}
+			}
+			wordlist_lowercase[lowercase]=wordlist[i];
+			wordlist_without_vowel[no_vewel]=wordlist[i];
+		}
+		// queries
+		vector<string> ans;
+		for (auto const &s:queries)
+		{
+			if(wordlist_correct.find(s)!=wordlist_correct.end()){
+				ans.push_back(s);
+				break;
+			}
+			string lowercase,no_vewel;
+			for(const auto c:s){
+				char lowercase_c=tolower(c);
+				lowercase+=lowercase_c;
+				if(vowels.find(lowercase_c)==string::npos){
+					no_vewel+=lowercase_c;
+				}else{
+					no_vewel+='*';
+					// to guarantee length of word is equal
+				}
+			}
+			if(wordlist_lowercase.find(lowercase)!=wordlist_lowercase.end()){
+				ans.push_back(wordlist_lowercase[lowercase]);
+				break;
+			}
+			if(wordlist_without_vowel.find(no_vewel)!=wordlist_without_vowel.end()){
+				ans.push_back(wordlist_without_vowel[no_vewel]);
+				break;
+			}
+			// no match
+			ans.push_back("");
+		}
+		return ans;
+    }
+    ```
+    本题充分体现了hash存储的优势。
+
  - [976](https://leetcode.com/problems/largest-perimeter-triangle/)
 
     给定一个$size>3$数组array，求数组中数可以组成的周长最长的三角形，这本质上是个数学题。首先岁数组中所有的数按降序排列有
