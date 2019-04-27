@@ -67,28 +67,28 @@
 
     求$"1234...n"$形成的第$k$个全排列，数学上可以计算第$k$个全排列的第$i$个字符。
     ```cpp
-        string getPermutation(int n, int k) {
-            string s,ans;
-            int factory=1;
-            for (int i = 1; i <= n; i++)
-            {
-                s+=i+'0';
-                factory*=i;
-            }
-            if(n<1 || n>9){
-                return ans;
-            }else{
-                k--;
-                for (int i = 0; i < n; i++)
-                {
-                    factory/=n-i;
-                    ans+=s[i+k/factory];
-                    s.erase(s.begin()+i+k/factory);
-                    k%=factory;
-                }
-                return ans;	
-            }	
-        }    
+    string getPermutation(int n, int k) {
+		string s,ans;
+		int factory=1;
+		for (int i = 1; i <= n; i++)
+		{
+			s+=i+'0';
+			factory*=i;
+		}
+		if(n<1 || n>9){
+			return ans;
+		}else{
+			k--;
+			for (int i = 0; i < n; i++)
+			{
+				factory/=n-i;
+				ans+=s[i+k/factory];
+				s.erase(s.begin()+i+k/factory);
+				k%=factory;
+			}
+			return ans;	
+		}	
+    }    
     ```
 
 - [62](https://leetcode.com/problems/unique-paths/)
