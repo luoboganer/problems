@@ -1504,4 +1504,8 @@
   
     本题主要练习字典树的的构建与查询，tire tree是一种高效的单词存储与查询数据结构，比如可以完成IDE的代码自动提示语补全功能，[here](https://blog.csdn.net/v_july_v/article/details/6897097)有相关博客。
 
+  - [1035](https://leetcode.com/problems/uncrossed-lines/)
+
+    类似于LCS最长公共子序列的问题，二维dp或者一维dp均可，注意问题中隐藏的dp思维。
+
   - [...]()
