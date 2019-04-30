@@ -511,6 +511,30 @@
 
     在$O(n)$时间和$O(1)$空间下判断一个链表是否回文，第一次遍历找到中点，然后翻转后半部分和前半部分进行比较即可
 
+- [239](https://leetcode.com/problems/sliding-window-maximum/)
+
+    给定数组nums和窗口大小k，求数组在窗口滑动过程中的最大值，这里主要是双端队列的使用。
+    ```cpp
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+		vector<int> ans;
+		deque<int> dq;
+		for (int i = 0; i < nums.size(); i++)
+		{
+			while(!dq.empty()&&nums[dq.back()]<nums[i]){
+				dq.pop_back();
+			}
+			dq.push_back(i); // 记录当前最大值的下标
+			if(dq.back()-dq.front()>k-1){
+				dq.pop_front();
+			}
+			if(i>=k-1){
+				ans.push_back(nums[dq.front()]);
+			}
+		}
+		return ans;
+    }
+    ```
+
 - [258](https://leetcode.com/problems/add-digits/)
   
   对一个数字求各个数位的和，递归直到这个数是个位数
