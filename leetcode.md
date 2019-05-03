@@ -1118,7 +1118,11 @@
       auto it = std::partition(v.begin(), v.end(), [](int i){return i % 2 == 0;});
     ```
 
- - [908](https://leetcode.com/problems/smallest-range-i/)
+- [906](https://leetcode.com/problems/super-palindromes/)
+
+    使用数位回溯或者数位dp甚至是暴力模拟构造从$1-10^9$范围内所有可能的回文数，计算其平方并检查平方结果是否为回文数即可。
+
+- [908](https://leetcode.com/problems/smallest-range-i/)
 
     给定数组A和阈值k，在$\pm k$范围内调节数组中的每一个数字，使得A中的最大值和最小值之间的差距尽可能的小。理论上尽量用$\pm k$范围内的数去抹平原数组中最大值和最小值之间的差距就可以了。
     ```cpp
@@ -1158,12 +1162,12 @@
 	}
     ```
 
- - [929](https://leetcode.com/problems/unique-email-addresses/)
+- [929](https://leetcode.com/problems/unique-email-addresses/)
     两个考察点
     - cpp STL中的string操作，子串、查找、替换等
     - cpp STL中集合(set)的使用，或者自己实现一个set
 
- - [941](https://leetcode.com/problems/valid-mountain-array/)
+- [941](https://leetcode.com/problems/valid-mountain-array/)
 
     重点在于要有increasing的过程，也要有decreasing的过程。
     ```cpp
@@ -1187,7 +1191,7 @@
     }
     ```
 
- - [950](https://leetcode.com/problems/reveal-cards-in-increasing-order/)
+- [950](https://leetcode.com/problems/reveal-cards-in-increasing-order/)
 
     按照揭牌的顺序，反向操作模拟
     题目给定的揭牌操作：
@@ -1206,7 +1210,7 @@
 
     时间复杂度$O(nlog(n))$
 
- - [961](https://leetcode.com/problems/n-repeated-element-in-size-2n-array/)
+- [961](https://leetcode.com/problems/n-repeated-element-in-size-2n-array/)
     In a array A of size 2N, there are N+1 unique elements, and exactly one of these elements is repeated N time, find and return this element.
     - HashTable 通过hash统计找到个数不是1的那个数，时间复杂度为O(N)，空间复杂度O(1)
     - 根据排列组合，相当于把N个不同的数插入到N个重复的数中，因此无论怎么插入连续的两个数作为一组中一定有一个数是那个重复的major element，因此两组、即连续的四个数中一定有两个major element，它们是相等的，因此按照步长为1,2,3,4搜索相等的两个数即可，时间复杂度与hash法相同为O(N)，空间复杂度O(1)
@@ -1217,7 +1221,7 @@
         return A[0] == A[2] || A[0] == A[3] ? A[0] : A[1];
     ```
  
- - [966](https://leetcode.com/problems/vowel-spellchecker/)
+- [966](https://leetcode.com/problems/vowel-spellchecker/)
 
     给定一个字典wordlist，给定查询单词word：
     - word在wordlist中有完全匹配的单词s，返回s
@@ -1290,7 +1294,7 @@
     ```
     本题充分体现了hash存储的优势。
 
- - [976](https://leetcode.com/problems/largest-perimeter-triangle/)
+- [976](https://leetcode.com/problems/largest-perimeter-triangle/)
 
     给定一个$size>3$数组array，求数组中数可以组成的周长最长的三角形，这本质上是个数学题。首先岁数组中所有的数按降序排列有
     $$a_0>a_1>a_2>...>a_{n-1}>a_n$$
@@ -1325,10 +1329,10 @@
 
         $$\begin{array}{c}{\text { Area }=\frac{1}{2}|\vec{AB} \times \vec{AC}|} \\ {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}, y_{b}-y_{a}\right) ) \times\left(x_{c}-x_{a}, y_{c}-y_{a}\right) ) |} \\ {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}\right)\left(y_{c}-y_{a}\right)-\left(x_{c}-x_{a}, y_{b}-y_{a}\right) ) |} \\ {\text {Area}=\frac{1}{2}\left|x_{a} y_{b}+x_{b} y_{c}+x_{c} y_{a}-x_{a} y_{c}-x_{c} y_{b}-x_{b} y_{a}\right|}\end{array}$$
  
- - [985](https://leetcode.com/problems/sum-of-even-numbers-after-queries/)
+- [985](https://leetcode.com/problems/sum-of-even-numbers-after-queries/)
     注意每次query对应下标的数字在query前后的奇偶性，分别有不同的操作。time complexity O(n+q)，其中n(size of array) and q(the number of queries)。
 
- - [1002](https://leetcode.com/problems/find-common-characters/)
+- [1002](https://leetcode.com/problems/find-common-characters/)
 
     用两个长度为26的数组来统计两个单词中每个字母出现的次数，然后共同字母的次数为两个单词分别统计结果中的较小值，如果有一方为0则表示没有共同出现过，时间复杂度$O(n)$，其中n是所有单词长度的和，即所有字母的个数。
 
@@ -1397,7 +1401,7 @@
         }
     ```
 
- - [1008](https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/)
+- [1008](https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/)
 
     从二叉搜索树BST的先序遍历preorder开始重建BST
 
@@ -1474,7 +1478,7 @@
         }
     ```
 
- - [1019](https://leetcode.com/problems/next-greater-node-in-linked-list/)
+- [1019](https://leetcode.com/problems/next-greater-node-in-linked-list/)
 
     用栈可以实现$O(n)$时间复杂度，即对数组从右往左遍历的过程中保持栈顶st[i]<st[i-1]，从栈底到栈顶是严格递增的顺序
 
@@ -1529,16 +1533,16 @@
         }
     ```
   
- - [1024](https://leetcode.com/problems/video-stitching/)
+- [1024](https://leetcode.com/problems/video-stitching/)
 
     一开始设定当前右端点$cur_right$，然后按照贪心策略寻找左端点小于等于当前右端点(保证可以连接而没有断点)且右端点最远(贪心原则，以便使用最少的视频片段)的没有用过的视频片段，直到所有视频片段被用完或者当前右端点$cur_right$超过了总时间长度要求$T$。
 
- - [1032](https://leetcode.com/problems/stream-of-characters/)
+- [1032](https://leetcode.com/problems/stream-of-characters/)
   
     本题主要练习字典树的的构建与查询，tire tree是一种高效的单词存储与查询数据结构，比如可以完成IDE的代码自动提示语补全功能，[here](https://blog.csdn.net/v_july_v/article/details/6897097)有相关博客。
 
-  - [1035](https://leetcode.com/problems/uncrossed-lines/)
+- [1035](https://leetcode.com/problems/uncrossed-lines/)
 
     类似于LCS最长公共子序列的问题，二维dp或者一维dp均可，注意问题中隐藏的dp思维。
 
-  - [...]()
+- [...]()
