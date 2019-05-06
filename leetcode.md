@@ -764,6 +764,10 @@
     - 基本想法是quick sort，时间复杂度$O(nlog(n))$
     - 本题给出了数据范围，可以bucket sort，时间复杂度$O(n)$，但是需要$O(N)$的额外空间
 
+- [583](https://leetcode.com/problems/delete-operation-for-two-strings/)
+
+    删除最少数量的字符使得两个字符串相等即可，因为删除完成之后要保证相等，因此保留下来的是最长公共子串(LCS)，递归求解LCS会TLE，需要二维DP或者一维DP。
+
 - [606](https://leetcode.com/problems/construct-string-from-binary-tree/)
 
     重点是二叉树的非递归先序遍历 preorder
