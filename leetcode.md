@@ -991,7 +991,7 @@
     }
 	```
     - 对于左右被1围困的连续的k个0，其距离最近的1的距离为$\frac{k+1}{2}$，边界情况特殊讨论
-```cpp
+    ```cpp
 	int maxDistToClosest(vector<int>& seats) {
 		const int count=seats.size();
 		int ans=0;
@@ -1050,6 +1050,57 @@
 - [852](https://leetcode.com/problems/peak-index-in-a-mountain-array/)
 
     寻找给定数组中的山峰数下标，所谓山峰数根据题目定义即为**全局最大值**，因此binary search是理论上的最佳算法，time complexity O(log(n))
+
+- [855](https://leetcode.com/problems/exam-room/)
+
+    本题给定包含N个座位的一排空椅子椅子，维护这个椅子序列，新来的学生要坐到距离任何一个现有学生最远的地方，同时有学生离开空出某个椅子的操作，按照[849](https://leetcode.com/problems/maximize-distance-to-closest-person/)做法实现正确结果，但是**TLE**。新方法采用内部有序的**set**数据结构来存储已经有人的位置下标，插入时O(n)顺序扫描set表，其中新学生插入任何两个元素位置$i,j$间和$i,j$的最大距离为$d=\frac{j-i}{2}$，位置下标为$index=i+d$，全局寻找d最大的的index即可，边界（第一个椅子没人和最后一个椅子没人的情况）情况特殊处理。
+    ```cpp
+    class ExamRoom {
+    public:
+        set<int> students;
+        int number_of_seats;
+        ExamRoom(int N) {
+            number_of_seats=N;
+        }
+        
+        int seat() {
+            int ans=0;
+            if(!students.empty()){
+                // students is emtpy, insert new student to position 0, else to find max distance to existing student;
+                int pre=-1,cur_max_dist=0;
+                for(const int cur:students){
+                    if(pre!=-1){
+                        int dist=(cur-pre)/2;
+                        if(dist>cur_max_dist){
+                            cur_max_dist=dist;
+                            ans=pre+dist;
+                        }
+                    }else if(cur!=0){
+                        // pre==-1 && cur!=0, the case of leftmost seat is not occcupied
+                        int dist=cur;
+                        if(cur>cur_max_dist){
+                            cur_max_dist=cur;
+                            ans=0;
+                        }
+                    }
+                    pre=cur;
+                }
+                // for the case of rightmost is 0
+                if(*students.rbegin()!=number_of_seats-1){
+                    if(number_of_seats-1-pre>cur_max_dist){
+                        ans=number_of_seats-1;
+                    }
+                }
+            }
+            students.insert(ans);
+            return ans;
+        }
+        
+        void leave(int p) {
+            students.erase(p);
+        }
+    };
+    ```
 
 - [874](https://leetcode.com/problems/walking-robot-simulation/)
 
