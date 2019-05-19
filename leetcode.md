@@ -1694,4 +1694,26 @@ $$ \begin{array}{l}{n^{2}=1+3+5+ \ldots +(2 \cdot n-1)=\sum_{i=1}^{n}(2 \cdot i-
 
     类似于LCS最长公共子序列的问题，二维dp或者一维dp均可，注意问题中隐藏的dp思维。
 
+- [1049](https://leetcode.com/problems/last-stone-weight-ii/)
+
+    本题需要把数组stones分为两部分$A,B$使得$min(abs(sum(A)-sum(B)))$，是经典的$0,1$背包问题。
+    ```cpp
+    int lastStoneWeightII(vector<int>& stones) {
+        bitset<1501> dp{1};
+        int sum_stones=0,ans=numeric_limits<int>::max();
+        // dp[x]表示可以在stones中选择一部分数使其和为x
+        for(auto const &it:stones){
+            for (int i = 1500; i >= it; i--)
+            {
+                dp[i]=dp[i]|dp[i-it];
+            }
+            sum_stones+=it;
+        }
+        for (int i = 0; i <= 1500; i++)
+        {
+            ans=min(ans,abs(sum_stones-dp[i]*2*i));
+        }
+        return ans;
+    }
+    ```
 - [...]()
