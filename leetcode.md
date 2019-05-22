@@ -16,6 +16,39 @@
     - 注意全排列的实现，递归的和非递归的，字典序的和非字典序的
     - cpp的STL中有*next_permutation*和*prev_permutation*两个函数，注意他们的实现方式
 
+- [33](https://leetcode.com/problems/search-in-rotated-sorted-array/)
+
+    在有序的旋转数组$(eg,{4,5,6,7,0,1,2,3})$中查找一个数target，首先二分查找确定数组的起点pivot，然后第二次二分查找确定target的index。
+
+    ```cpp
+    int search(vector<int>& nums, int target) {
+        int const n=nums.size();
+        int left=0,right=n-1;
+        while(left<right){
+            int mid=(left+right)>>1;
+            if(nums[mid]<nums[right]){
+                right=mid;
+            }else{
+                left=mid+1;
+            }
+        }
+        int pivot=left;
+        left=0,right=n-1;
+        while(left<=right){
+            int mid=(left+right)>>1;
+            int index=(mid+pivot)%n;
+            if(target<nums[index]){
+                right=mid-1;
+            }else if(target>nums[index]){
+                left=mid+1;
+            }else{
+                return index;
+            }
+        }
+        return -1;
+    }
+    ```
+
 - [53](https://leetcode.com/problems/maximum-subarray/)
   
   一维dp(dynamic plan)
