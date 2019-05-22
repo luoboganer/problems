@@ -628,6 +628,24 @@
 
     下标是0到n-1，补充一个n作为初始值，然后这些数字是0-n且missing一个数，相当于从0-n除了missing的这个数只出现一次之外其他数字都出现了两次，因此可以用XOR操作找到这个只出现了一次的数即可。
 
+- [278](https://leetcode.com/problems/first-bad-version/)
+
+    在形如$(1,2,3,4,5,...,n,n+1,n+1,n+1,n+1,n+1,n+1)$这样的数组中中寻找第一个$n+1$的下标位置，这是二叉搜索的另一种形式，即每次命中$n+1$的右侧都是$n+1$，而没有命中的左侧都不是。相似的题目还有寻找有重复的排序数组中某个元素出现的下标区间[leetcode 34](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/)等。
+    ```cpp
+    int firstBadVersion(int n) {
+        unsigned int lo=1,hi=n;
+        while(lo<hi){
+            unsigned int mid=(lo+hi)>>1;
+            if(isBadVersion(mid)){
+                hi=mid;
+            }else{
+                lo=mid+1;
+            }
+        }
+        return lo;
+    }
+    ```
+
 - [283](https://leetcode.com/problems/move-zeroes/)
   
   将一个数列中的0元素全部移动到数列尾部，O(1)空间复杂度和O(n)时间复杂度，保持原数列的稳定性
