@@ -283,6 +283,25 @@
 
     链表、树、图等指针操作千千万万要注意空指针甚至是输入根节点为空的情况。
 
+- [162](https://leetcode.com/problems/find-peak-element/)
+
+    寻找peak element即是寻找局部最大值，因此可以二分搜索在$O(log(n))$时间内实现，如果是全局最大值则至少要遍历一次，需要$O(n)$时间来实现
+    ```cpp
+    int findPeakElement(vector<int>& nums) {
+        int left=0,right=nums.size()-1;
+        while(left<right){
+            int mid=(left+right)>>1;
+            if(nums[mid]>nums[mid+1]){
+                right=mid;
+            }else{
+                left=mid+1;
+            }
+        }
+        return left;
+    }
+    ```
+    注意peak element只需要比自己左右两侧的值大就可以了，没必要比最左端和最右端的值大
+
 - [167](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/)
 
 	在给定的有序数组中寻找两个数使其和为给定的target，O(n)时间复杂度
