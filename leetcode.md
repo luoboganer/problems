@@ -396,6 +396,24 @@
     }
     ```
 
+- [172](https://leetcode.com/problems/factorial-trailing-zeroes/)
+
+    计算给定数n的阶乘($n!$)的结果中0的个数，理论上结果中0只能由5的偶数倍得来，因此计算从1到n的所有数中因子5的个数即可，时间复杂度$O(log(n))$。
+    ```cpp
+    int trailingZeroes(int n)
+    {
+        int ans = 0, power = 1;
+        long base = 5;
+        while (base <= n)
+        {
+            ans += n / base;
+            base *= 5;
+            power++;
+        }
+        return ans;
+    }
+    ```
+
 - [209](https://leetcode.com/problems/minimum-size-subarray-sum/)
 
     用左右双指针left、right设置滑动窗口capacity来满足sum和的要求，求滑动窗口可能的最小值即可
