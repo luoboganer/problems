@@ -915,6 +915,35 @@ $$ \begin{array}{l}{n^{2}=1+3+5+ \ldots +(2 \cdot n-1)=\sum_{i=1}^{n}(2 \cdot i-
         return a;
     }
     ```
+
+- [400](https://leetcode.com/problems/nth-digit/)
+    
+    在$1,2,3,4,5,6,7,8,9,10,11,...$的数列中找到第n个数字，思想简单，分别计算不同位宽的数字个数即可(k位数一共占据$k*(9*10^k)$个位置)，但是注意实现时的具体细节处理。
+    ```cpp
+    int findNthDigit(int n)
+    {
+        long base = 9, digits = 1;
+        while (n - base * digits > 0)
+        {
+            n -= base * digits;
+            base *= 10;
+            digits++;
+        }
+        int index = (n % digits) ? (n % digits) : digits;
+        long num = 1;
+        for (int i = 1; i < digits; i++)
+        {
+            num *= 10;
+        }
+        num += (index == digits) ? n / digits - 1 : n / digits;
+        for (int i = index; i < digits; i++)
+        {
+            num /= 10;
+        }
+        return num % 10;
+    }
+    ```
+
 - [401](https://leetcode.com/problems/binary-watch/)
 
     有些问题要用逆向思维来解决，本题本来是要用给定二进制位中1的个数来拼凑出可能的时间表示，组合数过程不好写，可以反过来写所有$00:00 - 23:59$中所有可能的时间中二进制位中1的个数符合题目要求的时间点。
