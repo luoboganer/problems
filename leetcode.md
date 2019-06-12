@@ -890,9 +890,8 @@
     ```
 
     
-在数学上可以证明对于任何一个完全平方数有：
-
-$$ \begin{array}{l}{n^{2}=1+3+5+ \ldots +(2 \cdot n-1)=\sum_{i=1}^{n}(2 \cdot i-1)} \\ {\text { provement:}} \\ {\quad 1+3+5+\ldots+(2 \cdot n-1)} \\ {=(2 \cdot 1-1)+(2 \cdot 2-1)+(2 \cdot 3-1)+\ldots+(2 \cdot n-1)} \\ {=2 \cdot(1+2+3+\ldots+n)-(\underbrace{1+1+\ldots+1}_{n \text { times }})} \\ {=2 \cdot \frac{n(n+1)}{2}-n} \\ {=n^{2}+n-n} \\ {=n^{2}}\end{array} $$
+    在数学上可以证明对于任何一个完全平方数有：
+    $$ \begin{array}{l}{n^{2}=1+3+5+ \ldots +(2 \cdot n-1)=\sum_{i=1}^{n}(2 \cdot i-1)} \\ {\text { provement:}} \\ {\quad 1+3+5+\ldots+(2 \cdot n-1)} \\ {=(2 \cdot 1-1)+(2 \cdot 2-1)+(2 \cdot 3-1)+\ldots+(2 \cdot n-1)} \\ {=2 \cdot(1+2+3+\ldots+n)-(\underbrace{1+1+\ldots+1}_{n \text { times }})} \\ {=2 \cdot \frac{n(n+1)}{2}-n} \\ {=n^{2}+n-n} \\ {=n^{2}}\end{array} $$
 
 - [371](https://leetcode.com/problems/sum-of-two-integers/)
 
@@ -957,6 +956,73 @@ $$ \begin{array}{l}{n^{2}=1+3+5+ \ldots +(2 \cdot n-1)=\sum_{i=1}^{n}(2 \cdot i-
 - [462](https://leetcode.com/problems/minimum-moves-to-equal-array-elements-ii/)
 
     使用nth_element()函数找到中位数即可。注意理解这个函数的实现原理，[here](http://c.biancheng.net/view/566.html)and[here](http://www.cplusplus.com/reference/algorithm/nth_element/)。
+
+- [447](https://leetcode.com/problems/number-of-boomerangs/)
+
+    给定平面上的一堆点，求符合欧氏距离$d_{ij}=d_{ik}$的点的三元组$(i,j,k)$的数量。
+
+    - 暴力搜索，时间复杂度$O(n^3)$
+    ```cpp
+    int numberOfBoomerangs(vector<vector<int>>& points) {
+        int length=points.size();
+        vector<vector<int>> distances(length,vector<int>(length,0));
+        for (int i = 0; i < length; i++)
+        {
+            for (int j = 0; j < length; j++)
+            {
+                int x=points[i][0]-points[j][0];
+                int y=points[i][1]-points[j][1];
+                distances[i][j]=x*x+y*y;
+            }
+        }
+        int ans=0;
+        for (int i = 0; i < length; i++)
+        {
+            for (int j = i+1; j < length; j++)
+            {
+                for (int k = j+1; k < length; k++)
+                {
+                    if(distances[i][j]==distances[i][k]){
+                        ans++;
+                    }
+                    if(distances[j][i]==distances[j][k]){
+                        ans++;
+                    }
+                    if(distances[k][i]==distances[k][j]){
+                        ans++;
+                    }
+                }
+            }
+        }
+        return ans*2; // (i,j,k) and (i,k,j)
+    }    
+    ```
+    - 使用哈希map和排列算法，即到任意一点i的距离为固定值d的点数为p时，符合条件的三元组数量为$p*(p-1)$，时间复杂度$O(n^2)$
+    ```cpp
+    int numberOfBoomerangs(vector<vector<int>>& points) {
+        int length=points.size(),ans=0;
+        unordered_map<long,int> count;
+        for (int i = 0; i < length; i++)
+        {
+            for (int j = 0; j < length; j++)
+            {
+                if(i==j){
+                    continue;
+                }else{
+                    auto x=points[i][0]-points[j][0];
+                    auto y=points[i][1]-points[j][1];
+                    count[x*x+y*y]++;
+                }
+            }
+            for (auto &&x : count)
+            {
+                ans+=x.second*(x.second-1); // permutation
+            }
+            count.clear();
+        }
+        return ans;
+    }
+    ```
 
 - [448](https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/)
 
