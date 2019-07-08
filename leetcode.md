@@ -100,6 +100,106 @@
     }
     ```
 
+- [55](https://leetcode.com/problems/jump-game/)
+
+    给定一个int形数组nums，初始位置在0，$nums[i]$表示从位置i出发向右可以跳跃的最大步数，即从i出发可以到达的步数范围为$[i,i+nums_i]$，判断对于给定的数组能否到达最后一个位置$nums_{nums.size()-1}$
+
+    - 最朴素的想法是用一个bool数组来标记从0出发是否可以到达当前位置i，首先将位置0设置为可达，然后从左到右遍历每一个位置position，如过位置position是可达的，则将从position出发可达的位置区间$[i,i+nums_i]$全部标记为可达，然后检查最后一个位置是否被标记为可达。
+    ```cpp
+    bool canJump(vector<int> &nums)
+    {
+        const int count = nums.size();
+        if (count > 0)
+        {
+            vector<bool> reachable(count, false);
+            reachable[0] = true;
+            for (int i = 0; i < count; i++)
+            {
+                if (reachable[i] && nums[i] > 0)
+                {
+                    for (int j = 1; j <= nums[i] && i + j < count; j++)
+                    {
+                        reachable[i + j] = true;
+                    }
+                }
+                if (reachable.back())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    ```
+    $\color{red}{时间复杂度O(n^2),Time\  Limit\  Exceeded}$
+    - Dynamic Programming Top-down，自顶向下的动态规划，递归思想，辅以memorization，即用一个memo数组来标记从位置$nums_i$出发是否可达终点，首先将所有位置均标注为unknown，然后从0开始询问每个位置是否可达终点，如果可达则返回true，如果不可达则返回false，如果unknow，则从当前位置开始递归地依次询问从当前位置可达的所有右侧位置是否可达，如果是，则将改点标记为可达，并返回true，如以上询问失败，则将该点标记为不可达并返回false。如此最后可递归询问到目标结果。
+    ```cpp
+    bool canJumpFromPosition(int position,vector<int>& nums,vector<int>& memo){
+        if(memo[position]!=0){
+            return (memo[position]==1)?true:false;
+        }else{
+            int furthest=min((int)(nums.size()-1),position+nums[position]); // 从当前位置出发可以抵达的最远位置
+            for (int nextPosition = position+1; nextPosition <= furthest; nextPosition++)
+            {
+                if(canJumpFromPosition(nextPosition,nums,memo)){
+                    memo[position]=1;
+                    return true;
+                }
+            }
+            memo[position]=2;
+            return false;
+        }
+    }
+    bool canJump(vector<int> &nums)
+    {
+        vector<int> memo(nums.size(),0); // 0-unknown, 1-reachable, 2-unreachable
+        memo[nums.size()-1]=1; // final position is reachable from itself
+        return canJumpFromPosition(0,nums,memo);
+    }
+    ```
+    $\color{red}{时间复杂度O(n^2),Time\  Limit\  Exceeded}$
+    - Dynamic Programming Bottom-up，自底向上的动态规划，从top-down到bottom-up的转换通常用来消除递归过程
+    ```cpp
+    bool canJump(vector<int> &nums)
+    {
+        int const count=nums.size();
+        vector<int> memo(count,0); // 0-unknown, 1-reachable, 2-unreachable
+        memo[count-1]=1; // final position is reachable from itself
+        for (int i = count-2; i >= 0; i--)
+        {
+            int furthest=min(count-1,i+nums[i]);
+            for (int j = i+1; j <= furthest; j++)
+            {
+                if(memo[j]==1){
+                    memo[i]=1;
+                    break;
+                }
+            }
+        }
+        return memo[0]==1; // 从位置0是否可达右端点 
+    }
+    ```
+    $\color{green}{时间复杂度O(n^2),Accepted,faster\  than\  13.04\%}$
+    - greedy algorithm，贪心算法，通过观察自底向上的动态规划方法可以看出，我们只需要当前节点可以到达现在已经确定的可以到达的最左端，就可以确保从当前点出发可以到达最右端点，即初始化$curPosition=nums_{length}-1$，即当前可以到达的最左点，然后从右到左遍历所有点i时$nums_i+i>=curPosition$即可确定位置i可达，可以更新curPosition为i，最后判断curPosition是否为出发的左端点0即可。
+    ```cpp
+    bool canJump(vector<int> &nums)
+    {
+        int const count=nums.size();
+        int curPosition=count-1;
+        for (int i = count-2; i >= 0; i--)
+        {
+            if(i+nums[i]>=curPosition){
+                curPosition=i;
+            }
+        }
+        return curPosition==0;
+    }
+    ```
+    $\color{green}{时间复杂度O(n),Accepted,faster\  than\  99.96\%}$
 - [60](https://leetcode.com/problems/permutation-sequence/)
 
     求$"1234...n"$形成的第$k$个全排列，数学上可以计算第$k$个全排列的第$i$个字符。
