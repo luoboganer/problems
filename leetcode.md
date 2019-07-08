@@ -48,6 +48,24 @@
         return -1;
     }
     ```
+- [45](https://leetcode.com/problems/jump-game-ii/)
+
+    Jump Game([55](https://leetcode.com/problems/jump-game/))判断是否可以到达右侧终点，本题演化为求到达右端点的最小代价（步数），同样是贪心的思维（DP动态规划会TLE），从左到右扫描一遍即可，时间复杂度$O(n)$，也是一种隐式的BFS（宽度优先搜索），$i==curEnd$即表示扫描了当前level，而curFurthest是当前level的size，即当前level可以到达的最右侧端点。
+    ```cpp
+    int jump(vector<int>& nums) {
+        const int count=nums.size()-1;
+        int steps=0,curEnd=0,curFurthest=0;
+        for (int i = 0; i < count; i++)
+        {
+            curFurthest=max(curFurthest,i+nums[i]);
+            if(i==curEnd){
+                steps++;
+                curEnd=curFurthest;
+            }
+        }
+        return steps;
+    }
+    ```
 
 - [53](https://leetcode.com/problems/maximum-subarray/)
   
