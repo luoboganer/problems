@@ -67,6 +67,32 @@
     }
     ```
 
+
+- [48](https://leetcode.com/problems/rotate-image/)
+
+    Rotate Image，旋转图片90度，即将一个二维数组原地旋转90度。
+    注意每次的坐标变换即可，按照每次旋转一个环（一圈），圈内从左到右一层一层旋转，每次基本的旋转单元只有四个数。
+    ```cpp
+    void rotate(vector<vector<int>>& matrix) {
+        const int n=matrix.size();
+        int circles=n/2;
+        for (int circle = 0; circle < circles; circle++)
+        {
+            int levels=n-circle*2-1; // 内层循环次数
+            levels+=circle; // circle是内层循环开始点
+            for (int level = circle; level < levels; level++)
+            {
+                int top=circle,left=level;
+                int tmp=matrix[circle][level];
+                matrix[circle][level]=matrix[n-1-level][circle];
+                matrix[n-1-level][circle]=matrix[n-1-circle][n-1-level];
+                matrix[n-1-circle][n-1-level]=matrix[level][n-1-circle];
+                matrix[level][n-1-circle]=tmp;
+            }            
+        }
+    }
+    ```
+
 - [53](https://leetcode.com/problems/maximum-subarray/)
   
   一维dp(dynamic plan)
