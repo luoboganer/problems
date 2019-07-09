@@ -7,6 +7,25 @@
   
   题目要求在一个数组中寻找两个和为给定值的数，暴力枚举时两层遍历的时间复杂度为$O(n^2)$，因此使用**unorder_map**的接近$O(1)$的查询效率来实现$O(n)$一遍扫描的做法，这里注意cpp中STL template **unorder_map** 的用法
 
+- [11](https://leetcode.com/problems/container-with-most-water/)
+
+    在一组通过数组给定高度的立柱中选择两根立柱，时期中间的空间可以装水最多，即在具有高度$\{a_0,a_1,...,a_n\}$的这些柱子中选择两根$a_i,a_j$使得$min(a_i,a_j)*(j-i)$最大。
+    ```cpp
+    int maxArea(vector<int>& height) {
+        int ans=0;
+        int i=0,j=height.size()-1;
+        while(i<j){
+            ans=max(ans,min(height[i],height[j])*(j-i));
+            if(height[i]<height[j]){
+                i++;
+            }else{
+                j--;
+            }
+        }
+        return ans;
+    }
+    ```
+
 - [13](https://leetcode.com/problems/roman-to-integer/)
 
     罗马数字转阿拉伯数字，主要是思想是对罗马数字字符序列从右到作扫描，注意IXC的位置和表示的数字有关即可。
@@ -66,7 +85,6 @@
         return steps;
     }
     ```
-
 
 - [48](https://leetcode.com/problems/rotate-image/)
 
