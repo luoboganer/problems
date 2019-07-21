@@ -2065,4 +2065,53 @@
         return ans;
     }
     ```
+
+- [1128](https://leetcode.com/problems/number-of-equivalent-domino-pairs/)
+
+    - brute force[$O(n^2)$]
+    ```cpp
+    int numEquivDominoPairs(vector<vector<int>>& dominoes) {
+        int const count=dominoes.size();
+        for (int i = 0; i < count; i++)
+        {
+            if(dominoes[i][0]>dominoes[i][1]){
+                swap(dominoes[i][0],dominoes[i][1]);
+            }
+        }
+        sort(dominoes.begin(),dominoes.end(),[](vector<int>& x,vector<int>&y)->bool{return x[0]<y[0];});
+        int ans=0;
+        for (int i = 0; i < count; i++)
+        {
+            int j=i+1;
+            while(j<count && dominoes[i][0]==dominoes[j][0]){
+                if(dominoes[i][1]==dominoes[j][1]){
+                    ans++;
+                }
+                j++;
+            }
+        }
+        return ans;
+    }
+    ```
+    - encoding method[$O(n)$]
+    ```cpp
+    int numEquivDominoPairs(vector<vector<int>>& dominoes) {
+        int ans=0;
+        // 1 <= dominoes[i][j] <= 9
+        vector<int> count(100,0);
+        for (int i = 0; i < dominoes.size(); i++)
+        {
+            count[10*max(dominoes[i][0],dominoes[i][1])+min(dominoes[i][0],dominoes[i][1])]++;
+            
+        }
+        for (int i = 0; i < count.size(); i++)
+        {
+            if(count[i]!=0){
+                ans+=count[i]*(count[i]-1)/2;
+            }
+        }
+        return ans;
+    }
+    ```
+
 - [...]()
