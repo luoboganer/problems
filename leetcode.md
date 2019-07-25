@@ -1276,6 +1276,40 @@
     } 
     ```
 
+- [697](https://leetcode.com/problems/degree-of-an-array/)
+    
+    给定一个非空非负数组$nums$，该数组中出现次数最多的数字出现的次数（即最高频数）称之为该数组的$degree$，求该数组的一个连续子段$nums[i]-nums[j]$使得该子段长度最小（$min(j-i+1)$）且与原数组有相同的$degree$。
+    
+    因为给定数组元素$nums[i] \in [0,50000]$，因此可以统计$[0,50000]$范围内每个数在原数组中出现的频率以及最左位置和最右位置，然后对所有频率最高的数中，按照端点位置计算子段长度并取较小值即可，时间复杂度$O(max(n,50000))$
+    ```cpp
+    int findShortestSubArray(vector<int>& nums) {
+        const int length=1e5;
+        vector<vector<int>> count(length,vector<int>(3,0));
+        for (int i = 0; i < nums.size(); i++)
+        {
+            if(count[nums[i]][0]==0){
+                count[nums[i]][0]=1;
+                count[nums[i]][1]=i;
+                count[nums[i]][2]=i;
+            }else{
+                count[nums[i]][0]+=1;
+                count[nums[i]][2]=i;
+            }
+        }
+        int cur_degree=0,ans=nums.size();
+        for (int i = 0; i < length; i++)
+        {
+            if(count[i][0]>cur_degree){
+                ans=count[i][2]-count[i][1]+1;
+                cur_degree=count[i][0];
+            }else if(count[i][0]==cur_degree){
+                ans=min(ans,count[i][2]-count[i][1]+1);
+            }
+        }
+        return ans;         
+    }
+    ```
+
 - [733](https://leetcode.com/problems/flood-fill/)
     
     类似于图像处理中区域增长的方式，采用DFS递归写法或者用栈stack实现
