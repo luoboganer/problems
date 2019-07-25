@@ -2043,6 +2043,40 @@
 
     类似于LCS最长公共子序列的问题，二维dp或者一维dp均可，注意问题中隐藏的dp思维。
 
+- [1042](https://leetcode.com/problems/flower-planting-with-no-adjacent/)
+
+    贪心思想，时间复杂度$O(n)$：经典的染色问题，在给定四种颜色且保证有满足条件的答案时可以确保每个节点的连通节点小于等于三个，因此外层循环遍历每个节点i，内层循环遍历该节点链接的所有节点j，使用j尚未使用的颜色染给i即可。
+    ```cpp
+    vector<int> gardenNoAdj(int N, vector<vector<int>>& paths) {
+        vector<vector<int>> connections(N);
+        vector<int> ans(N,0);
+        for (int i = 0; i < paths.size(); i++)
+        {
+            connections[paths[i][0]-1].push_back(paths[i][1]-1);
+            connections[paths[i][1]-1].push_back(paths[i][0]-1);
+        }
+        for (int i = 0; i < N; i++)
+        {
+            int colors[5]={0};
+            for (int j : connections[i])
+            {
+                // 与i相连的节点j最多有3个
+                colors[ans[j]]=1;
+                // 表示颜色colors[ans[j]]已经被用了
+            }
+            for (int color = 1; color <= 4; color++)
+            {
+                if(!colors[color]){
+                    // 颜色color尚未被与i相连的节点使用
+                    ans[i]=color;
+                    break;
+                }
+            }   
+        }
+        return ans;
+    }
+    ```
+
 - [1049](https://leetcode.com/problems/last-stone-weight-ii/)
 
     本题需要把数组stones分为两部分$A,B$使得$min(abs(sum(A)-sum(B)))$，是经典的$0,1$背包问题。
