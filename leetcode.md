@@ -1330,6 +1330,66 @@
     }
     ```
 
+- [784](https://leetcode.com/problems/letter-case-permutation/)
+
+    对给定的字符串中的字母做大小写的全排列
+    - BFS
+    ```cpp
+    vector<string> letterCasePermutation(string S) {
+        string init;
+        for (int i = 0; i < S.length(); i++)
+        {
+            if(isdigit(S.at(i))){
+                init.push_back(S.at(i));
+            }else{
+                init.push_back(tolower(S.at(i)));
+            }
+        }
+        vector<string> ans;
+        ans.push_back(init);
+        for (int level = 0; level < S.length(); level++)
+        {
+            if(isdigit(S.at(level))){
+                continue;
+            }else{
+                int count=ans.size();         
+                for (int i = 0; i < count; i++)
+                {
+                    string next=ans[i];
+                    next[level]+='A'-'a';
+                    ans.push_back(next);
+                }
+            }
+        }
+        return ans;
+    }
+    ```
+    - DFS/backtracking
+    ```cpp
+    vector<string> letterCasePermutation(string S) {
+        vector<string> ans;
+        adder(ans,S,0);
+        return ans;    
+    }
+    void adder(vector<string>& ans,string s,int pos){
+        if(pos<s.length()){
+            if(isdigit(s[pos])){
+                adder(ans,s,pos+1);
+            }else{
+                adder(ans,s,pos+1);
+                if(islower(s[pos])){                    
+                    s[pos]=toupper(s[pos]);
+                }else{
+                    s[pos]=tolower(s[pos]);                    
+                }
+                adder(ans,s,pos+1);
+            }
+        }else{
+            ans.push_back(s);
+        }
+    }
+    ```
+
 - [788](https://leetcode.com/problems/rotated-digits/)
 
     判断一个整数的每个位置上数字旋转180度之后是否可以形成一个不等于原来值的有效数字，暴力搜索$O(nlog(n))$，动态规划$O(log(n))$，[here](http://www.frankmadrid.com/ALudicFallacy/2018/02/28/rotated-digits-leet-code-788/)算法描述。
