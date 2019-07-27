@@ -1275,6 +1275,36 @@
         return s;
     } 
     ```
+- [669](https://leetcode.com/problems/trim-a-binary-search-tree/)
+
+    binary search tree (BST)中减掉值小于L的节点和值大于R的节点。分两步先减掉小于L的节点，第二步减掉大于R的节点。[$\color{red}{分治思想}$]
+    ```cpp
+    TreeNode* trimLeftBST(TreeNode* root, int value) {
+        if(root){
+            if(root->val < value){
+                root=trimLeftBST(root->right,value);
+            }else{
+                root->left=trimLeftBST(root->left,value);
+            }
+        }
+        return root;
+    }
+    TreeNode* trimRightBST(TreeNode* root, int value) {
+        if(root){
+            if(root->val > value){
+                root=trimRightBST(root->left,value);
+            }else{
+                root->right=trimBST(root->right,value);
+            }
+        }
+        return root;
+    }
+    TreeNode* trimBST(TreeNode* root, int L, int R) {
+        root=trimLeftBST(root,L);
+        root=trimRightBST(root,R);
+        return root;
+    }
+    ```
 
 - [697](https://leetcode.com/problems/degree-of-an-array/)
     
