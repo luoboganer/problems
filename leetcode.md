@@ -1375,6 +1375,45 @@
     
     类似于图像处理中区域增长的方式，采用DFS递归写法或者用栈stack实现
 
+- [744](https://leetcode.com/problems/find-smallest-letter-greater-than-target/)
+
+    在给定的有序（升序）小写字母序列letters中寻找第一个大于target的字母
+    - 顺序扫描[$O(n)$]
+    ```cpp
+    char nextGreatestLetter(vector<char>& letters, char target) {
+        vector<bool> count(26,false);
+        for(auto &ch:letters){
+            count[ch-'a']=true;
+        }
+        char ans='a';
+        int start=target-'a'+1;
+        int end=start+26;
+        for (int i = start; i < end; i++)
+        {
+            if(count[i%26]){
+                ans+=i%26;
+                break;
+            }
+        }
+        return ans;
+    }
+    ```
+    - 二分查找[$O(log(n))$]
+    ```cpp
+    char nextGreatestLetter(vector<char>& letters, char target) {
+        int low=0,high=letters.size();
+        while(low<high){
+            int mid=low+((high-low)>>1);
+            if(letters[mid]<=target){
+                low=mid+1;
+            }else{
+                high=mid;
+            }
+        }
+        return letters[low%letters.size()];
+    }
+    ```
+
 - [754](https://leetcode.com/problems/reach-a-number/)
 
     从$k=1$开始累加直到超过target，根据奇偶性校验的结果来修正最终值
