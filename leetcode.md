@@ -1306,6 +1306,37 @@
     }
     ```
 
+- [696](https://leetcode.com/problems/count-binary-substrings/)
+
+    首先对连续的0和1进行分组并统计个数，然后相邻的一组a个0和b个1，可以构成$min(a,b)$个符合条件的子串，然后求和即可。
+    ```cpp
+    int countBinarySubstrings(string s)
+    {
+        int ans=0,count=1;
+        int length=s.length();
+        if(length>0){
+            vector<int> groups;
+            for (int i = 1; i < length; i++)
+            {
+                if(s[i-1]==s[i]){
+                    count++;
+                }else{
+                    groups.push_back(count);
+                    count=1;
+                }
+            }
+            groups.push_back(count);
+            if(groups.size()>1){
+                for (int i = 1; i < groups.size(); i++)
+                {
+                    ans+=min(groups[i-1],groups[i]);
+                }
+            }
+        }
+        return ans;
+    }
+    ```
+
 - [697](https://leetcode.com/problems/degree-of-an-array/)
     
     给定一个非空非负数组$nums$，该数组中出现次数最多的数字出现的次数（即最高频数）称之为该数组的$degree$，求该数组的一个连续子段$nums[i]-nums[j]$使得该子段长度最小（$min(j-i+1)$）且与原数组有相同的$degree$。
