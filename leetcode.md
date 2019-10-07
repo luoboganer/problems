@@ -1,3 +1,14 @@
+<!--
+ * @Filename:
+ * @Author: shifaqiang
+ * @Email: 14061115@buaa.edu.cn
+ * @Github: https://github.com/luoboganer
+ * @Date: 2019-09-13 13:35:19
+ * @LastEditors: shifaqiang
+ * @LastEditTime: 2019-10-07 10:54:20
+ * @Software: Visual Studio Code
+ * @Description:
+ -->
 # record about problems in [leetcode](https://leetcode.com/)
 
 ## [algorithms](https://leetcode.com/problemset/algorithms/)
@@ -1200,6 +1211,14 @@
 
     注意理解最长非公共子串儿的正确含义，即只有两个字符串完全相同时才构成公共子串，否则最长非公共子串就是两个字符串中较长的一个。
 
+- [535](https://leetcode.com/problems/encode-and-decode-tinyurl/)
+
+    tinyURL的encode与decode算法
+
+    整体思路：采用hashmap或者字符串数组存储<key,value>对，key是个全局唯一的ID，value是其longURL。而shortURL则是key的64进制表示，这64个字符一般是[0-9a-zA-Z+-]。这里之所以是64进制是因为64为2的6次幂，进制转换效率高。
+
+
+
 - [561](https://leetcode.com/problems/array-partition-i/)
     
     2n个给定范围的数据划分成n组使得每组最小值求和最大，基本思路是对所有数排序后对基数位置上的数求和即可，这里类似于NMS非极大值抑制的思路，主要的时间复杂度在排序上。
@@ -1858,6 +1877,10 @@
     两个考察点
     - cpp STL中的string操作，子串、查找、替换等
     - cpp STL中集合(set)的使用，或者自己实现一个set
+
+- [930](https://leetcode.com/problems/binary-subarrays-with-sum/)
+
+    待补充    
 
 - [941](https://leetcode.com/problems/valid-mountain-array/)
 
