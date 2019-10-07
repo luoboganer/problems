@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-10-07 10:54:20
+ * @LastEditTime: 2019-10-07 10:58:22
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1216,8 +1216,6 @@
     tinyURL的encode与decode算法
 
     整体思路：采用hashmap或者字符串数组存储<key,value>对，key是个全局唯一的ID，value是其longURL。而shortURL则是key的64进制表示，这64个字符一般是[0-9a-zA-Z+-]。这里之所以是64进制是因为64为2的6次幂，进制转换效率高。
-
-
 
 - [561](https://leetcode.com/problems/array-partition-i/)
     
