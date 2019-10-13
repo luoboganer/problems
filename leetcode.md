@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-10-07 10:58:22
+ * @LastEditTime: 2019-10-13 20:20:28
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2318,6 +2318,56 @@
 - [1114](https://leetcode.com/problems/print-in-order/)
 
     注意cpp中的多线程与线程锁机制
+
+- [1115](https://leetcode.com/problems/print-foobar-alternately/)
+
+    cpp中的多线程机制，线程锁的使用，mutex包和mutex，基本格式如下，两个线程A和B交替使用，则：
+    ```cpp
+    mutex a,b;
+    b.lock();
+    A{
+        a.lock();
+        something;
+        b.unlock();
+    }
+    B{
+        b.lock();
+        something;
+        a.unlock();
+    }
+    ```
+    本题解法如下：
+    ```cpp
+    class FooBar {
+        private:
+            int n;
+            mutex m1,m2;
+
+        public:
+            FooBar(int n) {
+                this->n = n;
+                m2.lock();
+            }
+
+            void foo(function<void()> printFoo) {                
+                for (int i = 0; i < n; i++) {                    
+                    // printFoo() outputs "foo". Do not change or remove this line.
+                    m1.lock();
+                    printFoo();
+                    m2.unlock();
+                }
+            }
+
+            void bar(function<void()> printBar) {
+                for (int i = 0; i < n; i++) 
+                    // printBar() outputs "bar". Do not change or remove this line.
+                    m2.lock();
+                    printBar();
+                    m1.unlock();
+                }
+            }
+    };
+    ```
 
 - [1128](https://leetcode.com/problems/number-of-equivalent-domino-pairs/)
 
