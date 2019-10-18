@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-10-13 20:20:28
+ * @LastEditTime: 2019-10-18 20:24:01
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -16,7 +16,98 @@
 
 - [1](https://leetcode.com/problems/two-sum/)
   
-  题目要求在一个数组中寻找两个和为给定值的数，暴力枚举时两层遍历的时间复杂度为$O(n^2)$，因此使用**unorder_map**的接近$O(1)$的查询效率来实现$O(n)$一遍扫描的做法，这里注意cpp中STL template **unorder_map** 的用法
+    题目要求在一个数组中寻找两个和为给定值的数，暴力枚举时两层遍历的时间复杂度为$O(n^2)$，因此使用**unorder_map**的接近$O(1)$的查询效率来实现$O(n)$一遍扫描的做法，这里注意cpp中STL template **unorder_map** 的用法
+
+- [4](https://leetcode.com/problems/median-of-two-sorted-arrays/)
+
+    给定两个长度分别为m和n的有序数组，返回两个数组合并后新数组的中位数
+
+    - 思路一：两个有序数组归并排序后返回下标中间值一个数即可，时间复杂度$O(log(m+n))$
+    ```cpp
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        vector<int> nums;
+        int i=0,j=0,length_a=nums1.size(),length_b=nums2.size();
+        while(i<length_a && j<length_b){
+            if(nums1[i]<nums2[j]){
+                nums.push_back(nums1[i++]);
+            }else{
+                nums.push_back(nums2[j++]);
+            }
+        }
+        while(i<length_a){
+            nums.push_back(nums1[i++]);
+        }
+        while (j<length_b)
+        {
+            nums.push_back(nums2[j++]);
+        }
+        int length=nums.size();
+        double ans=0.0;
+        if(length&1){
+            ans=nums[length>>1];
+        }else{
+            ans=(nums[length>>1]+nums[(length>>1)+1])/2.0;
+        }
+        return ans;
+    }
+    ```
+
+    - 思路二：因为两个给定数组都是有序的，因此可以通过二分查找来实现寻找中位数，这样可以将时间复杂度降到$O(log(min(m,n)))$
+
+    ```cpp
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        int m=nums1.size(),n=nums2.size();
+        double ans=0;
+        if(m>n){
+            // m<n时交换两个数组，保证第一个二分搜索的数组长度不小于第二个
+            vector<int> temp=nums1;
+            nums1=nums2;
+            nums2=temp;
+            swap(m,n);
+        }
+        int start=0,end=m,mid=(m+n+1)/2;
+        while(start<=end){
+            int i=(start+end)/2;
+            int j=mid-i;
+            // 此时可以保证i左侧和j左侧的所有数字数量，i右侧与j右侧的所有数字的数量相同
+            // 接下来通过二分查找保证 max(nums1[i-1],nums2[j-1])<=min(nums1[i],nums2[j])
+            if(i<end && nums2[j-1]>nums1[i]){
+                // i is lower, move right
+                start=i+1;
+            }else if(i>start && nums1[i-1]>nums2[j]){
+                // i is upper, move left
+                end=i-1;
+            }else{
+                // i刚好合适，但也有特殊情况是i到达数组nums1的边界
+                int max_left=0; // 左半部分最大值
+                if(i==0){
+                    max_left=nums2[j-1];
+                }else if(j==0){
+                    max_left=nums1[i-1];
+                }else{
+                    max_left=max(nums1[i-1],nums2[j-1]);
+                }
+                if((m+n)%2==1){
+                    ans=max_left;
+                    break;
+                }else{
+                    int min_right;
+                    if(i==m){
+                        min_right=nums2[j];
+                    }else if(j==n)
+                    {
+                        min_right=nums1[i];
+                    }else{
+                        min_right=min(nums1[i],nums2[j]);
+                    }
+                    ans=(max_left+min_right)/2.0;
+                    break;
+                }
+            }
+        }
+        return ans;
+    }
+    ```
 
 - [11](https://leetcode.com/problems/container-with-most-water/)
 
@@ -1384,7 +1475,7 @@
                 ans=min(ans,count[i][2]-count[i][1]+1);
             }
         }
-        return ans;         
+        return ans;
     }
     ```
 
