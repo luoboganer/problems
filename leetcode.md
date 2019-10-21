@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-10-18 20:24:01
+ * @LastEditTime: 2019-10-21 12:59:45
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2505,6 +2505,27 @@
             }
         }
         return ans;
+    }
+    ```
+
+- [1230](https://leetcode.com/problems/toss-strange-coins/)
+
+    有n个硬币，第i个随机扔起正面朝上的概率为$prob_i$，求将n个硬币全部随机扔起之后有target个正面朝上的概率。本题属于典型的动态规划DP类型，递推公式为$$dp_{ij}=dp_{i-1,j-1}*prob_i+dp_{i-1,j}*(1-prob_i)$$，其中$dp_{ij}$表示随机扔起i个硬币后有j个朝上的概率，即随机扔起i个后有j个朝上有两种情况，一是随机扔起$i-1$个有$j-1$个朝上并且第j个也朝上，二是随机扔起$i-1$个有$j$个朝上并且第j个朝下。
+
+    ```cpp
+    double probabilityOfHeads(vector<double>& prob, int target) {
+        int const count=prob.size();
+        vector<double> dp(target+1,0);
+        dp[0]=1.0;
+        for (int i = 0; i < count; i++)
+        {
+            for (int j = min(i+1,target); j > 0; j--)
+            {
+                dp[j]=dp[j-1]*prob[i]+dp[j]*(1-prob[i]);
+            }
+            dp[0]*=1-prob[i];
+        }
+        return dp.back();
     }
     ```
 
