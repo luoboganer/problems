@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-10-21 12:59:45
+ * @LastEditTime: 2019-10-21 13:34:22
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -406,6 +406,50 @@
 - [69](https://leetcode.com/problems/sqrtx/)
   
   牛顿迭代法
+
+- [71](https://leetcode.com/problems/simplify-path/)
+
+    将一个给定的unix形式的文件路径改为标准的canonical path形式，将有效地目录结构自顶向下存储为string数组，然后使用/字符将string数组链接起来即可，注意首尾边界形式的处理和函数结构的设计。
+    ```cpp
+    void helper(vector<string>& paths,string s){
+        if(!s.empty()){
+            if(s.compare("..")){
+                if(!paths.empty()){
+                    paths.pop_back();
+                }
+            }else if(s.compare(".")!=0){
+                paths.push_back(s);
+            }
+        }
+    }
+    string simplifyPath(string path)
+    {
+        vector<string> paths;
+        string s;
+        for (auto &&ch : path)
+        {
+            if(ch=='/'){
+                helper(paths, s);
+                s.clear();
+            }else{
+                s.push_back(ch);
+            }
+        }
+        helper(paths, s); // for last segmentation of the path
+        string ans;
+        for (auto &&simple_path : paths)
+        {
+            ans.push_back('/');
+            ans += simple_path;
+        }
+        if (ans.empty())
+        {
+            // for empth path
+            ans.push_back('/');
+        }
+        return ans;
+    }
+    ```
 
 - [75](https://leetcode.com/problems/sort-colors/)
 
