@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-10-21 13:34:22
+ * @LastEditTime: 2019-10-21 14:57:14
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -511,6 +511,34 @@
                 nums[i++] = 0;
             }
         }
+    }
+    ```
+
+- [77](https://leetcode.com/problems/combinations/)
+
+    求组合数C(n,k)所有可能形式，一般为DFS的递归写法
+    ```cpp
+    vector<vector<int>> ans;
+    vector<int> combination;
+    int target;
+    void dfs_helper(int n, int k)
+    {
+        for (int i = n; i >= k; i--)
+        {
+            combination[k - 1] = i;
+            if(k>1){
+                dfs_helper(i - 1, k - 1);
+            }else{
+                ans.push_back(combination);
+            }
+        }
+    }
+    vector<vector<int>> combine(int n, int k)
+    {
+        target = k;
+        combination = vector<int>(k, 0);
+        dfs_helper(n, k);
+        return ans;
     }
     ```
 
