@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-10-21 14:57:14
+ * @LastEditTime: 2019-10-22 20:52:57
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -448,6 +448,109 @@
             ans.push_back('/');
         }
         return ans;
+    }
+    ```
+
+- [73](https://leetcode.com/problems/set-matrix-zeroes/)
+
+    将一个矩阵中有0的行和列全部set为0
+
+    - 方法1：pass one记录所有的值为0的行和列坐标，pass two按记录的坐标将这些行和列全部set为0，时间复杂度$O(m*n)$，空间复杂度$O(m*n)$，缺点在于空间复杂度高
+    ```cpp
+    void setZeroes(vector<vector<int>> &matrix)
+    {
+        unordered_set<int> indexs;
+        int m = matrix.size(), n = matrix[0].size();
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (matrix[i][j] == 0)
+                {
+                    indexs.insert((i + 1));
+                    indexs.insert(-(j + 1));
+                }
+            }
+        }
+        for (auto &&index : indexs)
+        {
+            if (index > 0)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    matrix[index - 1][i] = 0;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < m; i++)
+                {
+                    matrix[i][-index - 1] = 0;
+                }
+            }
+        }
+    }
+    ```
+    - 方法2：pass one将有0所在的行首和列首set为0，pass two将首值为0的行和列全部set为0，时间复杂度$O(m*n)$，空间复杂度$O(1)$
+    ```cpp
+    void setZeroes(vector<vector<int>> &matrix)
+    {
+        int m = matrix.size(), n = matrix[0].size();
+        bool firstCol = false, firstRow = false;
+        if(matrix[0][0]==0){
+            firstCol = true;
+            firstRow = true;
+        }else{
+            for (int i = 0; i < m; i++)
+            {
+                if (matrix[i][0] == 0)
+                {
+                    firstCol = true;
+                }
+            }
+            for (int j = 0; j < n; j++)
+            {
+                if (matrix[0][j] == 0)
+                {
+                    firstRow = true;
+                }
+            }
+        }
+        // one pass
+        for (int i = 1; i < m; i++)
+        {
+            for (int j = 1; j < n; j++)
+            {
+                if (matrix[i][j] == 0)
+                {
+                    matrix[i][0] = 0;
+                    matrix[0][j] = 0;
+                }
+            }
+        }
+        // two pass
+        for (int i = 1; i < m; i++)
+        {
+            for (int j = 1; j < n; j++)
+            {
+                if (matrix[i][0]==0 ||matrix[0][j]==0){
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        // specifial for first column and first row
+        if(firstCol){
+            for (int i = 0; i < m; i++)
+            {
+                matrix[i][0] = 0;
+            }
+        }
+        if(firstRow){
+            for (int j = 0; j < n; j++)
+            {
+                matrix[0][j] = 0;
+            }
+        }
     }
     ```
 
