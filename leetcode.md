@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-10-22 20:52:57
+ * @LastEditTime: 2019-10-23 22:18:00
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1482,6 +1482,28 @@
     tinyURL的encode与decode算法
 
     整体思路：采用hashmap或者字符串数组存储<key,value>对，key是个全局唯一的ID，value是其longURL。而shortURL则是key的64进制表示，这64个字符一般是[0-9a-zA-Z+-]。这里之所以是64进制是因为64为2的6次幂，进制转换效率高。
+
+- [539](https://leetcode.com/problems/minimum-time-difference/)
+
+    在24时制的"hh:mm"格式字符串表示的时间序列中寻找最近的两个时间段差值，将每个时间用转换为分钟数后排序，在任意相邻的两个时间的差值中取最小值即可，时间复杂度$O(nlog(n))$，特别注意排序之后的时间序列第一个值和最后一个值之间的差值也要考虑在内。
+    ```cpp
+    int findMinDifference(vector<string> &timePoints)
+    {
+        vector<int> minutes;
+        for (auto &&point : timePoints)
+        {
+            minutes.push_back(((point[0] - '0') * 10 + (point[1] - '0')) * 60 + ((point[3] - '0') * 10 + (point[4] - '0')));
+        }
+        sort(minutes.begin(), minutes.end());
+        minutes.push_back(minutes[0] + 1440);
+        int diff = numeric_limits<int>::max();
+        for (int i = 1; i < minutes.size(); i++)
+        {
+            diff = min(diff, min(minutes[i] - minutes[i - 1], minutes[i - 1] + 1440 - minutes[i]));
+        }
+        return diff;
+    }
+    ```
 
 - [561](https://leetcode.com/problems/array-partition-i/)
     
