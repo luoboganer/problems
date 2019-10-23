@@ -1,3 +1,14 @@
+<!--
+ * @Filename: 
+ * @Author: shifaqiang
+ * @Email: 14061115@buaa.edu.cn
+ * @Github: https://github.com/luoboganer
+ * @Date: 2019-07-23 13:42:09
+ * @LastEditors: shifaqiang
+ * @LastEditTime: 2019-10-23 22:13:48
+ * @Software: Visual Studio Code
+ * @Description:
+ -->
 # record about problems in [newcoder](https://www.nowcoder.com)
 
 ## algorithms
