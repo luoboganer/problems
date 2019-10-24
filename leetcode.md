@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-10-23 22:18:00
+ * @LastEditTime: 2019-10-24 10:09:04
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -658,6 +658,51 @@
 - [110](https://leetcode.com/problems/balanced-binary-tree/)
 
     判断二叉树是否是平衡二叉树（任何节点左右子树的高度差小于等于1），在递归求二叉树最大深度的过程中维护一个全局变量balanced，随时比较任意节点的左右子树高度差即可。
+
+- [116](https://leetcode.com/problems/populating-next-right-pointers-in-each-node/)
+
+    更一般化的问题是如题[117](https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/)所示的条件，给定一个二叉树，将每一个节点的next指针指向他的同深度的右侧兄弟节点，简单BFS(Breadth-First-Search),即层序遍历然后将同层的节点one pass将每个节点的next指针指向同层下一个节点即可。
+    ```cpp
+    Node *connect(Node *root)
+    {
+        if(root){
+            vector<Node *> level{root}, next_level;
+            while (!level.empty()){
+                for (auto &&node : level){
+                    if(node->left){
+                        next_level.push_back(node->left);
+                    }
+                    if(node->right){
+                        next_level.push_back(node->right);
+                    }
+                }
+                int i = 0, count = next_level.size() - 1;
+                while(i < count){
+                    next_level[i]->next = next_level[i + 1];
+                    i++;
+                }
+                level = next_level;
+                next_level.clear();
+            }
+        }
+        return root;
+    }
+    ```
+    当将给定二叉树限定为本题所示的Perfect Binary Tree的时候，可以用递归的方式来完成而无需BFS层序遍历的庞大空间开销，需要注意递归到子节点时需要利用父节点的next指针信息。
+    ```cpp
+    Node *connect(Node *root)
+    {
+        if(root && root->left){
+            root->left->next = root->right;
+            if(root->next){
+                root->right->next = root->next->left;
+            }
+            connect(root->left);
+            connect(root->right);
+        }
+        return root;
+    }
+    ```
 
 - [136](https://leetcode.com/problems/single-number/)
 
