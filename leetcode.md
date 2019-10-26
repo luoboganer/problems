@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-10-24 10:09:04
+ * @LastEditTime: 2019-10-26 11:27:19
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -654,6 +654,39 @@
     - 非空的非叶子节点对称的条件有：
         - 左右子树同时存在且左右子树的值相同（对称）
         - 左子树的左子树和右子树的右子树递归对称，左子树的右子树和右子树的左子树递归对称
+
+- [104](https://leetcode.com/problems/maximum-depth-of-binary-tree/)
+
+    计算一颗二叉树的最大深度，这是典型的使用递归解决tree类问题的模板，按照top-down和bottom-up两种思路，参见[article](https://leetcode.com/explore/learn/card/data-structure-tree/17/solve-problems-recursively/534/)。
+    - top-down
+    ```cpp
+    int ans = 0;
+    void updateDepth(TreeNode *root, int depth){
+        if (root){
+            ans = max(ans, depth);
+            updateDepth(root->left, depth + 1);
+            updateDepth(root->right, depth + 1);
+        }
+    }
+    int maxDepth(TreeNode *root){
+        if (root){
+            updateDepth(root, 1);
+        }
+        return ans;
+    }
+    ```
+    - bottom-up
+    ```cpp
+    int maxDepth(TreeNode* root) {
+        if(!root){
+            return 0;
+        }else{
+            int left=maxDepth(root->left);
+            int right=maxDepth(root->right);
+            return 1+max(left,right);
+        }
+    }
+    ```
 
 - [110](https://leetcode.com/problems/balanced-binary-tree/)
 
