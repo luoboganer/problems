@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-10-26 11:27:19
+ * @LastEditTime: 2019-10-27 16:59:02
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -219,7 +219,7 @@
 
 - [54](https://leetcode.com/problems/spiral-matrix/)
 
-    spiral matrix，按照蛇形回环遍历一个二维数组，主要难点在数组的小标控制。类似的问题有[59](https://leetcode.com/problems/spiral-matrix-ii/)，将$1-n^2$这$n^2$个数按照蛇形规则填充到一个$n*n$的二维数组中；还有[885](https://leetcode.com/problems/spiral-matrix-iii/)，将指定的数字按照蛇序列从指定位置$(i,j)$开始填充到一个二维数组中。
+    spiral matrix，按照蛇形回环遍历一个二维数组，主要难点在数组的下标控制。类似的问题有[59](https://leetcode.com/problems/spiral-matrix-ii/)，将$1-n^2$这$n^2$个数按照蛇形规则填充到一个$n*n$的二维数组中；还有[885](https://leetcode.com/problems/spiral-matrix-iii/)，将指定的数字按照蛇序列从指定位置$(i,j)$开始填充到一个二维数组中。
     ```cpp
     vector<int> spiralOrder(vector<vector<int>>& matrix) {
 		vector<int> ans;
@@ -641,6 +641,32 @@
         target = k;
         combination = vector<int>(k, 0);
         dfs_helper(n, k);
+        return ans;
+    }
+    ```
+
+- [89](https://leetcode.com/problems/gray-code/)
+
+    给定一个位宽值n，求$range(0,2^{n}-1)$的一个全排列，要求排列中每两个相邻的数字的二进制表示仅仅有一个bit位不同，类似的还有[1238](https://leetcode.com/problems/circular-permutation-in-binary-representation/)，比本题多了一个要求是该排列要从指定数字k开始。
+
+    本题的规律在于，从位宽为n-1即$range(0,2^{n-1}-1)$的全排列，逆转之后附加上最高位bit(前一半为0，后一半为0)，即可实现位宽为n即$range(0,2^{n}-1)$之间的全排列。
+
+    ```cpp
+    vector<int> grayCode(int n)
+    {
+        if(n==0){
+            return {0};
+        }
+        vector<int> ans{0, 1};
+        for (int i = 1; i < n; i++)
+        {
+            int added = (1 << i);
+            int count = ans.size() - 1;
+            for (int j = count; j >= 0; j--)
+            {
+                ans.push_back(ans[j] + added);
+            }
+        }
         return ans;
     }
     ```
