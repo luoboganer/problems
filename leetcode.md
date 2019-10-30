@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-10-27 16:59:02
+ * @LastEditTime: 2019-10-30 12:00:32
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1259,6 +1259,124 @@
             }
         }
     }
+    ```
+
+- [297](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/)
+  
+    序列化或者反序列化一颗树
+    ```cpp
+    class Codec {
+    public:
+        // Encodes a tree to a single string.
+        string serialize(TreeNode *root)
+        {
+            vector<TreeNode *> serialized, current_level, next_level;
+            if (root)
+            {
+                // serialize a tree
+                current_level.push_back(root);
+                while (!current_level.empty())
+                {
+                    // add current level to serialized
+                    for (int i = 0; i < current_level.size(); i++)
+                    {
+                        serialized.push_back(current_level[i]);
+                        if (current_level[i])
+                        {
+                            next_level.push_back(current_level[i]->left);
+                            next_level.push_back(current_level[i]->right);
+                        }
+                    }
+                    current_level = next_level;
+                    next_level.clear();
+                }
+                // remove nullptr in the end
+                while (!current_level.empty())
+                {
+                    if (current_level.back() == nullptr)
+                    {
+                        current_level.pop_back();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+            // convert serialized to string
+            string ans;
+            for (auto &&node : serialized)
+            {
+                if (node)
+                {
+                    ans += to_string(node->val);
+                }
+                else
+                {
+                    ans += "NULL";
+                }
+                ans.push_back(',');
+            }
+            if (ans.length() > 0)
+            {
+                ans.pop_back();
+            }
+            ans = '[' + ans + ']';
+            return ans;
+        }
+        // Decodes your encoded data to tree.
+        TreeNode *deserialize(string data)
+        {
+            TreeNode *root = nullptr;
+            data = data.substr(1, data.length() - 2);
+            if (data.length() > 0)
+            {
+                stringstream ss;
+                string item;
+                ss.str(data);
+                getline(ss, item, ',');
+                root = new TreeNode(stoi(item));
+                queue<TreeNode *> qe;
+                qe.push(root);
+                while (true)
+                {
+                    TreeNode *cur_node = qe.front();
+                    qe.pop();
+                    if (!getline(ss, item, ','))
+                    {
+                        break; // end of the string
+                    }
+                    if (item.compare("NULL") != 0)
+                    {
+                        TreeNode *left = new TreeNode(stoi(item));
+                        cur_node->left = left;
+                        qe.push(left);
+                    }
+                    if (!getline(ss, item, ','))
+                    {
+                        break; // end of the string
+                    }
+                    if (item.compare("NULL") != 0)
+                    {
+                        TreeNode *right = new TreeNode(stoi(item));
+                        cur_node->right = right;
+                        qe.push(right);
+                    }
+                }
+            }
+            return root;
+        }
+
+    };
+
+    // test case 
+    // [1,2,3,null,null,4,5] 
+    // [3,5,1,6,2,0,8,null,null,7,4,null,9,null,null,null,8,5] 
+    // [3,5,1,6,2,0,8,null,null,7,4,null,9,null,8,5]
+
+    // Your Codec object will be instantiated and called as such: 
+    // Codec codec; 
+    // codec.deserialize(codec.serialize(root));
     ```
 
 - [315](https://leetcode.com/problems/count-of-smaller-numbers-after-self/)
