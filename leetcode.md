@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-10-30 12:00:32
+ * @LastEditTime: 2019-10-31 21:27:59
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1377,6 +1377,74 @@
     // Your Codec object will be instantiated and called as such: 
     // Codec codec; 
     // codec.deserialize(codec.serialize(root));
+    ```
+- [300](https://leetcode.com/problems/longest-increasing-subsequence/)
+
+    求给定无序顺序的最长升序子序列
+
+    - 思路一，dynamic plan，时间复杂度$O(n^2)$
+    ```cpp
+    int lengthOfLIS(vector<int> &nums)
+    {
+        const int count = nums.size();
+        vector<int> length(count, 1);
+        int ans = 0;
+        for (int i = 0; i < count; i++)
+        {
+            int j = 0;
+            while (j < i)
+            {
+                if (nums[j] < nums[i])
+                {
+                    length[i] = max(length[j] + 1, length[i]);
+                }
+                j++;
+            }
+            ans = max(ans, length[i]);
+        }
+        return ans;
+    }
+    ```
+    - 思路二，dynamic + binary search，时间复杂度$O(nlog(n))$
+    ```cpp
+    int lengthOfLIS(vector<int> &nums)
+    {
+        const int count = nums.size();
+        int ans = 0;
+        if (count < 2)
+        {
+            ans = count;
+        }
+        else
+        {
+            vector<int> longestIncreasingSeries;
+            longestIncreasingSeries.push_back(nums[0]);
+            for (int i = 1; i < count; i++)
+            {
+                if (nums[i] > longestIncreasingSeries.back())
+                {
+                    longestIncreasingSeries.push_back(nums[i]);
+                }
+                int left = 0, right = longestIncreasingSeries.size() - 1;
+                // 在当前 longIncreasingSeries 中用 nums[i] 替换比其大的最小值
+                while (left < right)
+                {
+                    int mid = left + ((right - left) >> 1);
+                    if (nums[i] > longestIncreasingSeries[mid])
+                    {
+                        left = mid + 1;
+                    }
+                    else
+                    {
+                        right = mid;
+                    }
+                }
+                longestIncreasingSeries[left] = nums[i];
+            }
+            ans = longestIncreasingSeries.size();
+        }
+        return ans;
+    }
     ```
 
 - [315](https://leetcode.com/problems/count-of-smaller-numbers-after-self/)
