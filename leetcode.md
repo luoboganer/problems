@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-10-31 21:27:59
+ * @LastEditTime: 2019-11-03 00:24:52
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3013,6 +3013,66 @@
             dp[0]*=1-prob[i];
         }
         return dp.back();
+    }
+    ```
+
+- [1245](https://leetcode.com/problems/tree-diameter/)
+
+    给定一颗树，即N叉树，求树的直径，即树中任意两各节点之间的最远距离，通过两遍BFS来求解，首先BFS从任意节点start出发求得最远节点end，然后第二遍BFS从节点end出发求得最远节点last，end到last之间的距离即为树的直径。
+    ```cpp
+    int depth_BFS(int start, vector<vector<int>> &from_i_to_node, int &end)
+    {
+        int depth = 0;
+        vector<int> cur_level{start};
+        vector<bool> visited(from_i_to_node.size(), false);
+        end = start;
+        while (true)
+        {
+            vector<int> next_level;
+            for (auto &&node : cur_level)
+            {
+                if (!visited[node])
+                {
+                    next_level.insert(next_level.end(), from_i_to_node[node].begin(), from_i_to_node[node].end());
+                    if (!from_i_to_node[node].empty())
+                    {
+                        end = from_i_to_node[node].back();
+                    }
+                    visited[node] = true;
+                }
+            }
+            if (next_level.empty())
+            {
+                break;
+            }
+            else
+            {
+                depth++;
+                cur_level = next_level;
+            }
+        }
+        return depth;
+    }
+    int treeDiameter(vector<vector<int>> &edges)
+    {
+        int ans = 0;
+        const int count = edges.size();
+        if (count > 0)
+        {
+            // 第一次bfs，从任意节点start出发找到最远节点end
+            int start = 0, end = 0;
+            // sort(edges.begin(), edges.end(), [](vector<int> &a, vector<int> &b) -> bool { return a[0] < b[0]; });
+            vector<vector<int>> from_i_to_node(count + 1, vector<int>{});
+            for (int i = 0; i < count; i++)
+            {
+                from_i_to_node[edges[i][0]].push_back(edges[i][1]);
+                from_i_to_node[edges[i][1]].push_back(edges[i][0]);
+            }
+            int depth = depth_BFS(start, from_i_to_node, end);
+            // 第二次bfs，从end出发找到最远节点last，end到last之间的距离即为树的直径 diameter
+            ans = depth_BFS(end, from_i_to_node, end);
+        }
+        return ans;
     }
     ```
 
