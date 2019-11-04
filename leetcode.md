@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-03 00:24:52
+ * @LastEditTime: 2019-11-03 12:04:52
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3071,6 +3071,44 @@
             int depth = depth_BFS(start, from_i_to_node, end);
             // 第二次bfs，从end出发找到最远节点last，end到last之间的距离即为树的直径 diameter
             ans = depth_BFS(end, from_i_to_node, end);
+        }
+        return ans;
+    }
+    ```
+
+- [1249](https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/)
+
+    在一个包含英文字母和左右小括号的字符串中，移除最少数量的左右括号，使得字符串中的左右括号相匹配，使用栈来实现即可。
+    ```cpp
+    string minRemoveToMakeValid(string s)
+    {
+        stack<int> st; // record index of left parenthese
+        vector<int> removed_index;
+        for (int i = 0; i < s.length(); i++)
+        {
+            if(s[i]=='('){
+                st.push(i);
+            }else if(s[i]==')'){
+                if(st.empty()){
+                    removed_index.push_back(i);
+                }else{
+                    st.pop();
+                }
+            }
+        }
+        while(!st.empty()){
+            removed_index.push_back(st.top());
+            st.pop();
+        }
+        sort(removed_index.begin(), removed_index.end());
+        string ans;
+        for (int i = 0, j = 0; i < s.length(); i++)
+        {
+            if(j<removed_index.size() && i==removed_index[j]){
+                j++;
+            }else{
+                ans.push_back(s[i]);
+            }
         }
         return ans;
     }
