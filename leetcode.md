@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-04 16:22:04
+ * @LastEditTime: 2019-11-04 21:56:45
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -641,6 +641,87 @@
         target = k;
         combination = vector<int>(k, 0);
         dfs_helper(n, k);
+        return ans;
+    }
+    ```
+
+- [81](https://leetcode.com/problems/search-in-rotated-sorted-array-ii/)
+
+    在一个升序旋转后的数组中寻找是否存在一个值，与题目[33](https://leetcode.com/problems/search-in-rotated-sorted-array/)不同的是本题中增加条件，数组中可能有duplicated的值，这时仍然用二分搜索，平均时间复杂度$O(log(n))$，但是由于需要在二分查找是判断mid和left、right的值都相同的情况，所以最坏情况下会退化到$O(n)$
+
+    - [33]没有duplicated的情况   
+    ```cpp
+    int search(vector<int>& nums, int target) {
+        int const n=nums.size();
+        int left=0,right=n-1;
+        while(left<right){
+            int mid=(left+right)>>1;
+            if(nums[mid]<nums[right]){
+                right=mid;
+            }else{
+                left=mid+1;
+            }
+        }
+        int pivot=left;
+        left=0,right=n-1;
+        while(left<=right){
+            int mid=(left+right)>>1;
+            int index=(mid+pivot)%n;
+            if(target<nums[index]){
+                right=mid-1;
+            }else if(target>nums[index]){
+                left=mid+1;
+            }else{
+                return index;
+            }
+        }
+        return -1;
+    }
+    ```
+
+    - 本题有duplicated的情况
+    可以参考以下两篇artical，[ref_1](https://leetcode.com/problems/search-in-rotated-sorted-array-ii/discuss/28218/My-8ms-C%2B%2B-solution-(o(logn)-on-average-o(n)-worst-case))，[ref_2](https://leetcode.com/problems/search-in-rotated-sorted-array-ii/discuss/28194/C%2B%2B-concise-log(n)-solution)
+    ```cpp
+    bool search(vector<int> &nums, int target)
+    {
+        int left = 0, right = nums.size() - 1;
+        int ans = false;
+        while (left <= right)
+        {
+            int mid = left + ((right - left) / 2);
+            if (nums[mid] == target)
+            {
+                ans = true;
+                break;
+            }
+            else if (nums[mid] == nums[left] && nums[mid] == nums[right])
+            {
+                left++, right--;
+            }
+            else if (nums[left] <= nums[mid])
+            {
+                if (nums[left] <= target && nums[mid] > target)
+                {
+                    right = mid - 1;
+                }
+                else
+                {
+                    left = mid + 1;
+                }
+            }
+            else
+            {
+                // nums[left]>nums[mid]
+                if (nums[mid] < target && target <= nums[right])
+                {
+                    left = mid + 1;
+                }
+                else
+                {
+                    right = mid - 1;
+                }
+            }
+        }
         return ans;
     }
     ```
