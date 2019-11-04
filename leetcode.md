@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-04 21:56:45
+ * @LastEditTime: 2019-11-04 23:15:35
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1837,6 +1837,106 @@
 - [448](https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/)
 
     本题和[442](https://leetcode.com/problems/find-all-duplicates-in-an-array/)很像，在遍历数组的过程中可以简单的用一个bool数组来标记每个下标是否出现即可，在不使用额外空间的情况下，可以用正负标记来代替true和false的bool标记在原数组中标记，只不过每次读取原数组的时候取绝对值即可。
+
+- [468](https://leetcode.com/problems/validate-ip-address/)
+
+    验证据given string是否是符合given rules的IPv4或IPv6地址，本题的key points有两处，一是正确理解given rules并在代码中体现出来，而是代码的有效结构设计，精巧的设计模式可以有效降低代码量并提高代码的可读性。
+
+    ```cpp
+    class Solution {
+        public:
+            bool check_IPv4_block(string item)
+            {
+                int v = 0;
+                bool ans = false;
+                if (item.length() >= 1 && item.length() <= 3)
+                {
+                    for (auto &&ch : item)
+                    {
+                        if (isdigit(ch))
+                        {
+                            v = v * 10 + (int)(ch - '0');
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    if (v >= 0 && v <= 255 && item.compare(to_string(v)) == 0)
+                    {
+                        ans = true;
+                    }
+                }
+                return ans;
+            }
+            bool check_IPv6_block(string item)
+            {
+                string chars = "0123456789abcdefABCDEF";
+                bool ans = true;
+                if (!(item.length() >= 1 && item.length() <= 4))
+                {
+                    // ensure item.length in [1,2,3,4]
+                    ans = false;
+                }
+                else
+                {
+                    // ensure all characters in item si valid (in given chars)
+                    for (auto &&ch : item)
+                    {
+                        if (chars.find(ch) == chars.npos)
+                        {
+                            ans = false;
+                            break;
+                        }
+                    }
+                }
+                return ans;
+            }
+            string validIPAddress(string IP)
+            {
+                stringstream ss(IP);
+                string item;
+                if (IP.find('.') != IP.npos)
+                {
+                    // 可能是IPv4
+                    for (int i = 0; i < 4; i++)
+                    {
+                        // check four block for IPv4
+                        if (!getline(ss, item, '.') || !check_IPv4_block(item))
+                        {
+                            return "Neither";
+                        }
+                    }
+                    if (!ss.eof())
+                    {
+                        // if their are other extra charachers, returh Neither
+                        return "Neither";
+                    }
+                    return "IPv4";
+                }
+                else
+                {
+                    // 可能是IPv6
+                    for (int i = 0; i < 8; i++)
+                    {
+                        // check four block for IPv6
+
+                        if (!getline(ss, item, ':') || !check_IPv6_block(item))
+                        {
+                            return "Neither";
+                        }
+                    }
+                    if (!ss.eof())
+                    {
+                        // if their are other extra charachers, returh Neither
+                        return "Neither";
+                    }
+                    return "IPv6";
+                }
+                return "Neither";
+            }
+    };
+    ```
 
 - [475](https://leetcode.com/problems/heaters/submissions/)
 
