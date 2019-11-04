@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-03 12:04:52
+ * @LastEditTime: 2019-11-04 16:22:04
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1756,6 +1756,60 @@
 - [448](https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/)
 
     本题和[442](https://leetcode.com/problems/find-all-duplicates-in-an-array/)很像，在遍历数组的过程中可以简单的用一个bool数组来标记每个下标是否出现即可，在不使用额外空间的情况下，可以用正负标记来代替true和false的bool标记在原数组中标记，只不过每次读取原数组的时候取绝对值即可。
+
+- [475](https://leetcode.com/problems/heaters/submissions/)
+
+    在数轴上固定位置有一些house，同样在固定位置有一些heater，求heater的最小作用半径以覆盖所有的house，算法基本思想如下：
+    - 首先对house坐标和heater坐标排序，时间复杂度为$max(O(nlog(n)),O(mlog(m)))$，其中m和n是house数组和heater数组的长度
+    - 然后从右到左扫描确定每个house到其左侧最近的heater的距离，时间复杂度$O(m+n)$
+    - 然后从左到右扫描确定每个house到其右侧最近的heater的距离，时间复杂度$O(m+n)$
+    - 然后每个house在其左右两侧最近的两个heater中选择一个，记录其距离
+    - 最后在所有house的距离中选择最大值即可实现全覆盖
+    这样在给定house和heater数组有序的情况下可以实现线性时间复杂度
+
+    ```cpp
+    int findRadius(vector<int> &houses, vector<int> &heaters)
+    {
+        sort(houses.begin(), houses.end());
+        sort(heaters.begin(), heaters.end());
+        // 记录每个house到左侧最近的heater的距离，相同位置距离为0，左侧没有heater距离为无穷大
+        vector<int> left(houses.size(), numeric_limits<int>::max());
+        for (int i = houses.size() - 1, h = heaters.size() - 1; i >= 0 && h >= 0;)
+        {
+            if (houses[i] >= heaters[h])
+            {
+                left[i] = houses[i] - heaters[h];
+                i--;
+            }
+            else
+            {
+                h--;
+            }
+        }
+        // 记录每个house到右侧最近的heater的距离，相同位置距离为0，右侧没有heater距离为无穷大
+        vector<int> right(houses.size(), numeric_limits<int>::max());
+        for (int i = 0, h = 0; i < houses.size() && h < heaters.size();)
+        {
+            if (houses[i] <= heaters[h])
+            {
+                right[i] = -(houses[i] - heaters[h]);
+                i++;
+            }
+            else
+            {
+                h++;
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < left.size(); i++)
+        {
+            ans = max(ans, min(left[i], right[i]));
+            // 然后每个house选择左右两侧距离自己较近的那个heater
+            // ans在所有house选择的heater距离中选择最大值即可
+        }
+        return ans;
+    }
+    ```
 
 - [509](https://leetcode.com/problems/fibonacci-number/)
     
