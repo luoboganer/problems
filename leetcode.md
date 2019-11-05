@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-05 17:24:02
+ * @LastEditTime: 2019-11-05 21:21:59
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -403,8 +403,10 @@
         }
     }
     ```
+
     $\color{red}{时间复杂度O(n^2),Time\  Limit\  Exceeded}$
     - Dynamic Programming Top-down，自顶向下的动态规划，递归思想，辅以memorization，即用一个memo数组来标记从位置$nums_i$出发是否可达终点，首先将所有位置均标注为unknown，然后从0开始询问每个位置是否可达终点，如果可达则返回true，如果不可达则返回false，如果unknow，则从当前位置开始递归地依次询问从当前位置可达的所有右侧位置是否可达，如果是，则将改点标记为可达，并返回true，如以上询问失败，则将该点标记为不可达并返回false。如此最后可递归询问到目标结果。
+
     ```cpp
     bool canJumpFromPosition(int position,vector<int>& nums,vector<int>& memo){
         if(memo[position]!=0){
@@ -429,8 +431,10 @@
         return canJumpFromPosition(0,nums,memo);
     }
     ```
+
     $\color{red}{时间复杂度O(n^2),Time\  Limit\  Exceeded}$
     - Dynamic Programming Bottom-up，自底向上的动态规划，从top-down到bottom-up的转换通常用来消除递归过程
+
     ```cpp
     bool canJump(vector<int> &nums)
     {
@@ -451,8 +455,10 @@
         return memo[0]==1; // 从位置0是否可达右端点 
     }
     ```
+
     $\color{green}{时间复杂度O(n^2),Accepted,faster\  than\  13.04\%}$
     - greedy algorithm，贪心算法，通过观察自底向上的动态规划方法可以看出，我们只需要当前节点可以到达现在已经确定的可以到达的最左端，就可以确保从当前点出发可以到达最右端点，即初始化$curPosition=nums_{length}-1$，即当前可以到达的最左点，然后从右到左遍历所有点i时$nums_i+i>=curPosition$即可确定位置i可达，可以更新curPosition为i，最后判断curPosition是否为出发的左端点0即可。
+
     ```cpp
     bool canJump(vector<int> &nums)
     {
@@ -467,7 +473,9 @@
         return curPosition==0;
     }
     ```
+
     $\color{green}{时间复杂度O(n),Accepted,faster\  than\  99.96\%}$
+
 - [60](https://leetcode.com/problems/permutation-sequence/)
 
     求$"1234...n"$形成的第$k$个全排列，数学上可以计算第$k$个全排列的第$i$个字符。
@@ -509,12 +517,13 @@
     另外需要注意由于障碍点的0路径导致最终结果在int表示范围内，但是计算过程中可能会出现超出int表示范围的数字，需要用long long来表示并取模(mod INT_MAX)。
 
 - [69](https://leetcode.com/problems/sqrtx/)
-  
-  牛顿迭代法
+
+    牛顿迭代法
 
 - [71](https://leetcode.com/problems/simplify-path/)
 
-    将一个给定的unix形式的文件路径改为标准的canonical path形式，将有效地目录结构自顶向下存储为string数组，然后使用/字符将string数组链接起来即可，注意首尾边界形式的处理和函数结构的设计。
+    将一个给定的unix形式的文件路径改为标准的canonical path形式，将有效地目录结构自顶向下存储为string数组，然后使用/字符将string数组链接起来即可，注意首尾边界形式的处理和函数结构的设计
+
     ```cpp
     void helper(vector<string>& paths,string s){
         if(!s.empty()){
@@ -561,6 +570,7 @@
     将一个矩阵中有0的行和列全部set为0
 
     - 方法1：pass one记录所有的值为0的行和列坐标，pass two按记录的坐标将这些行和列全部set为0，时间复杂度$O(m*n)$，空间复杂度$O(m*n)$，缺点在于空间复杂度高
+
     ```cpp
     void setZeroes(vector<vector<int>> &matrix)
     {
@@ -596,7 +606,9 @@
         }
     }
     ```
+
     - 方法2：pass one将有0所在的行首和列首set为0，pass two将首值为0的行和列全部set为0，时间复杂度$O(m*n)$，空间复杂度$O(1)$
+
     ```cpp
     void setZeroes(vector<vector<int>> &matrix)
     {
@@ -725,6 +737,7 @@
 - [77](https://leetcode.com/problems/combinations/)
 
     求组合数C(n,k)所有可能形式，一般为DFS的递归写法
+    
     ```cpp
     vector<vector<int>> ans;
     vector<int> combination;
@@ -754,7 +767,8 @@
 
     在一个升序旋转后的数组中寻找是否存在一个值，与题目[33](https://leetcode.com/problems/search-in-rotated-sorted-array/)不同的是本题中增加条件，数组中可能有duplicated的值，这时仍然用二分搜索，平均时间复杂度$O(log(n))$，但是由于需要在二分查找是判断mid和left、right的值都相同的情况，所以最坏情况下会退化到$O(n)$
 
-    - [33]没有duplicated的情况   
+    - [33]没有duplicated的情况
+
     ```cpp
     int search(vector<int>& nums, int target) {
         int const n=nums.size();
@@ -786,6 +800,7 @@
 
     - 本题有duplicated的情况
     可以参考以下两篇artical，[ref_1](https://leetcode.com/problems/search-in-rotated-sorted-array-ii/discuss/28218/My-8ms-C%2B%2B-solution-(o(logn)-on-average-o(n)-worst-case))，[ref_2](https://leetcode.com/problems/search-in-rotated-sorted-array-ii/discuss/28194/C%2B%2B-concise-log(n)-solution)
+
     ```cpp
     bool search(vector<int> &nums, int target)
     {
@@ -871,6 +886,7 @@
 
     计算一颗二叉树的最大深度，这是典型的使用递归解决tree类问题的模板，按照top-down和bottom-up两种思路，参见[article](https://leetcode.com/explore/learn/card/data-structure-tree/17/solve-problems-recursively/534/)。
     - top-down
+
     ```cpp
     int ans = 0;
     void updateDepth(TreeNode *root, int depth){
@@ -887,7 +903,9 @@
         return ans;
     }
     ```
+
     - bottom-up
+
     ```cpp
     int maxDepth(TreeNode* root) {
         if(!root){
@@ -907,6 +925,7 @@
 - [116](https://leetcode.com/problems/populating-next-right-pointers-in-each-node/)
 
     更一般化的问题是如题[117](https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/)所示的条件，给定一个二叉树，将每一个节点的next指针指向他的同深度的右侧兄弟节点，简单BFS(Breadth-First-Search),即层序遍历然后将同层的节点one pass将每个节点的next指针指向同层下一个节点即可。
+
     ```cpp
     Node *connect(Node *root)
     {
@@ -933,7 +952,9 @@
         return root;
     }
     ```
+
     当将给定二叉树限定为本题所示的Perfect Binary Tree的时候，可以用递归的方式来完成而无需BFS层序遍历的庞大空间开销，需要注意递归到子节点时需要利用父节点的next指针信息。
+
     ```cpp
     Node *connect(Node *root)
     {
@@ -962,7 +983,7 @@
     检查单向链表中是否存在cycle，两种方法，O(n)时间复杂度
     - hastset 存储节点，不停的检查set中是否存在cur->next
     - 快慢双指针遍历，当快慢指针相同的时候出现cycle
-  
+
     ```cpp
     bool hasCycle(ListNode *head)
     {
@@ -1019,6 +1040,7 @@
 - [162](https://leetcode.com/problems/find-peak-element/)
 
     寻找peak element即是寻找局部最大值，因此可以二分搜索在$O(log(n))$时间内实现，如果是全局最大值则至少要遍历一次，需要$O(n)$时间来实现
+
     ```cpp
     int findPeakElement(vector<int>& nums) {
         int left=0,right=nums.size()-1;
@@ -1033,12 +1055,13 @@
         return left;
     }
     ```
+
     注意peak element只需要比自己左右两侧的值大就可以了，没必要比最左端和最右端的值大
 
 - [167](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/)
 
 	在给定的有序数组中寻找两个数使其和为给定的target，O(n)时间复杂度
-  
+      
   	```cpp
     vector<int> twoSum(vector<int> &numbers, int target)
     {
@@ -1069,12 +1092,12 @@
     - 首先遍历数组用hashmap统计每个数出现的次数，然后遍历hashmap来比较是否有出现次数超过一半，假定hashmap的$O(1)$存取效率，可以实现$O(n)$的限行时间复杂度
     - 首先对数组排序，从而使得相同数字全部相邻，然后从左到右遍历是否有出现次数超过一半的数字，时间复杂度来自排序算法，一般为$O(nlog(n))$
     - MOOER voting 算法，可以实现真$O(n)$的线性时间和$O(1)$的常量空间，[here](https://www.hijerry.cn/p/45987.html)and[here](https://blog.csdn.net/tinyjian/article/details/79110473)有相关技术博客。
-  
+    
         > 摩尔投票法的基本原理是数学上可以证明数组中出现次数超过数组长度一半的元素最多仅有一个。在从左向右遍历数组的过程中维护两个变量，当前大多数cur_majority和当前大多数的投票得分cur_votes，在遍历数组的过程中遇到投票vote：
         - 如果vote和当前大多数相同，则得分cur_votes++
         - 如果vote和当前大多数不同
-          - 此时如果当前大多数的得分已经为0，则用vote更新当前大多数，且得分更新为1
-          - 此时如果当前大多数的得分尚大于0，则得分cur_vote--
+            - 此时如果当前大多数的得分已经为0，则用vote更新当前大多数，且得分更新为1
+            - 此时如果当前大多数的得分尚大于0，则得分cur_vote--
         > 最终的当前大多数即是得票过半的 majority element。
     
     ```cpp
@@ -1128,6 +1151,7 @@
 - [172](https://leetcode.com/problems/factorial-trailing-zeroes/)
 
     计算给定数n的阶乘($n!$)的结果中0的个数，理论上结果中0只能由5的偶数倍得来，因此计算从1到n的所有数中因子5的个数即可，时间复杂度$O(log(n))$。
+
     ```cpp
     int trailingZeroes(int n)
     {
@@ -1181,6 +1205,7 @@
 
     - 先排序然后一遍扫描，O(nlog(n))
     - hash set，近似O(n)
+
     ```cpp
     bool containsDuplicate(vector<int> &nums)
     {
@@ -1216,8 +1241,9 @@
     ```
 
 - [229](https://leetcode.com/problems/majority-element-ii/)
-  
+
     在给定数组中寻找出现次数超过$\frac{1}{3}$的数字，是[169](https://leetcode.com/problems/majority-element/)题的升级版，同样用hashmap进行统计，排序，摩尔投票等方法解决。
+
     ```cpp
     vector<int> majorityElement(vector<int> &nums)
     {
@@ -1315,6 +1341,7 @@
 - [237](https://leetcode.com/problems/delete-node-in-a-linked-list/)
 
     给定链表中某个节点，删除该节点，难点在于该节点的前继节点未知。如果该节点有后继，则用后继节点来代替该节点，如果没有后继，则该节点指向空即可。
+
     ```cpp
     void deleteNode(ListNode* node) {
         if(node->next){
@@ -1325,6 +1352,7 @@
         }
     }
     ```
+
 - [234](https://leetcode.com/problems/palindrome-linked-list/)
 
     在$O(n)$时间和$O(1)$空间下判断一个链表是否回文，第一次遍历找到中点，然后翻转后半部分和前半部分进行比较即可
@@ -1332,6 +1360,7 @@
 - [239](https://leetcode.com/problems/sliding-window-maximum/)
 
     给定数组nums和窗口大小k，求数组在窗口滑动过程中的最大值，这里主要是双端队列的使用。
+
     ```cpp
     vector<int> maxSlidingWindow(vector<int>& nums, int k) {
 		vector<int> ans;
@@ -1354,9 +1383,11 @@
     ```
 
 - [258](https://leetcode.com/problems/add-digits/)
-  
-  对一个数字求各个数位的和，递归直到这个数是个位数
-  - 循环或者递归的方法
+    
+    对一个数字求各个数位的和，递归直到这个数是个位数
+
+    - 循环或者递归的方法
+
     ```cpp
     int addDigitals(int n)
     {
@@ -1373,10 +1404,13 @@
         return n;
     }
     ```
-  - O(1)方法，可以[数学证明](https://leetcode.com/problems/add-digits/discuss/241551/Explanation-of-O(1)-Solution-(modular-arithmetic))
+
+    - O(1)方法，可以[数学证明](https://leetcode.com/problems/add-digits/discuss/241551/Explanation-of-O(1)-Solution-(modular-arithmetic))
+
     ```cpp
 	return (n - 1) % 9 + 1
     ```
+
 - [264](https://leetcode.com/problems/ugly-number-ii/)
 
     定义：素因子只有2,3,5的数正整数成为ugly数，1是特殊的ugly数。
@@ -1384,23 +1418,22 @@
     问题：寻找第n个ugly数
 
     方法：
-
-        - 暴力
-            从1开始逐个检查所有正整数序列是否为ugly数直到统计量count达到n
-        - dynamic program
-            除1外，下一个ugly数必然是2,3,5的倍数(倍率分别从1开始，每使用一次倍率增长一次)中较小的一个
+    - 暴力：从1开始逐个检查所有正整数序列是否为ugly数直到统计量count达到n
+    - dynamic program：除1外，下一个ugly数必然是2,3,5的倍数(倍率分别从1开始，每使用一次倍率增长一次)中较小的一个
 
 - [268](https://leetcode.com/problems/missing-number/)
-  - Gauss formual
+    - Gauss formual
     
     从0到n的和是$S_0=\frac{n(n+1)}{2}$，missing一个数x以后的和是$S=\frac{n(n+1)}{2}-x$，则丢失的数是$x=S_0-S$。
-  - bit XOR
+
+    - bit XOR
 
     下标是0到n-1，补充一个n作为初始值，然后这些数字是0-n且missing一个数，相当于从0-n除了missing的这个数只出现一次之外其他数字都出现了两次，因此可以用XOR操作找到这个只出现了一次的数即可。
 
 - [278](https://leetcode.com/problems/first-bad-version/)
 
     在形如$(1,2,3,4,5,...,n,n+1,n+1,n+1,n+1,n+1,n+1)$这样的数组中中寻找第一个$n+1$的下标位置，这是二叉搜索的另一种形式，即每次命中$n+1$的右侧都是$n+1$，而没有命中的左侧都不是。相似的题目还有寻找有重复的排序数组中某个元素出现的下标区间[leetcode 34](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/)等。
+
     ```cpp
     int firstBadVersion(int n) {
         unsigned int lo=1,hi=n;
@@ -1417,8 +1450,9 @@
     ```
 
 - [283](https://leetcode.com/problems/move-zeroes/)
-  
-  将一个数列中的0元素全部移动到数列尾部，O(1)空间复杂度和O(n)时间复杂度，保持原数列的稳定性
+
+    将一个数列中的0元素全部移动到数列尾部，O(1)空间复杂度和O(n)时间复杂度，保持原数列的稳定性
+
     ```cpp
     void moveZeroes(vector<int> &nums)
     {
@@ -1448,8 +1482,9 @@
     ```
 
 - [297](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/)
-  
+
     序列化或者反序列化一颗树
+
     ```cpp
     class Codec {
     public:
@@ -1564,6 +1599,7 @@
     // Codec codec; 
     // codec.deserialize(codec.serialize(root));
     ```
+
 - [300](https://leetcode.com/problems/longest-increasing-subsequence/)
 
     求给定无序顺序的最长升序子序列
@@ -1820,7 +1856,7 @@
             c = a & b;
             a = a ^ b;
             b = (c & 0xffffffff) << 1;
-            /* 
+            /*
             这里c定义为长整型而又和0xffffffff按位与的目的是
             1. 避免signed int表示的最小负数左移时溢出的问题
             2. 将c限制在unsigned int的32 bits内
@@ -1829,10 +1865,63 @@
         return a;
     }
     ```
+    
+- [394](https://leetcode.com/problems/decode-string/)
+
+    关于括号中嵌套的问题，可以用递归的方法解决
+
+    ```cpp
+    string decodeString(string s)
+    {
+        string ans;
+        if (s.length() > 0)
+        {
+            int i = 0, count = s.length();
+            while (i < count)
+            {
+                if (isdigit(s[i]))
+                {
+                    int length = 0;
+                    while (i < count && isdigit(s[i]))
+                    {
+                        length = length * 10 + (int)(s[i] - '0');
+                        i++;
+                    }
+                    int open_start = i + 1, open_count = 1;
+                    i++; // skip the first [
+                    while (i < count && open_count > 0)
+                    {
+                        if (s[i] == '[')
+                        {
+                            open_count++;
+                        }
+                        else if (s[i] == ']')
+                        {
+                            open_count--;
+                        }
+                        i++;
+                    }
+                    string temp = s.substr(open_start, i - 1 - open_start); // substr(begin_index,length)
+                    temp = decodeString(temp);
+                    for (int j = 0; j < length; j++)
+                    {
+                        ans += temp;
+                    }
+                }
+                else
+                {
+                    ans.push_back(s[i++]);
+                }
+            }
+        }
+        return ans;
+    }
+    ```
 
 - [400](https://leetcode.com/problems/nth-digit/)
     
     在$1,2,3,4,5,6,7,8,9,10,11,...$的数列中找到第n个数字，思想简单，分别计算不同位宽的数字个数即可(k位数一共占据$k*(9*10^k)$个位置)，但是注意实现时的具体细节处理。
+
     ```cpp
     int findNthDigit(int n)
     {
