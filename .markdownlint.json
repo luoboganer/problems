@@ -1,0 +1,16 @@
+{
+    "default": true,
+    "MD003": {
+        "style": "atx_closed"
+    },
+    "MD007": {
+        "indent": 4
+    },
+    "MD009": {
+        "br_spaces": 4
+    },
+    "MD013": {
+        "line_length": 120
+    },
+    "no-hard-tabs": false
+}

@@ -5,17 +5,17 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-04 23:15:35
+ * @LastEditTime: 2019-11-05 17:24:02
  * @Software: Visual Studio Code
  * @Description:
  -->
+
 # record about problems in [leetcode](https://leetcode.com/)
 
 ## [algorithms](https://leetcode.com/problemset/algorithms/)
 
-
 - [1](https://leetcode.com/problems/two-sum/)
-  
+
     题目要求在一个数组中寻找两个和为给定值的数，暴力枚举时两层遍历的时间复杂度为$O(n^2)$，因此使用**unorder_map**的接近$O(1)$的查询效率来实现$O(n)$一遍扫描的做法，这里注意cpp中STL template **unorder_map** 的用法
 
 - [4](https://leetcode.com/problems/median-of-two-sorted-arrays/)
@@ -23,6 +23,7 @@
     给定两个长度分别为m和n的有序数组，返回两个数组合并后新数组的中位数
 
     - 思路一：两个有序数组归并排序后返回下标中间值一个数即可，时间复杂度$O(log(m+n))$
+
     ```cpp
     double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
         vector<int> nums;
@@ -112,6 +113,7 @@
 - [11](https://leetcode.com/problems/container-with-most-water/)
 
     在一组通过数组给定高度的立柱中选择两根立柱，时期中间的空间可以装水最多，即在具有高度$\{a_0,a_1,...,a_n\}$的这些柱子中选择两根$a_i,a_j$使得$min(a_i,a_j)*(j-i)$最大。
+
     ```cpp
     int maxArea(vector<int>& height) {
         int ans=0;
@@ -131,6 +133,104 @@
 - [13](https://leetcode.com/problems/roman-to-integer/)
 
     罗马数字转阿拉伯数字，主要是思想是对罗马数字字符序列从右到作扫描，注意IXC的位置和表示的数字有关即可。
+
+- [22](https://leetcode.com/problems/generate-parentheses/)
+
+    本题给定左右括号对数量n，生成所有符合条件的括号数
+
+    - 方法一，回溯+剪枝，回溯的时间复杂度高达$O(4^n)$，但是剪枝策略可以有效降低实际运行时间
+
+    ```cpp
+    void dfs_helper_generateParenthesis(string cur, int left, int right, vector<string> &ans)
+    {
+        if (left == 0 && right == 0)
+        {
+            ans.push_back(cur);
+        }
+        else
+        {
+            if (left > 0)
+            {
+                dfs_helper_generateParenthesis(cur + '(', left - 1, right, ans);
+            }
+            if (left < right && right > 0)
+            {
+                dfs_helper_generateParenthesis(cur + ')', left, right - 1, ans);
+            }
+        }
+    }
+    vector<string> generateParenthesis(int n)
+    {
+        vector<string> ans;
+        dfs_helper_generateParenthesis("", n, n, ans);
+        return ans;
+    }
+    ```
+    
+    同样的思路，这里将参数ans的传递方式从引用传递改为值传递（这里体现为全局变量）的时候，在LeetCode在线提交的时间效率从80%提高到beat 100%，这说明在cpp中值传递的效率高于引用传递。
+
+    ```cpp
+    class Solution {
+    public:
+        vector<string> ans;
+        void dfs_helper_generateParenthesis(string cur, int left, int right)
+        {
+            if (left == 0 && right == 0)
+            {
+                ans.push_back(cur);
+            }
+            else
+            {
+                if (left > 0)
+                {
+                    dfs_helper_generateParenthesis(cur + '(', left - 1, right);
+                }
+                if (left < right && right > 0)
+                {
+                    dfs_helper_generateParenthesis(cur + ')', left, right - 1);
+                }
+            }
+        }
+        vector<string> generateParenthesis(int n)
+        {
+            dfs_helper_generateParenthesis("", n, n);
+            return ans;
+        }
+    };
+    ```
+
+    - 方法二，dynamic plan
+
+    用$dp[i]$表示含有i对括号的结果，则$dp[i]$可以从$dp[i-1]$的结果添加一对括号即可，在$i-1$对括号的基础上添加第$i$对括号，将左括号放在最坐标，然后在剩下的位置选择合适位置插入右括号即可，状态转移方程为:
+    $$dp[i]='('+dp[j]+')'+dp[i-j-1], j \in \{0,1,2,3,...,i-1\}$$
+
+    ```cpp
+    vector<string> generateParenthesis(int n)
+    {
+        vector<vector<string>> dp;
+        dp.push_back(vector<string>{""});
+        if (n > 0)
+        {
+            for (int i = 1; i <= n; i++)
+            {
+                vector<string> cur;
+                // dp[i]= ( + dp[j] + ) +dp[i-j-1]
+                for (int j = 0; j < i; j++)
+                {
+                    for (auto &&item1 : dp[j])
+                    {
+                        for (auto &&item2 : dp[i - j - 1])
+                        {
+                            cur.push_back('(' + item1 + ')' + item2);
+                        }
+                    }
+                }
+                dp.push_back(cur);
+            }
+        }
+        return dp.back();
+    }
+    ```
 
 - [46](https://leetcode.com/problems/permutations/)
 
@@ -169,9 +269,11 @@
         return -1;
     }
     ```
+
 - [45](https://leetcode.com/problems/jump-game-ii/)
 
     Jump Game([55](https://leetcode.com/problems/jump-game/))判断是否可以到达右侧终点，本题演化为求到达右端点的最小代价（步数），同样是贪心的思维（DP动态规划会TLE），从左到右扫描一遍即可，时间复杂度$O(n)$，也是一种隐式的BFS（宽度优先搜索），$i==curEnd$即表示扫描了当前level，而curFurthest是当前level的size，即当前level可以到达的最右侧端点。
+
     ```cpp
     int jump(vector<int>& nums) {
         const int count=nums.size()-1;
@@ -192,6 +294,7 @@
 
     Rotate Image，旋转图片90度，即将一个二维数组原地旋转90度。
     注意每次的坐标变换即可，按照每次旋转一个环（一圈），圈内从左到右一层一层旋转，每次基本的旋转单元只有四个数。
+
     ```cpp
     void rotate(vector<vector<int>>& matrix) {
         const int n=matrix.size();
@@ -208,18 +311,19 @@
                 matrix[n-1-level][circle]=matrix[n-1-circle][n-1-level];
                 matrix[n-1-circle][n-1-level]=matrix[level][n-1-circle];
                 matrix[level][n-1-circle]=tmp;
-            }            
+            }
         }
     }
     ```
 
 - [53](https://leetcode.com/problems/maximum-subarray/)
-  
-  一维dp(dynamic plan)
+
+    一维dp(dynamic plan)
 
 - [54](https://leetcode.com/problems/spiral-matrix/)
 
     spiral matrix，按照蛇形回环遍历一个二维数组，主要难点在数组的下标控制。类似的问题有[59](https://leetcode.com/problems/spiral-matrix-ii/)，将$1-n^2$这$n^2$个数按照蛇形规则填充到一个$n*n$的二维数组中；还有[885](https://leetcode.com/problems/spiral-matrix-iii/)，将指定的数字按照蛇序列从指定位置$(i,j)$开始填充到一个二维数组中。
+
     ```cpp
     vector<int> spiralOrder(vector<vector<int>>& matrix) {
 		vector<int> ans;
@@ -367,6 +471,7 @@
 - [60](https://leetcode.com/problems/permutation-sequence/)
 
     求$"1234...n"$形成的第$k$个全排列，数学上可以计算第$k$个全排列的第$i$个字符。
+
     ```cpp
     string getPermutation(int n, int k) {
 		string s,ans;
@@ -387,8 +492,8 @@
 				s.erase(s.begin()+i+k/factory);
 				k%=factory;
 			}
-			return ans;	
-		}	
+			return ans;
+		}
     }    
     ```
 
@@ -2209,6 +2314,7 @@
 
     在给定的有序（升序）小写字母序列letters中寻找第一个大于target的字母
     - 顺序扫描[$O(n)$]
+
     ```cpp
     char nextGreatestLetter(vector<char>& letters, char target) {
         vector<bool> count(26,false);
@@ -2228,7 +2334,9 @@
         return ans;
     }
     ```
+
     - 二分查找[$O(log(n))$]
+
     ```cpp
     char nextGreatestLetter(vector<char>& letters, char target) {
         int low=0,high=letters.size();
@@ -2264,6 +2372,7 @@
 
     对给定的字符串中的字母做大小写的全排列
     - BFS
+
     ```cpp
     vector<string> letterCasePermutation(string S) {
         string init;
@@ -2282,7 +2391,7 @@
             if(isdigit(S.at(level))){
                 continue;
             }else{
-                int count=ans.size();         
+                int count=ans.size();
                 for (int i = 0; i < count; i++)
                 {
                     string next=ans[i];
@@ -2293,8 +2402,11 @@
         }
         return ans;
     }
+
     ```
+
     - DFS/backtracking
+
     ```cpp
     vector<string> letterCasePermutation(string S) {
         vector<string> ans;
@@ -2307,10 +2419,10 @@
                 adder(ans,s,pos+1);
             }else{
                 adder(ans,s,pos+1);
-                if(islower(s[pos])){                    
+                if(islower(s[pos])){
                     s[pos]=toupper(s[pos]);
                 }else{
-                    s[pos]=tolower(s[pos]);                    
+                    s[pos]=tolower(s[pos]);
                 }
                 adder(ans,s,pos+1);
             }
@@ -2379,6 +2491,38 @@
     }
 	```
 
+    这里同样的思路换种写法，将ans参数从引用传递改为值传递（这里体现为全局变量），在LeetCode的在线提交中时间效率可以从战胜80%提高到战胜100%，这说明cpp中值传递的效率要高于引用传递
+
+    ```cpp
+    class Solution {
+    public:
+        vector<string> ans;
+        void dfs_helper_generateParenthesis(string cur, int left, int right)
+        {
+            if (left == 0 && right == 0)
+            {
+                ans.push_back(cur);
+            }
+            else
+            {
+                if (left > 0)
+                {
+                    dfs_helper_generateParenthesis(cur + '(', left - 1, right);
+                }
+                if (left < right && right > 0)
+                {
+                    dfs_helper_generateParenthesis(cur + ')', left, right - 1);
+                }
+            }
+        }
+        vector<string> generateParenthesis(int n)
+        {
+            dfs_helper_generateParenthesis("", n, n);
+            return ans;
+        }
+    };
+    ```
+
     - [dynamic plan]
 
 	```cpp
@@ -2429,10 +2573,10 @@
     ```
 
 - [849](https://leetcode.com/problems/maximize-distance-to-closest-person/)
-  
+
     给定一排座位，0表示空，1表示有人，新来一个人要安排到某个空的座位，使得新人到原来座位上的人(1)的距离尽可能的远，输出这最远距离。整体思路在于某一点到1的最远距离为该点到左边1的距离和到右边1的距离的较小值。
     - left[i]表示点i到到左边最近1的距离，right[i]表示点i到右边最近1的距离，则点i到1的最远距离为$min(left[i],right[i])$。特别注意处理边界点的距离，即左边界的0到其左边的1的距离为无穷大，右边界的0到右边的1的距离为无穷。
-  	
+
 	```cpp
     int maxDistToClosest(vector<int>& seats) {
         const int count=seats.size();
@@ -2452,12 +2596,14 @@
             for (int i = 0; i < count; i++)
             {
                 ans=max(ans,min(left[i],right[i]));
-            }			
+            }
         }
         return ans;
     }
 	```
+
     - 对于左右被1围困的连续的k个0，其距离最近的1的距离为$\frac{k+1}{2}$，边界情况特殊讨论
+
     ```cpp
 	int maxDistToClosest(vector<int>& seats) {
 		const int count=seats.size();
@@ -2488,8 +2634,10 @@
 		}
 		return ans;
 	}
+
 	```
     - two pointer法，用两个指针prev和future，pre指向点i的左边一个1，future指向点i的右边一个1，在该点i到最近1的距离即为$min(i-prev,future-i)$，同样要注意边界点上是0的情况的处理0。
+
 	```cpp
 	int maxDistToClosest(vector<int>& seats) {
 		const int count=seats.size();
@@ -2514,6 +2662,7 @@
 		return ans;
 	}
 	```
+
 - [852](https://leetcode.com/problems/peak-index-in-a-mountain-array/)
 
     寻找给定数组中的山峰数下标，所谓山峰数根据题目定义即为**全局最大值**，因此binary search是理论上的最佳算法，time complexity O(log(n))
@@ -2521,6 +2670,7 @@
 - [855](https://leetcode.com/problems/exam-room/)
 
     本题给定包含N个座位的一排空椅子椅子，维护这个椅子序列，新来的学生要坐到距离任何一个现有学生最远的地方，同时有学生离开空出某个椅子的操作，按照[849](https://leetcode.com/problems/maximize-distance-to-closest-person/)做法实现正确结果，但是**TLE**。新方法采用内部有序的**set**数据结构来存储已经有人的位置下标，插入时O(n)顺序扫描set表，其中新学生插入任何两个元素位置$i,j$间和$i,j$的最大距离为$d=\frac{j-i}{2}$，位置下标为$index=i+d$，全局寻找d最大的的index即可，边界（第一个椅子没人和最后一个椅子没人的情况）情况特殊处理。
+
     ```cpp
     class ExamRoom {
     public:
@@ -2529,7 +2679,7 @@
         ExamRoom(int N) {
             number_of_seats=N;
         }
-        
+
         int seat() {
             int ans=0;
             if(!students.empty()){
@@ -2562,7 +2712,6 @@
             students.insert(ans);
             return ans;
         }
-        
         void leave(int p) {
             students.erase(p);
         }
@@ -2580,9 +2729,9 @@
 
 - [877](https://leetcode.com/problems/stone-game/submissions/)
     - 动态规划:假定dp数组表示第一个人的得分，则
-      - 第i次轮到第一个人拿的时候，他一定拿使自己得分最高的那个数
+        - 第i次轮到第一个人拿的时候，他一定拿使自己得分最高的那个数
         $$dp[i+1][j+1]=max(piles[i]+dp[i+2][j+1],piles[j]+dp[i+1][j]$$
-      - 第i次轮到第二个人拿的时候，他一定拿使对方得分最低的那个数
+        - 第i次轮到第二个人拿的时候，他一定拿使对方得分最低的那个数
         $$dp[i+1][j+1]=min(-piles[i]+dp[i+2][j+1],-piles[j]+dp[i+1][j]$$
     - 数学方法可以证明第一个开始游戏的人一定取胜
 
@@ -2590,6 +2739,7 @@
     问题描述：Uncommon Words from Two Sentences  
     统计两句话中只出现过一次的单词，主要的点有：
     - 字符串的分割，使用istringstream进行copy，back_inserter的使用
+
     ```cpp
     vector<string> getWords(const string &s)
     {
@@ -2599,7 +2749,9 @@
         return ret;
     }
     ```
+
     - 使用unorder_map<string,int>进行word的词频统计
+
     ```cpp
     vector<string> uncommonFromSentences(string A, string B)
     {
@@ -2625,16 +2777,19 @@
         return res;
     }
     ```
+
 - [896](https://leetcode.com/problems/monotonic-array/)
     判断一个数列是否单调，单调包含单调递增和单调递减，非严格单调还包含相等的情况
     - two pass，第一遍扫描判断是否全部 <= ，第二遍扫描判断是否全部 >=，两次结果取或关系
     - one pass，一遍扫描过程中用${-1,0,1}$分别表示<,=,>三种状态，然后在第二次出现非零元素的情况下，如果和第一次非零元素不同，即可返回false
+
 - [905](https://leetcode.com/problems/sort-array-by-parity/)
     cpp的两个标准库函数，用于将vector按照一定的条件划分，例如将一个int类型数组按照奇数偶数划分
     - [partition()](https://en.cppreference.com/w/cpp/algorithm/partition)
     - [stable_partition()](https://en.cppreference.com/w/cpp/algorithm/stable_partition)
     
     eg:
+
     ```cpp
     std::vector<int> v = {0,1,2,3,4,5,6,7,8,9};
     auto it = std::partition(v.begin(), v.end(), [](int i){return i % 2 == 0;});
@@ -2647,6 +2802,7 @@
 - [908](https://leetcode.com/problems/smallest-range-i/)
 
     给定数组A和阈值k，在$\pm k$范围内调节数组中的每一个数字，使得A中的最大值和最小值之间的差距尽可能的小。理论上尽量用$\pm k$范围内的数去抹平原数组中最大值和最小值之间的差距就可以了。
+
     ```cpp
     int smallestRangeI(vector<int> &A, int K)
     {
@@ -2667,7 +2823,9 @@
         return max(0, max_value - min_value - (K << 1));
     }
     ```
+
     [here-910](https://leetcode.com/problems/smallest-range-ii/)限定这个题的调节量只能是$-k$和$+k$，而不能是$\pm k$范围内的任意数。
+
     ```cpp
     int smallestRangeII(vector<int>& A, int K) {
         const int count=A.size();
@@ -2696,6 +2854,7 @@
 - [941](https://leetcode.com/problems/valid-mountain-array/)
 
     重点在于要有increasing的过程，也要有decreasing的过程。
+
     ```cpp
     bool validMountainArray(vector<int>& A) {
         const int count=A.size()-1;
@@ -2721,16 +2880,14 @@
 
     按照揭牌的顺序，反向操作模拟
     题目给定的揭牌操作：
-        
-        - 揭开最上面一张牌
-        - 把下一张牌移到最下面
-  
+    - 揭开最上面一张牌
+    - 把下一张牌移到最下面
+
     最终得到升序的序列
 
     因此反向操作，首先对给定数组升序排序，然后
-
-        - 牌堆最后一张移到最上面
-        - 有序数列的最后一个（当前最大值）放到牌堆最上面盖住
+    - 牌堆最后一张移到最上面
+    - 有序数列的最后一个（当前最大值）放到牌堆最上面盖住
 
     直到给定的数列完全被放到牌堆里
 
@@ -2740,13 +2897,14 @@
     In a array A of size 2N, there are N+1 unique elements, and exactly one of these elements is repeated N time, find and return this element.
     - HashTable 通过hash统计找到个数不是1的那个数，时间复杂度为O(N)，空间复杂度O(1)
     - 根据排列组合，相当于把N个不同的数插入到N个重复的数中，因此无论怎么插入连续的两个数作为一组中一定有一个数是那个重复的major element，因此两组、即连续的四个数中一定有两个major element，它们是相等的，因此按照步长为1,2,3,4搜索相等的两个数即可，时间复杂度与hash法相同为O(N)，空间复杂度O(1)
+
     ```cpp
     for (int i=0; i<A.size(); i+=2) {
         if (A[i] == A[i+1]) return A[i];
     }
     return A[0] == A[2] || A[0] == A[3] ? A[0] : A[1];
     ```
- 
+
 - [966](https://leetcode.com/problems/vowel-spellchecker/)
 
     给定一个字典wordlist，给定查询单词word：
@@ -2754,6 +2912,7 @@
     - 忽略大小写之后word在wordlist中有匹配的单词s，返回s
     - 忽略大小写并将元音字母全部替换为任意的其它元音字母之后word在wordlist中存在匹配的单词s，返回s
     - 以上三种情况均不符合在返回空字符串
+
     ```cpp
     vector<string> spellchecker(vector<string>& wordlist, vector<string>& queries) {
 		/*
@@ -2818,6 +2977,7 @@
 		return ans;
     }
     ```
+
     本题充分体现了hash存储的优势。
 
 - [976](https://leetcode.com/problems/largest-perimeter-triangle/)
