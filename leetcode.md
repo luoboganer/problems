@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-05 21:21:59
+ * @LastEditTime: 2019-11-06 10:45:20
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2723,8 +2723,8 @@
 		}
 		return ans;
 	}
-
 	```
+
     - two pointer法，用两个指针prev和future，pre指向点i的左边一个1，future指向点i的右边一个1，在该点i到最近1的距离即为$min(i-prev,future-i)$，同样要注意边界点上是0的情况的处理0。
 
 	```cpp
@@ -2824,8 +2824,70 @@
         $$dp[i+1][j+1]=min(-piles[i]+dp[i+2][j+1],-piles[j]+dp[i+1][j]$$
     - 数学方法可以证明第一个开始游戏的人一定取胜
 
+- [880](https://leetcode.com/problems/decoded-string-at-index/)
+
+    通过字符和重复次数给定一个字符串，求解码吼字符串中给定index的字符，类似这样只求指定位置字符的课通过下标运算获得，无需求出整个字符串，否则很容易memory limitation，这里注意$\color{red}{逆向思维}$
+
+    ```cpp
+    string decodeAtIndex(string S, int K)
+    {
+        string ans;
+        // calculate the length of decoded string
+        long long tape_length = 0;
+        for (int i = 0; i < S.length(); i++)
+        {
+            if (S[i] <= '9' && S[i] >= '2')
+            {
+                tape_length *= (int)(S[i] - '0'); // digital
+            }
+            else
+            {
+                tape_length++; // lower case letter
+            }
+        }
+        // Reverse inferring the Kth character in a string
+        for (int i = S.length() - 1; i >= 0; i--)
+        {
+            K %= tape_length;
+            if (K == 0 && islower(S[i]))
+            {
+                ans += S[i];
+                break;
+            }
+            else if (S[i] <= '9' && S[i] >= '2')
+            {
+                tape_length /= (int)(S[i] - '0'); // digital
+            }
+            else
+            {
+                tape_length--;
+            }
+        }
+        return ans;
+    }
+    ```
+
+    Some test case
+
+    ```cpp
+    // "a23"
+    // 6
+    // "ajx37nyx97niysdrzice4petvcvmcgqn282zicpbx6okybw93vhk782unctdbgmcjmbqn25rorktmu5ig2qn2y4xagtru2nehmsp"
+    // 976159153
+    // "vzpp636m8y"
+    // 2920
+    // "a2b3c4d5e6f7g8h9"
+    // 10
+    // "leet2code3"
+    // 10
+    // "ha22"
+    // 5
+    // "a2345678999999999999999"
+    // 1
+    ```
+
 - [884](https://leetcode.com/problems/uncommon-words-from-two-sentences/)
-    问题描述：Uncommon Words from Two Sentences  
+    问题描述：Uncommon Words from Two Sentences
     统计两句话中只出现过一次的单词，主要的点有：
     - 字符串的分割，使用istringstream进行copy，back_inserter的使用
 
