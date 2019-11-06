@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-06 16:31:14
+ * @LastEditTime: 2019-11-06 19:25:11
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1663,6 +1663,7 @@
     求给定无序顺序的最长升序子序列
 
     - 思路一，dynamic plan，时间复杂度$O(n^2)$
+
     ```cpp
     int lengthOfLIS(vector<int> &nums)
     {
@@ -1685,7 +1686,9 @@
         return ans;
     }
     ```
+
     - 思路二，dynamic + binary search，时间复杂度$O(nlog(n))$
+
     ```cpp
     int lengthOfLIS(vector<int> &nums)
     {
@@ -1730,6 +1733,7 @@
 - [315](https://leetcode.com/problems/count-of-smaller-numbers-after-self/)
 
 	求逆序数对的问题，线段树或者归并排序(稳定排序)的过程中统计交换的次数或者BST。
+
 	```cpp
 	class Solution
 	{
@@ -1809,40 +1813,19 @@
 - [337](https://leetcode.com/problems/house-robber-iii/)
 
     - 最简单版本[198](https://leetcode.com/problems/house-robber/)
-        
         所有房子的价值以数组nums形式给出，顺序遍历dp即可
         $$dp[i]=\left\{\begin{matrix} x[0], i=0\\ max(x[0],x[1]), i=1\\ max(dp[i-2]+x[i],dp[i-1]), i\geqslant 2 \end{matrix}\right.$$
-        
-    - 升级版[213](https://leetcode.com/problems/house-robber-ii/)
 
+    - 升级版[213](https://leetcode.com/problems/house-robber-ii/)
         此时所有房子形成了一个环，即第一个和最后一个互相接壤，会互相影响，对数组nums[0,n-2],nums[1,n-1]执行两次dp取较大值即可
 
     - 本题中所有房子价值按照二叉树形式给出，只有一个入口，即根节点root，优质discussion在[这里](https://leetcode.com/problems/house-robber-iii/discuss/79330/Step-by-step-tackling-of-the-problem)
-      - naive dp with recursion **[TLE](Time Limit Exceeded)**
-    ```cpp
-  	int rob(TreeNode* root) {
-        int ret=0;
-        if(root){
-            int cur_value=root->val;
-            if(root->left){
-                cur_value+=rob(root->left->left)+rob(root->left->right);
-            }
-            if(root->right){
-                cur_value+=rob(root->right->left)+rob(root->right->right);
-            }
-            ret=max(rob(root->left)+rob(root->right),cur_value);
-        return ret;
-    }
-    ```
-      - 朴素的递归过程中有很多的重复计算问题，可以通过hashmap来记录拜访过的子节点，在递归的过程中相当于实现了自底向上的dp过程，可以在$O(n)$时间和$O(n)$空间限制内解决问题
-    ```cpp
-    unordered_map<TreeNode*,int> visited;
-    int rob(TreeNode* root) {
-        int ret=0;
-        if(root){
-            if(visited.find(root)!=visited.end()){
-                ret=visited[root];
-            }else{	
+        - naive dp with recursion **[TLE](Time Limit Exceeded)**
+
+        ```cpp
+      	int rob(TreeNode* root) {
+            int ret=0;
+            if(root){
                 int cur_value=root->val;
                 if(root->left){
                     cur_value+=rob(root->left->left)+rob(root->left->right);
@@ -1851,33 +1834,57 @@
                     cur_value+=rob(root->right->left)+rob(root->right->right);
                 }
                 ret=max(rob(root->left)+rob(root->right),cur_value);
-                visited[root]=ret;
+            return ret;
+        }
+        ```
+
+        - 朴素的递归过程中有很多的重复计算问题，可以通过hashmap来记录拜访过的子节点，在递归的过程中相当于实现了自底向上的dp过程，可以在$O(n)$时间和$O(n)$空间限制内解决问题
+
+        ```cpp
+        unordered_map<TreeNode*,int> visited;
+        int rob(TreeNode* root) {
+            int ret=0;
+            if(root){
+                if(visited.find(root)!=visited.end()){
+                    ret=visited[root];
+                }else{	
+                    int cur_value=root->val;
+                    if(root->left){
+                        cur_value+=rob(root->left->left)+rob(root->left->right);
+                    }
+                    if(root->right){
+                        cur_value+=rob(root->right->left)+rob(root->right->right);
+                    }
+                    ret=max(rob(root->left)+rob(root->right),cur_value);
+                    visited[root]=ret;
+                }
+            }
+            return ret;
+        }
+        ```
+
+        - 在每个节点计算两个值pair<int,int>，其中pair.first表示当前节点不选择时左右子树获得的最大价值，pair.second代表选择当前节点时当前节点及其子树可以获得的最大价值，递归之后在根节点的两个值中选择最大值即可
+
+        ```cpp
+        int rob(TreeNode* root) {
+            pair<int,int> res=robsub(root);
+            return max(res.first,res.second);
+        }
+
+        pair<int,int> robsub(TreeNode* root){
+            if(root){
+                /*
+                    pair.first	当前节点不选择的最大价值
+                    pair.second	当前节点选择的最大价值
+                */
+                pair<int,int> left=robsub(root->left);
+                pair<int,int> right=robsub(root->right);
+                return make_pair(max(left.first,left.second)+max(right.first,right.second),root->val+left.first+right.first);
+            }else{
+                return make_pair(0,0);
             }
         }
-        return ret;
-    }
-    ```
-      - 在每个节点计算两个值pair<int,int>，其中pair.first表示当前节点不选择时左右子树获得的最大价值，pair.second代表选择当前节点时当前节点及其子树可以获得的最大价值，递归之后在根节点的两个值中选择最大值即可
-    ```cpp
-    int rob(TreeNode* root) {
-        pair<int,int> res=robsub(root);
-        return max(res.first,res.second);
-    }
-
-    pair<int,int> robsub(TreeNode* root){
-        if(root){
-            /*
-                pair.first	当前节点不选择的最大价值
-                pair.second	当前节点选择的最大价值
-            */
-            pair<int,int> left=robsub(root->left);
-            pair<int,int> right=robsub(root->right);
-            return make_pair(max(left.first,left.second)+max(right.first,right.second),root->val+left.first+right.first);
-        }else{
-            return make_pair(0,0);
-        }
-    }
-    ```
+        ```
 
 - [338](https://leetcode.com/problems/counting-bits/)
 
@@ -1886,6 +1893,7 @@
 - [367](https://leetcode.com/problems/valid-perfect-square/)
 
     线性时间内判断一个数是否是完全平方数而不用开方函数，代码如下：
+
     ```cpp
     bool isPerfectSquare(int num) {
         long long i = 1, sum = 0;
@@ -1898,7 +1906,6 @@
     }
     ```
 
-    
     在数学上可以证明对于任何一个完全平方数有：
     $$ \begin{array}{l}{n^{2}=1+3+5+ \ldots +(2 \cdot n-1)=\sum_{i=1}^{n}(2 \cdot i-1)} \\ {\text { provement:}} \\ {\quad 1+3+5+\ldots+(2 \cdot n-1)} \\ {=(2 \cdot 1-1)+(2 \cdot 2-1)+(2 \cdot 3-1)+\ldots+(2 \cdot n-1)} \\ {=2 \cdot(1+2+3+\ldots+n)-(\underbrace{1+1+\ldots+1}_{n \text { times }})} \\ {=2 \cdot \frac{n(n+1)}{2}-n} \\ {=n^{2}+n-n} \\ {=n^{2}}\end{array} $$
 
@@ -2024,6 +2031,7 @@
     给定平面上的一堆点，求符合欧氏距离$d_{ij}=d_{ik}$的点的三元组$(i,j,k)$的数量。
 
     - 暴力搜索，时间复杂度$O(n^3)$
+
     ```cpp
     int numberOfBoomerangs(vector<vector<int>>& points) {
         int length=points.size();
@@ -2059,7 +2067,9 @@
         return ans*2; // (i,j,k) and (i,k,j)
     }    
     ```
+
     - 使用哈希map和排列算法，即到任意一点i的距离为固定值d的点数为p时，符合条件的三元组数量为$p*(p-1)$，时间复杂度$O(n^2)$
+
     ```cpp
     int numberOfBoomerangs(vector<vector<int>>& points) {
         int length=points.size(),ans=0;
@@ -2250,6 +2260,35 @@
     - 递归法
     - 非递归循环 faster
 
+- [516](https://leetcode.com/problems/longest-palindromic-subsequence/)
+
+    求给定字符串s中的最长回文子串长度，将s翻转后形成字符串t，用动态规划求s和t的最长公共子序列LCS长度即可‘时间复杂度$O(log(n))$
+
+    ```cpp
+    int longestPalindromeSubseq(string s)
+    {
+        string t = s;
+        reverse(s.begin(), s.end());
+        const int length = s.length();
+        vector<vector<int>> dp(length + 1, vector<int>(length + 1, 0));
+        for (int i = 1; i <= length; i++)
+        {
+            for (int j = 1; j <= length; j++)
+            {
+                if (s[i - 1] == t[j - 1])
+                {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                }
+                else
+                {
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp.back().back();
+    }
+    ```
+
 - [521](https://leetcode.com/problems/longest-uncommon-subsequence-i/)
 
     注意理解最长非公共子串儿的正确含义，即只有两个字符串完全相同时才构成公共子串，否则最长非公共子串就是两个字符串中较长的一个。
@@ -2263,6 +2302,7 @@
 - [539](https://leetcode.com/problems/minimum-time-difference/)
 
     在24时制的"hh:mm"格式字符串表示的时间序列中寻找最近的两个时间段差值，将每个时间用转换为分钟数后排序，在任意相邻的两个时间的差值中取最小值即可，时间复杂度$O(nlog(n))$，特别注意排序之后的时间序列第一个值和最后一个值之间的差值也要考虑在内。
+
     ```cpp
     int findMinDifference(vector<string> &timePoints)
     {
@@ -2355,11 +2395,13 @@
             s = s.substr(1, s.length() - 2);
         }
         return s;
-    } 
+    }
     ```
+
 - [669](https://leetcode.com/problems/trim-a-binary-search-tree/)
 
     binary search tree (BST)中减掉值小于L的节点和值大于R的节点。分两步先减掉小于L的节点，第二步减掉大于R的节点。[$\color{red}{分治思想}$]
+
     ```cpp
     TreeNode* trimLeftBST(TreeNode* root, int value) {
         if(root){
@@ -2391,6 +2433,7 @@
 - [696](https://leetcode.com/problems/count-binary-substrings/)
 
     首先对连续的0和1进行分组并统计个数，然后相邻的一组a个0和b个1，可以构成$min(a,b)$个符合条件的子串，然后求和即可。
+
     ```cpp
     int countBinarySubstrings(string s)
     {
@@ -2424,6 +2467,7 @@
     给定一个非空非负数组$nums$，该数组中出现次数最多的数字出现的次数（即最高频数）称之为该数组的$degree$，求该数组的一个连续子段$nums[i]-nums[j]$使得该子段长度最小（$min(j-i+1)$）且与原数组有相同的$degree$。
     
     因为给定数组元素$nums[i] \in [0,50000]$，因此可以统计$[0,50000]$范围内每个数在原数组中出现的频率以及最左位置和最右位置，然后对所有频率最高的数中，按照端点位置计算子段长度并取较小值即可，时间复杂度$O(max(n,50000))$
+
     ```cpp
     int findShortestSubArray(vector<int>& nums) {
         const int length=1e5;
@@ -3223,7 +3267,7 @@
     - [向量外积](https://en.wikipedia.org/wiki/Cross_product)
 
         $$\begin{array}{c}{\text { Area }=\frac{1}{2}|\vec{AB} \times \vec{AC}|} \\ {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}, y_{b}-y_{a}\right) ) \times\left(x_{c}-x_{a}, y_{c}-y_{a}\right) ) |} \\ {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}\right)\left(y_{c}-y_{a}\right)-\left(x_{c}-x_{a}, y_{b}-y_{a}\right) ) |} \\ {\text {Area}=\frac{1}{2}\left|x_{a} y_{b}+x_{b} y_{c}+x_{c} y_{a}-x_{a} y_{c}-x_{c} y_{b}-x_{b} y_{a}\right|}\end{array}$$
- 
+
 - [985](https://leetcode.com/problems/sum-of-even-numbers-after-queries/)
     注意每次query对应下标的数字在query前后的奇偶性，分别有不同的操作。time complexity O(n+q)，其中n(size of array) and q(the number of queries)。
 
@@ -3301,6 +3345,7 @@
     从二叉搜索树BST的先序遍历preorder开始重建BST
 
     - 以preorder[0]为分界线将后面preorder后面的部分划分成两部份，左半部分递归重建左子树，右半部分递归重建右子树，时间复杂度$O(nlog(n))$
+
     ```cpp
     TreeNode *bstFromPreorder(vector<int> &preorder)
     {
@@ -3322,7 +3367,9 @@
         }
     }
     ```
+
     - 重写函数为bstFromPreorder(vector<int>& preorder,int boundary)，设定一个界boundary，从preorder[i]开始用下标i遍历preorder，小于界boundary的递归建立左子树，大于界的递归建立右子树，可以实现线性时间复杂度$O(n)$
+
     ```cpp
     int i = 0;
     TreeNode *bstFromPreorder(vector<int> &preorder)
@@ -3344,7 +3391,9 @@
         }
     }
     ```
+
     - 栈实现，时间复杂度$O(n)$，遍历数组中的每个元素item，找到第一个比item小的数p，然后把item挂到p的右孩子，因此需要维护一个从栈底到栈顶递减的栈序列，从而为数组迭代过程中的每个数item找到第一个比它小的数p，即栈顶元素；如果栈中不存在p比item小，则item当前最小，成为栈顶元素的左孩子。
+
     ```cpp
     TreeNode *bstFromPreorder(vector<int> &preorder)
     {
