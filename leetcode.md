@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-06 10:45:20
+ * @LastEditTime: 2019-11-06 16:31:14
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -373,6 +373,7 @@
     给定一个int形数组nums，初始位置在0，$nums[i]$表示从位置i出发向右可以跳跃的最大步数，即从i出发可以到达的步数范围为$[i,i+nums_i]$，判断对于给定的数组能否到达最后一个位置$nums_{nums.size()-1}$
 
     - 最朴素的想法是用一个bool数组来标记从0出发是否可以到达当前位置i，首先将位置0设置为可达，然后从左到右遍历每一个位置position，如过位置position是可达的，则将从position出发可达的位置区间$[i,i+nums_i]$全部标记为可达，然后检查最后一个位置是否被标记为可达。
+
     ```cpp
     bool canJump(vector<int> &nums)
     {
@@ -560,6 +561,63 @@
         {
             // for empth path
             ans.push_back('/');
+        }
+        return ans;
+    }
+    ```
+
+- [72](https://leetcode.com/problems/edit-distance/)
+
+    经典的编辑距离问题，即给定两个字符串a和b，求从a转化到b的最少单字符操作次数，单字符操作指一个字符的增加、删除、改变三种操作中的一种，这是一个经典的动态规划问题，和[1035](https://leetcode.com/problems/uncrossed-lines/)的解法很像，定义状态$dp_{i,j}$表示字符串a的前$i$个字符到字符串b的前$j$个字符之间的编辑距离，则其状态转移方程如下：
+    $$dp_{i,j}=\left\{\begin{matrix}
+        min(i,j) = 0 : max(i,j)\\
+        min(i,j) \neq 0 : \left\{\begin{matrix}
+        a_i = b_j : dp_{i-1,j-1}\\
+        a_i \neq b_j : min \left\{\begin{matrix}
+        dp_{i-1,j}+1 \\
+        dp_{i-1,j-1}+1 \\
+        dp_{i,j-1}+1 \\
+        \end{matrix}\right.
+        \end{matrix}\right.
+        \end{matrix}\right.$$
+
+    **注意数学公式中0-index和代码中1-index的转换**
+
+    ```cpp
+    int minDistance(string word1, string word2)
+    {
+        int ans = 0;
+        int length1 = word1.length(), length2 = word2.length();
+        if (min(length1, length2) == 0)
+        {
+            ans = max(length1, length2);
+        }
+        else
+        {
+            vector<vector<int>> dp(length1 + 1, vector<int>(length2 + 1, 0));
+            for (int i = 1; i <= length1; i++)
+            {
+                dp[i][0] = i;
+            }
+            for (int i = 1; i <= length2; i++)
+            {
+                dp[0][i] = i;
+            }
+            for (int i = 1; i <= length1; i++)
+            {
+                for (int j = 1; j <= length2; j++)
+                {
+                    if (word1[i-1] == word2[j-1])
+                    {
+                        dp[i][j] = dp[i - 1][j - 1];
+                    }
+                    else
+                    {
+                        dp[i][j] = min(min(dp[i - 1][j], dp[i - 1][j - 1]), dp[i][j - 1]) + 1;
+                    }
+                }
+            }
+            ans = dp.back().back();
         }
         return ans;
     }
@@ -3369,13 +3427,13 @@
         return ret;
     }
     ```
-  
+
 - [1024](https://leetcode.com/problems/video-stitching/)
 
     一开始设定当前右端点$cur_right$，然后按照贪心策略寻找左端点小于等于当前右端点(保证可以连接而没有断点)且右端点最远(贪心原则，以便使用最少的视频片段)的没有用过的视频片段，直到所有视频片段被用完或者当前右端点$cur_right$超过了总时间长度要求$T$。
 
 - [1032](https://leetcode.com/problems/stream-of-characters/)
-  
+
     本题主要练习字典树的的构建与查询，tire tree是一种高效的单词存储与查询数据结构，比如可以完成IDE的代码自动提示语补全功能，[here](https://blog.csdn.net/v_july_v/article/details/6897097)有相关博客。
 
 - [1035](https://leetcode.com/problems/uncrossed-lines/)
@@ -3385,6 +3443,7 @@
 - [1042](https://leetcode.com/problems/flower-planting-with-no-adjacent/)
 
     贪心思想，时间复杂度$O(n)$：经典的染色问题，在给定四种颜色且保证有满足条件的答案时可以确保每个节点的连通节点小于等于三个，因此外层循环遍历每个节点i，内层循环遍历该节点链接的所有节点j，使用j尚未使用的颜色染给i即可。
+
     ```cpp
     vector<int> gardenNoAdj(int N, vector<vector<int>>& paths) {
         vector<vector<int>> connections(N);
@@ -3410,7 +3469,7 @@
                     ans[i]=color;
                     break;
                 }
-            }   
+            }
         }
         return ans;
     }
@@ -3419,6 +3478,7 @@
 - [1049](https://leetcode.com/problems/last-stone-weight-ii/)
 
     本题需要把数组stones分为两部分$A,B$使得$min(abs(sum(A)-sum(B)))$，是经典的$0,1$背包问题。
+
     ```cpp
     int lastStoneWeightII(vector<int>& stones) {
         bitset<1501> dp{1};
@@ -3446,6 +3506,7 @@
 - [1115](https://leetcode.com/problems/print-foobar-alternately/)
 
     cpp中的多线程机制，线程锁的使用，mutex包和mutex，基本格式如下，两个线程A和B交替使用，则：
+
     ```cpp
     mutex a,b;
     b.lock();
@@ -3460,7 +3521,9 @@
         a.unlock();
     }
     ```
+
     本题解法如下：
+
     ```cpp
     class FooBar {
         private:
@@ -3473,8 +3536,8 @@
                 m2.lock();
             }
 
-            void foo(function<void()> printFoo) {                
-                for (int i = 0; i < n; i++) {                    
+            void foo(function<void()> printFoo) {
+                for (int i = 0; i < n; i++) {
                     // printFoo() outputs "foo". Do not change or remove this line.
                     m1.lock();
                     printFoo();
@@ -3496,6 +3559,7 @@
 - [1128](https://leetcode.com/problems/number-of-equivalent-domino-pairs/)
 
     - brute force[$O(n^2)$]
+
     ```cpp
     int numEquivDominoPairs(vector<vector<int>>& dominoes) {
         int const count=dominoes.size();
@@ -3520,7 +3584,9 @@
         return ans;
     }
     ```
+
     - encoding method[$O(n)$]
+
     ```cpp
     int numEquivDominoPairs(vector<vector<int>>& dominoes) {
         int ans=0;
@@ -3529,7 +3595,6 @@
         for (int i = 0; i < dominoes.size(); i++)
         {
             count[10*max(dominoes[i][0],dominoes[i][1])+min(dominoes[i][0],dominoes[i][1])]++;
-            
         }
         for (int i = 0; i < count.size(); i++)
         {
@@ -3565,6 +3630,7 @@
 - [1245](https://leetcode.com/problems/tree-diameter/)
 
     给定一颗树，即N叉树，求树的直径，即树中任意两各节点之间的最远距离，通过两遍BFS来求解，首先BFS从任意节点start出发求得最远节点end，然后第二遍BFS从节点end出发求得最远节点last，end到last之间的距离即为树的直径。
+
     ```cpp
     int depth_BFS(int start, vector<vector<int>> &from_i_to_node, int &end)
     {
@@ -3625,6 +3691,7 @@
 - [1249](https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/)
 
     在一个包含英文字母和左右小括号的字符串中，移除最少数量的左右括号，使得字符串中的左右括号相匹配，使用栈来实现即可。
+
     ```cpp
     string minRemoveToMakeValid(string s)
     {
