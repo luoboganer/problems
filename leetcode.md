@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-06 19:25:11
+ * @LastEditTime: 2019-11-07 10:55:24
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -453,7 +453,7 @@
                 }
             }
         }
-        return memo[0]==1; // 从位置0是否可达右端点 
+        return memo[0]==1; // 从位置0是否可达右端点
     }
     ```
 
@@ -982,7 +982,7 @@
 
 - [116](https://leetcode.com/problems/populating-next-right-pointers-in-each-node/)
 
-    更一般化的问题是如题[117](https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/)所示的条件，给定一个二叉树，将每一个节点的next指针指向他的同深度的右侧兄弟节点，简单BFS(Breadth-First-Search),即层序遍历然后将同层的节点one pass将每个节点的next指针指向同层下一个节点即可。
+    更一般化的问题是如题[117](https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/)所示的条件，给定一个二叉树，将每一个节点的next指针指向他的同深度的右侧兄弟节点，简单BFS(Breadth-First-Search)，即层序遍历然后将同层的节点扫描一遍将每个节点的next指针指向同层下一个节点即可。
 
     ```cpp
     Node *connect(Node *root)
@@ -1119,7 +1119,7 @@
 - [167](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/)
 
 	在给定的有序数组中寻找两个数使其和为给定的target，O(n)时间复杂度
-      
+
   	```cpp
     vector<int> twoSum(vector<int> &numbers, int target)
     {
@@ -1366,7 +1366,7 @@
                 cur_votes_A--;
                 cur_votes_B--;
             }
-            /* 
+            /*
             投票结束，题目并未保证给定数组中一定有两个出现次数超过1/3的数字，
             所以还要检查这两个数出现的次数是否真的超过1/3,
             这是因为摩尔投票法仅能找出出现次数超过一半的数而不能找出出现次数最多的众数
@@ -1648,13 +1648,13 @@
 
     };
 
-    // test case 
-    // [1,2,3,null,null,4,5] 
-    // [3,5,1,6,2,0,8,null,null,7,4,null,9,null,null,null,8,5] 
+    // test case
+    // [1,2,3,null,null,4,5]
+    // [3,5,1,6,2,0,8,null,null,7,4,null,9,null,null,null,8,5]
     // [3,5,1,6,2,0,8,null,null,7,4,null,9,null,8,5]
 
-    // Your Codec object will be instantiated and called as such: 
-    // Codec codec; 
+    // Your Codec object will be instantiated and called as such:
+    // Codec codec;
     // codec.deserialize(codec.serialize(root));
     ```
 
@@ -1847,7 +1847,7 @@
             if(root){
                 if(visited.find(root)!=visited.end()){
                     ret=visited[root];
-                }else{	
+                }else{
                     int cur_value=root->val;
                     if(root->left){
                         cur_value+=rob(root->left->left)+rob(root->left->right);
@@ -1902,12 +1902,21 @@
             sum += i;
             i += 2;
         }
-        return sum == num; 
+        return sum == num;
     }
     ```
 
     在数学上可以证明对于任何一个完全平方数有：
-    $$ \begin{array}{l}{n^{2}=1+3+5+ \ldots +(2 \cdot n-1)=\sum_{i=1}^{n}(2 \cdot i-1)} \\ {\text { provement:}} \\ {\quad 1+3+5+\ldots+(2 \cdot n-1)} \\ {=(2 \cdot 1-1)+(2 \cdot 2-1)+(2 \cdot 3-1)+\ldots+(2 \cdot n-1)} \\ {=2 \cdot(1+2+3+\ldots+n)-(\underbrace{1+1+\ldots+1}_{n \text { times }})} \\ {=2 \cdot \frac{n(n+1)}{2}-n} \\ {=n^{2}+n-n} \\ {=n^{2}}\end{array} $$
+    $$
+    \begin{array}{l}{n^{2}=1+3+5+ \ldots +(2 \cdot n-1)=\sum_{i=1}^{n}(2 \cdot i-1)} \\
+    {\text { provement:}}
+    \\ {\quad 1+3+5+\ldots+(2 \cdot n-1)} \\
+    {=(2 \cdot 1-1)+(2 \cdot 2 - 1) + (2 \cdot 3-1)+\ldots+(2 \cdot n-1)} \\
+    {=2 \cdot(1+2+3+\ldots+n)-(\underbrace{1+1+\ldots+1}_{n \text { times }})} \\
+    {=2 \cdot \frac{n(n+1)}{2}-n} \\
+    {=n^{2}+n-n} \\
+    {=n^{2}}\end{array}
+    $$
 
 - [371](https://leetcode.com/problems/sum-of-two-integers/)
 
@@ -2555,7 +2564,7 @@
         {
             target -= ++k;
         }
-        return (target & 1) ? k + 1 + k % 2 : k; 
+        return (target & 1) ? k + 1 + k % 2 : k;
     }
     ```
 
@@ -3243,6 +3252,7 @@
     $$a_i+a_{i+1}>a_{i+2}$$
     使得这三个数可以构成有效三角形，
     此时由于数组的降序性有$i$最小时三角形周长$C=a_i+a_{i+1}+a_{i+2}$获得最大值。
+
     ```cpp
     int largestPerimeter(vector<int>& A) {
 	    int ans=0;
@@ -3262,11 +3272,15 @@
 
     但是对于[812](https://leetcode.com/problems/largest-triangle-area/)这样根据给定的一群点来求面积最大三角形的优化问题则只能是用三重循环暴力搜索，即使可以使用凸包(convex hull)优化，效果不明显，最坏情况下仍然是$O(n^3)$复杂度。另外一个问题，根据给定的点$A,B,C$求三角形面积的公式有：
     - 海伦公式
-  
+
         令$p=\frac{a+b+c}{2}$,则$S=\sqrt{p(p-a)(p-b)(p-c)}$,其中$a,b,c$为三条边边长
     - [向量外积](https://en.wikipedia.org/wiki/Cross_product)
 
-        $$\begin{array}{c}{\text { Area }=\frac{1}{2}|\vec{AB} \times \vec{AC}|} \\ {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}, y_{b}-y_{a}\right) ) \times\left(x_{c}-x_{a}, y_{c}-y_{a}\right) ) |} \\ {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}\right)\left(y_{c}-y_{a}\right)-\left(x_{c}-x_{a}, y_{b}-y_{a}\right) ) |} \\ {\text {Area}=\frac{1}{2}\left|x_{a} y_{b}+x_{b} y_{c}+x_{c} y_{a}-x_{a} y_{c}-x_{c} y_{b}-x_{b} y_{a}\right|}\end{array}$$
+        $$
+        \begin{array}{c}{\text { Area }=\frac{1}{2}|\vec{AB} \times \vec{AC}|} \\
+        {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}, y_{b}-y_{a}\right) ) \times\left(x_{c}-x_{a}, y_{c}-y_{a}\right) ) |} \\
+        {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}\right)\left(y_{c}-y_{a}\right)-\left(x_{c}-x_{a}, y_{b}-y_{a}\right) ) |} \\
+        {\text {Area}=\frac{1}{2}\left|x_{a} y_{b}+x_{b} y_{c}+x_{c} y_{a}-x_{a} y_{c}-x_{c} y_{b}-x_{b} y_{a}\right|}\end{array}$$
 
 - [985](https://leetcode.com/problems/sum-of-even-numbers-after-queries/)
     注意每次query对应下标的数字在query前后的奇偶性，分别有不同的操作。time complexity O(n+q)，其中n(size of array) and q(the number of queries)。
@@ -3595,7 +3609,7 @@
             }
 
             void bar(function<void()> printBar) {
-                for (int i = 0; i < n; i++) 
+                for (int i = 0; i < n; i++)
                     // printBar() outputs "bar". Do not change or remove this line.
                     m2.lock();
                     printBar();
@@ -3776,4 +3790,4 @@
     }
     ```
 
-- [...]()
+- [...](123)
