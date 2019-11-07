@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-07 10:55:24
+ * @LastEditTime: 2019-11-07 22:10:39
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -365,6 +365,46 @@
 			}
 		}
 		return ans;
+    }
+    ```
+
+    另外一种思路，将每一次外层的环抽象成四段相等的线段，只要确定了起始点和方向、长度，就可以确定这条线上的每个坐标，然后输出该坐标下的值，时间复杂度$O(n)$，其中$n$为矩阵中数字的数量
+    
+    ```cpp
+    vector<int> spiralOrder(vector<vector<int>> &matrix)
+    {
+        vector<int> ans;
+        if (matrix.size() > 0 && matrix[0].size() > 0)
+        {
+            int rows = matrix.size(), cols = matrix[0].size();
+            int total_number = rows * cols, cur_number = 0;
+            vector<int> directionX{0, 1, 0, -1};
+            vector<int> directionY{1, 0, -1, 0};
+            int direction = 0, step_length = rows;
+            int x = 0, y = -1;
+            while (cur_number < total_number)
+            {
+                if (direction == 0 || direction == 2)
+                {
+                    step_length = cols;
+                    rows--;
+                }
+                else
+                {
+                    step_length = rows;
+                    cols--;
+                }
+                for (int i = 0; i < step_length; i++)
+                {
+                    x += directionX[direction];
+                    y += directionY[direction];
+                    ans.push_back(matrix[x][y]);
+                    cur_number++;
+                }
+                direction = (++direction) % 4;
+            }
+        }
+        return ans;
     }
     ```
 
@@ -1298,6 +1338,154 @@
     }
     ```
 
+- [227](https://leetcode.com/problems/basic-calculator-ii/)
+
+    计算只包含加减乘除和正整数的表达式的值
+
+    - 方法一，给加减和乘除定义不同的优先级，然后使用栈将其转化为逆波兰表达式，最终求值的
+
+    ```cpp
+    int calculate(string s) {
+        vector<string> items;
+        unordered_map<string,int> priority;
+        priority["+"]=0;
+        priority["-"]=0;
+        priority["*"]=1;
+        priority["/"]=1;
+        string item;
+        stack<string> ops;
+        for (int i = 0; i < s.length(); i++)
+        {
+            if(s[i]==' '){
+                continue;
+            }else if(isdigit(s[i])){
+                item+=s[i];
+            }else{
+                if(item.length()>0){
+                    items.push_back(item);
+                    item.clear();
+                }
+                item=s[i];
+                while(!ops.empty() && priority[item]<=priority[ops.top()]){
+                    items.push_back(ops.top());
+                    ops.pop();
+                }
+                ops.push(item);
+                item.clear();
+            }
+        }
+        if(item.length()>0){
+            items.push_back(item);
+        }
+        while (!ops.empty())
+        {
+            items.push_back(ops.top());
+            ops.pop();
+        }
+        // for calculate
+        stack<int> nums;
+        for (const string &x:items)
+        {
+            if(isdigit(x[0])){
+                nums.push(stoi(x));
+            }else
+            {
+                char c=x[0];
+                int b=nums.top();
+                nums.pop();
+                int a=nums.top();
+                nums.pop();
+                switch (c)
+                {
+                case '+':
+                    /* code */
+                    nums.push(a+b);
+                    break;
+                case '-':
+                    /* code */
+                    nums.push(a-b);
+                    break;
+                case '*':
+                    /* code */
+                    nums.push(a*b);
+                    break;
+                case '/':
+                    /* code */
+                    nums.push(a/b);
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+        return nums.top();
+    }
+    ```
+
+    - 方法二，因为没有使用括号，因此可以在 one pass 扫描的时候直接计算高优先级的乘除的值，并将减法转化为相反数的加法，最后将所有的数直接求和即可
+
+    ```cpp
+    int calculate(string s)
+    {
+        int ans = 0;
+        if (s.length() > 0)
+        {
+            stack<int> nums;
+            string ops = "+-*/";
+            nums.push(0);
+            char op = '+';
+            int cur_value = 0;
+            string::iterator it = s.begin();
+            while (true)
+            {
+                if (isdigit(*it))
+                {
+                    cur_value = cur_value * 10 + (int)(*it - '0');
+                }
+                if (it + 1 == s.end() || (ops.find(*it) != ops.npos))
+                {
+                    if (op == '+')
+                    {
+                        nums.push(cur_value);
+                    }
+                    else if (op == '-')
+                    {
+                        nums.push(-cur_value);
+                    }
+                    else if (op == '*')
+                    {
+                        int temp = nums.top();
+                        nums.pop();
+                        nums.push(temp * cur_value);
+                    }
+                    else if (op == '/')
+                    {
+                        int temp = nums.top();
+                        nums.pop();
+                        nums.push(temp / cur_value);
+                    }
+                    cur_value = 0;
+                    op = *it;
+                }
+                if (it + 1 == s.end())
+                {
+                    break;
+                }
+                else
+                {
+                    it++;
+                }
+            }
+            while (!nums.empty())
+            {
+                ans += nums.top();
+                nums.pop();
+            }
+        }
+        return ans;
+    }
+    ```
+
 - [229](https://leetcode.com/problems/majority-element-ii/)
 
     在给定数组中寻找出现次数超过$\frac{1}{3}$的数字，是[169](https://leetcode.com/problems/majority-element/)题的升级版，同样用hashmap进行统计，排序，摩尔投票等方法解决。
@@ -1888,7 +2076,37 @@
 
 - [338](https://leetcode.com/problems/counting-bits/)
 
-    注意分组统计的办法，类似和二进制表示中1的数量有关的问题和2的倍数有关系
+    注意分组统计的办法，类似和二进制表示中1的数量有关的问题和2的倍数有关系，主要有两条规则：
+    - 一个偶数乘以2之后其二进制表示中1的个数不变
+    - 一个奇数的二进制表示中1的个数等于它的前一个数（必然是偶数）的二进制表示中1的个数加一
+
+    ```cpp
+	vector<int> countBits(int num)
+	{
+		// method, count for every number
+		// vector<int> ret(num + 1, 0);
+		// for (int i = 1; i <= num; i++)
+		// {
+		// 	int count = 0, n = i;
+		// 	while (n)
+		// 	{
+		// 		count += n & 1;
+		// 		n = (n >> 1);
+		// 	}
+		// 	ret[i] = count;
+		// }
+		// return ret;
+
+		// method 2, divide and computing
+		vector<int> ret(num + 1, 0);
+		for (int i = 1, distance = 1; i <= num; i++)
+		{
+			distance = (i == (distance << 1)) ? (distance << 1) : distance;
+			ret[i] = ret[i - distance] + 1;
+		}
+		return ret;
+	}
+    ```
 
 - [367](https://leetcode.com/problems/valid-perfect-square/)
 
