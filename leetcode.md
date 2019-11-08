@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-07 22:10:39
+ * @LastEditTime: 2019-11-08 10:31:53
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4002,6 +4002,39 @@
                 j++;
             }else{
                 ans.push_back(s[i]);
+            }
+        }
+        return ans;
+    }
+    ```
+
+- [1250](https://leetcode.com/problems/check-if-it-is-a-good-array/)
+
+    数论中存在一个裴蜀定理[wikipad](https://www.wikidata.org/wiki/Q513028)，简单讲就是两个整数$x,y$互质的充要条件为存在整数$a,b$使得$a*x+b*y=1$，因此本题给定一维数组$x$，如果它们的最大公约数（GCD）为1，则它们可以采用合适的权重$a$实现$\sum_{i=1}^{n}a_i*x_i=1$，即只需验证给定数组中是否存在一组互质的数即可。
+
+    ```cpp
+    int gcd(int a,int b){
+        if(a<b){
+            swap(a, b);
+        }
+        while(b){
+            int r = a % b;
+            a = b;
+            b = r;
+        }
+        return a;
+    }
+    bool isGoodArray(vector<int> &nums)
+    {
+        bool ans = false;
+        if(nums.size()>0){
+            int v = nums.front();
+            for (int i = 1; i < nums.size(); i++)
+            {
+                v = gcd(v, nums[i]);
+            }
+            if(v==1){
+                ans = true;
             }
         }
         return ans;
