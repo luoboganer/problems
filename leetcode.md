@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-08 10:31:53
+ * @LastEditTime: 2019-11-08 11:55:03
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3329,7 +3329,48 @@
 
 - [930](https://leetcode.com/problems/binary-subarrays-with-sum/)
 
-    待补充    
+    首先统计数组中所以1的下标位置，注意最左端插入-1、最右端插入数组大小size，帮助处理边界情况，然后对target的值分0和非0两种情况处理
+    - 0只能由连续的一段0构成，则连续的$n$个0可以构成$\frac{n*(n-1)}{2}$个连续子数组，其和均为0
+    - 非0值x只能由x个1的和构成，这些1的下标的长度应为x，然后左右两侧可以包含任意长度的0，则当其左右两侧0的个数为left和right时，符合条件的连续子数组数量为$(left+1)*(right+1)$
+
+    ```cpp
+    int numSubarraysWithSum(vector<int> &A, int S)
+    {
+        int count = A.size(), ans = 0;
+        vector<int> index_of_one;
+        index_of_one.push_back(-1); // for the first number is 0
+        for (int i = 0; i < count; i++)
+        {
+            if (A[i] == 1)
+            {
+                index_of_one.push_back(i);
+            }
+        }
+        index_of_one.push_back(count); // for the last number is 0
+        if (S == 0)
+        {
+            // special case
+            const int length = index_of_one.size();
+            for (int i = 1; i < length; i++)
+            {
+                int n = index_of_one[i] - index_of_one[i - 1] - 1;
+                ans += n * (n + 1) / 2;
+            }
+        }
+        else
+        {
+            // S > 0
+            const int right_end = index_of_one.size() - S;
+            for (int i = 1; i < right_end; i++)
+            {
+                int left = index_of_one[i] - index_of_one[i - 1];
+                int right = index_of_one[i + S] - index_of_one[i + S - 1];
+                ans += left * right;
+            }
+        }
+        return ans;
+    }
+    ```    
 
 - [941](https://leetcode.com/problems/valid-mountain-array/)
 
