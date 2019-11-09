@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-08 11:55:03
+ * @LastEditTime: 2019-11-09 13:53:50
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2987,6 +2987,41 @@
     int rotatedDigits(int N)
     {
         return myrotatedDigits(to_string(N), false);
+    }
+    ```
+
+- [797](https://leetcode.com/problems/all-paths-from-source-to-target/)
+
+    本题是通过可达矩阵给出一个有向图，然后求出从0节点到达最后一个节点的所有路径，理论上DFS或者BFS遍历所有节点即可，重点在于代码的实现方式和效率，是其它图节点遍历问题的模板。
+
+    - 递归式的深度优先遍历
+
+    ```cpp
+    void helper(vector<vector<int>> &graph, vector<vector<int>> &ans, vector<int> &cur)
+    {
+        if (cur.back() == graph.size() - 1)
+        {
+            ans.push_back(cur);
+        }
+        else
+        {
+            for (auto &&next_node : graph[cur.back()])
+            {
+                cur.push_back(next_node);
+                helper(graph, ans, cur);
+                cur.pop_back();
+            }
+        }
+    }
+    vector<vector<int>> allPathsSourceTarget(vector<vector<int>> &graph)
+    {
+        vector<vector<int>> ans;
+        if (graph.size() > 0)
+        {
+            vector<int> cur{0};
+            helper(graph, ans, cur);
+        }
+        return ans;
     }
     ```
 
