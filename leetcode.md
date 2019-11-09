@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-09 13:53:50
+ * @LastEditTime: 2019-11-09 17:42:41
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -658,6 +658,45 @@
                 }
             }
             ans = dp.back().back();
+        }
+        return ans;
+    }
+    ```
+
+    为了节省内存空间，可以从二维数组实现的DP压缩到一维数组实现
+
+    ```cpp
+    int minDistance(string word1, string word2)
+    {
+        int ans = 0;
+        int length1 = word1.length(), length2 = word2.length();
+        if (min(length1, length2) == 0)
+        {
+            ans = max(length1, length2);
+        }
+        else
+        {
+            vector<int> dp(length2 + 1, 0);
+            for (int i = 0; i <= length2; i++)
+            {
+                dp[i] = i;
+            }
+            for (int i = 1; i <= length1; i++)
+            {
+                int cur = i, temp = 0;
+                for (int j = 1; j<=length2; j++)
+                {
+                    if(word1[i-1]==word2[j-1]){
+                        temp = dp[j-1];
+                    }else{
+                        temp = min(cur, min(dp[j], dp[j - 1])) + 1;
+                    }
+                    dp[j - 1] = cur;
+                    cur = temp;
+                }
+                dp.back() = cur;
+            }
+            ans = dp.back();
         }
         return ans;
     }
