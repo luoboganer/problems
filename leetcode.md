@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-11 21:08:42
+ * @LastEditTime: 2019-11-11 21:33:43
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1299,6 +1299,57 @@
             ans += n / base;
             base *= 5;
             power++;
+        }
+        return ans;
+    }
+    ```
+
+- [200](https://leetcode.com/problems/number-of-islands/submissions/)
+
+    统计岛屿数量，典型的DFS应用，每当发现一个unvisited陆地标记('1')的时候，岛屿数量加1，递归地将其四个方向的陆地('1')全部标记为visited即可。
+
+    ```cpp
+    void marker(vector<vector<char>> &grid, int i, int j)
+    {
+        if (i > 0 && grid[i - 1][j] == '1')
+        {
+            grid[i - 1][j] = '2'; // visited
+            marker(grid, i - 1, j);
+        }
+        if (i < grid.size() - 1 && grid[i + 1][j] == '1')
+        {
+            grid[i + 1][j] = '2'; // visited
+            marker(grid, i + 1, j);
+        }
+        if (j > 0 && grid[i][j - 1] == '1')
+        {
+            grid[i][j - 1] = '2'; // visited
+            marker(grid, i, j - 1);
+        }
+        if (j < grid[0].size() - 1 && grid[i][j + 1] == '1')
+        {
+            grid[i][j + 1] = '2'; // visited
+            marker(grid, i, j + 1);
+        }
+    }
+    int numIslands(vector<vector<char>> &grid)
+    {
+        int ans = 0;
+        if (grid.size() > 0 && grid[0].size() > 0)
+        {
+            int rows = grid.size(), cols = grid[0].size();
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    if (grid[i][j] == '1')
+                    {
+                        // 发现陆地
+                        marker(grid, i, j);
+                        ans++;
+                    }
+                }
+            }
         }
         return ans;
     }
