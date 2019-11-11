@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-09 17:42:41
+ * @LastEditTime: 2019-11-11 21:08:42
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3996,6 +3996,65 @@
         {
             if(count[i]!=0){
                 ans+=count[i]*(count[i]-1)/2;
+            }
+        }
+        return ans;
+    }
+    ```
+
+- [1169](https://leetcode.com/problems/invalid-transactions/)
+
+    在一个transaction列表中通过两条规则过滤掉invalid的transaction，规则如下：
+    - amount > 1000
+    - time[i]-time[j]<=60且names[i]=name[j],city[i]!=city[j]
+    解析存储所有的transactions之后，规则1线性时间过滤一遍就好，规则2需要平方时间验证所有相同姓名下不同城市时间差在60以内的交易
+
+    ```cpp
+    vector<string> invalidTransactions(vector<string> &transactions)
+    {
+        const int count = transactions.size();
+        vector<string> names, cities;
+        vector<int> times(count, 0), amounts(count, 0);
+        vector<bool> valid(count, true);
+
+        // 解析记录
+        for (int i = 0; i < count; i++)
+        {
+            string item;
+            stringstream ss(transactions[i]);
+            getline(ss, item, ',');
+            names.push_back(item);
+            getline(ss, item, ',');
+            times[i] = stoi(item);
+            getline(ss, item, ',');
+            amounts[i] = stoi(item);
+            getline(ss, item, ',');
+            cities.push_back(item);
+            if (amounts[i] > 1000)
+            {
+                valid[i] = false;
+            }
+        }
+        // n^2时间遍历所有相同人名的不同交易
+        for (int i = 0; i < count; i++)
+        {
+            for (int j = i + 1; j < count; j++)
+            {
+                if (names[i].compare(names[j]) == 0 && abs(times[i] - times[j]) <= 60 && cities[i].compare(cities[j]) != 0)
+                {
+                    valid[i] = false;
+                    valid[j] = false;
+                }
+            }
+        }
+
+        // 输出结果
+        vector<string> ans;
+        for (int i = 0; i < count; i++)
+        {
+            if (valid[i] == false)
+            {
+                ans.push_back(transactions[i]);
             }
         }
         return ans;
