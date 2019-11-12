@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-12 14:58:35
+ * @LastEditTime: 2019-11-12 16:34:09
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2937,6 +2937,55 @@
         }else{
             ans.push_back(s);
         }
+    }
+    ```
+
+- [785](https://leetcode.com/problems/is-graph-bipartite/)
+
+    验证通过邻接矩阵给定的无向图是否为二部图，使用两种颜色对图中所有节点染色即可，若染色成功则，任何两个相邻节点颜色不同，则为true，否则为false
+
+    ```cpp
+    bool valid_color(vector<vector<int>> &graph, vector<int> &color, int node, int cur_color)
+    {
+        bool ret = true;
+        if (!graph[node].empty())
+        {
+            if (color[node] != 0)
+            {
+                ret = (color[node] == cur_color);
+            }
+            else
+            {
+                color[node] = cur_color;
+                for (auto &&item : graph[node])
+                {
+                    ret = valid_color(graph, color, item, -cur_color);
+                    if (!ret)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    bool isBipartite(vector<vector<int>> &graph)
+    {
+        int const count = graph.size();
+        int ret = true;
+        if (count > 0)
+        {
+            vector<int> color(count, 0); // 0 not assigned, 1 to set A, -1 to set B
+            for (int i = 0; ret && i < count; i++)
+            {
+                if (color[i] == 0 && !valid_color(graph, color, i, 1))
+                {
+                    ret = false;
+                    break;
+                }
+            }
+        }
+        return ret;
     }
     ```
 
