@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-11 21:33:43
+ * @LastEditTime: 2019-11-12 14:58:35
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4260,6 +4260,59 @@
             }
             if(v==1){
                 ans = true;
+            }
+        }
+        return ans;
+    }
+    ```
+
+- [1254](https://leetcode.com/problems/number-of-closed-islands/)
+
+    求被水域完全包围的陆地（岛屿）的数量，DFS遍历所有岛屿，与常规统计岛屿数量[200](https://leetcode.com/problems/number-of-islands/)多的一点是，放弃所有与边界相连的岛屿
+
+    ```cpp
+    bool is_closed(vector<vector<int>> &grid, int i, int j)
+    {
+        bool ans = true;
+        if (i < 0 || j < 0 || i >= grid.size() || j >= grid[0].size())
+        {
+            ans = false;
+            // 到达边界
+        }
+        else
+        {
+            if (grid[i][j] == 1)
+            {
+                // 水域
+                ans = true;
+            }
+            else
+            {
+                // 陆地
+                grid[i][j] = 1; // flag for visited
+                ans &= is_closed(grid, i - 1, j);
+                ans &= is_closed(grid, i + 1, j);
+                ans &= is_closed(grid, i, j - 1);
+                ans &= is_closed(grid, i, j + 1);
+            }
+        }
+        return ans;
+    }
+    int closedIsland(vector<vector<int>> &grid)
+    {
+        int ans = 0;
+        if (grid.size() > 0 && grid[0].size() > 0)
+        {
+            const int rows = grid.size(), cols = grid[0].size();
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    if (grid[i][j] == 0 && is_closed(grid, i, j))
+                    {
+                        ans++;
+                    }
+                }
             }
         }
         return ans;
