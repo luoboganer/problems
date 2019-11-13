@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-13 11:25:18
+ * @LastEditTime: 2019-11-13 12:02:38
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -232,11 +232,6 @@
     }
     ```
 
-- [46](https://leetcode.com/problems/permutations/)
-
-    - 注意全排列的实现，递归的和非递归的，字典序的和非字典序的
-    - cpp的STL中有*next_permutation*和*prev_permutation*两个函数，注意他们的实现方式
-
 - [33](https://leetcode.com/problems/search-in-rotated-sorted-array/)
 
     在有序的旋转数组$(eg,{4,5,6,7,0,1,2,3})$中查找一个数target，首先二分查找确定数组的起点pivot，然后第二次二分查找确定target的index。
@@ -270,6 +265,46 @@
     }
     ```
 
+- [41](https://leetcode.com/problems/first-missing-positive/)
+
+    寻找给定数组nums中第一个缺失的正整数，首先初始化一个长度相同的全false数组flags，然后线性扫描nums中每一个数，如果是正整数x且在1到nums.length()范围内，则在flags[x]中标记为true，然后线性扫描flags找到第一个false即可，如果限定在O(1)空间内，则想到用nums数组本身的下标就是0到n-1可以作为标记，线性扫描nums将正整数nums[i]交换到nums[nums[i]-1]即可，然后第二遍扫描确定第一个i+1和nums[i]不匹配的值即可，特别注意空数组等边界测试条件
+
+    ```cpp
+    int firstMissingPositive(vector<int> &nums)
+    {
+        const int count = nums.size();
+        for (int i = 0; i < count; i++)
+        {
+            if(i+1!=nums[i]){
+                while(nums[i]>=1 && nums[i]<=count && nums[i]!=nums[nums[i]-1]){
+                    swap(nums[i], nums[nums[i] - 1]);
+                }
+            }
+        }
+        int ans = 1; // for empty numbers, the 1 is the correct answer
+        for (int i = 0; i < count; i++)
+        {
+            if(nums[i]!=i+1){
+                ans = i + 1;
+                break;
+            }else{
+                ans = count + 1;
+            }
+        }
+        return ans;
+    }
+    ```
+
+    这是典型的测试用例
+
+    ```cpp
+    [1,2,0]
+    [3,4,-1,1]
+    [7,8,9,11,12]
+    []
+    [1]
+    ```
+
 - [45](https://leetcode.com/problems/jump-game-ii/)
 
     Jump Game([55](https://leetcode.com/problems/jump-game/))判断是否可以到达右侧终点，本题演化为求到达右端点的最小代价（步数），同样是贪心的思维（DP动态规划会TLE），从左到右扫描一遍即可，时间复杂度$O(n)$，也是一种隐式的BFS（宽度优先搜索），$i==curEnd$即表示扫描了当前level，而curFurthest是当前level的size，即当前level可以到达的最右侧端点。
@@ -289,6 +324,11 @@
         return steps;
     }
     ```
+
+- [46](https://leetcode.com/problems/permutations/)
+
+    - 注意全排列的实现，递归的和非递归的，字典序的和非字典序的
+    - cpp的STL中有*next_permutation*和*prev_permutation*两个函数，注意他们的实现方式
 
 - [48](https://leetcode.com/problems/rotate-image/)
 
