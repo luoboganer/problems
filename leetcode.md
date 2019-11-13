@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-12 16:34:09
+ * @LastEditTime: 2019-11-13 11:25:18
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2636,6 +2636,66 @@
             diff = min(diff, min(minutes[i] - minutes[i - 1], minutes[i - 1] + 1440 - minutes[i]));
         }
         return diff;
+    }
+    ```
+
+- [542](https://leetcode.com/problems/01-matrix/)
+
+    给定一个0/1矩阵，寻找每个1位置距离最近的0的距离，两种思路，一是以每个1为中心BFS遍历，第一次出现0的层深即为距离，二是典型的DP思维，每个1到0的最近距离是它的四个邻居（上下左右）到最近的0的距离的最小值加一。
+
+    DP的实现代码
+
+    ```cpp
+    vector<vector<int>> updateMatrix(vector<vector<int>> &matrix)
+    {
+        int m = matrix.size(), n = matrix[0].size();
+        vector<vector<int>> dist(m, vector<int>(n, 1e4 + 1)); // 1e4是矩阵中元素的最大数量，题目给定
+        // 左上角到右下角
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (matrix[i][j] == 1)
+                {
+                    if (i > 0)
+                    {
+                        dist[i][j] = min(dist[i][j], dist[i - 1][j] + 1);
+                    }
+                    if (j > 0)
+                    {
+                        dist[i][j] = min(dist[i][j], dist[i][j - 1] + 1);
+                    }
+                }
+                else
+                {
+                    dist[i][j] = 0;
+                }
+            }
+        }
+        // 从右下角到左上角
+        for (int i = m - 1; i >= 0; i--)
+        {
+            for (int j = n - 1; j >= 0; j--)
+            {
+                if (matrix[i][j] == 1)
+                {
+                    if (i < m - 1)
+                    {
+                        dist[i][j] = min(dist[i][j], dist[i + 1][j] + 1);
+                    }
+                    if (j < n - 1)
+                    {
+                        dist[i][j] = min(dist[i][j], dist[i][j + 1] + 1);
+                    }
+                }
+                else
+                {
+                    dist[i][j] = 0;
+                }
+            }
+        }
+
+        return dist;
     }
     ```
 
