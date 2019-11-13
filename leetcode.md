@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-13 12:02:38
+ * @LastEditTime: 2019-11-13 14:46:59
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2128,6 +2128,40 @@
 	};
 	```
 
+- [326](https://leetcode.com/problems/power-of-three/)
+
+    验证一个数是否是3的幂
+
+    - 迭代式，循环用3去除，直到无法整除或值为1
+
+    ```cpp
+    bool isPowerOfThree(int n) {
+		bool ret = false;
+		if (n == 1)
+		{
+			ret = true;
+		}
+		else if (n > 1)
+		{
+			while (n % 3 == 0)
+			{
+				n /= 3;
+			}
+			ret = (n == 1) ? true : false;
+		}
+		return ret;
+    }
+    ```
+
+    - 用数学方式直接判断，在官方[Solution](https://leetcode.com/problems/power-of-three/solution/)中有较为详细的解释
+
+    ```cpp
+    bool isPowerOfThree(int n)
+    {
+        return n > 0 && 1162261467 % n == 0;
+    }
+    ```
+    
 - [337](https://leetcode.com/problems/house-robber-iii/)
 
     - 最简单版本[198](https://leetcode.com/problems/house-robber/)
