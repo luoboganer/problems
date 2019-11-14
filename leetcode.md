@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-13 14:46:59
+ * @LastEditTime: 2019-11-14 16:26:30
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1046,6 +1046,81 @@
             }
         }
         return ans;
+    }
+    ```
+
+- [98](https://leetcode.com/problems/validate-binary-search-tree/)
+
+    验证给定的二叉树是否为二叉搜索树(BST)
+
+    - 思路一，通过迭代或递归的方式获取二叉树的中序遍历数组inorder，然后线性扫描验证inorder数组是否为升序，时间复杂度$O(n)$，其中n为二叉树节点数量
+    
+    ```cpp
+    bool isValidBST(TreeNode* root) {
+    	bool ret = true;
+		if (root)
+		{
+			vector<int> inorder;
+			TreeNode *cur = root;
+			stack<TreeNode *> st;
+			while (cur || !st.empty())
+			{
+				if (cur)
+				{
+					st.push(cur);
+					cur = cur->left;
+				}
+				else
+				{
+					cur = st.top();
+					st.pop();
+					inorder.push_back(cur->val);
+					if (cur->right)
+					{
+						cur = cur->right;
+					}
+					else
+					{
+						cur = nullptr;
+					}
+				}
+			}
+			for (int i = 1; i < inorder.size(); i++)
+			{
+				if (inorder[i] <= inorder[i - 1])
+				{
+					ret = false;
+					break;
+				}
+			}
+		}
+		return ret;
+    }
+    ```
+
+    - 思路二，递归式验证非空二叉树的左子树为BST且左子树所有节点值小于当前节点，右子树为BST且右子树所有节点值大于当前节点，则为BST
+
+    ```cpp
+    bool helper(TreeNode *root, long long lower, long long upper)
+    {
+        bool ret = true;
+        if (root)
+        {
+            int v = root->val;
+            if ((v <= lower) || (v >= upper))
+            {
+                ret = false;
+            }
+            else
+            {
+                ret = helper(root->left, lower, v) && helper(root->right, v, upper);
+            }
+        }
+        return ret;
+    }
+    bool isValidBST(TreeNode *root)
+    {
+        return helper(root, numeric_limits<long long>::min(), numeric_limits<long long>::max());
     }
     ```
 
