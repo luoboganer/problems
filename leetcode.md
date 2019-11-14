@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-14 16:26:30
+ * @LastEditTime: 2019-11-14 16:53:03
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1417,6 +1417,46 @@
         }
         return ans;
     }
+    ```
+
+- [173](https://leetcode.com/problems/binary-search-tree-iterator/)
+
+    用$O(n)$的时间复杂度和$O(h)$的空间复杂度实现一个二叉搜索树（BST）的迭代器，n和h分别为二叉搜索树的节点数和高度，这里用一个栈来存储所有的左子节点即可实现$O(h)$的空间复杂度，同时保证栈顶即为当前最左子节点，即最小值，每次next请求返回栈顶元素，同时将栈顶的右子节点压栈即可，这样每个节点至多访问一次，实现$O(n)$的时间复杂度，同时判断栈是否为空即可确定hasNext
+
+    ```cpp
+    class BSTIterator
+    {
+    public:
+        stack<TreeNode *> st;
+        void push_stack(TreeNode *root)
+        {
+            while (root)
+            {
+                st.push(root);
+                root = root->left;
+            }
+        }
+        BSTIterator(TreeNode *root)
+        {
+            push_stack(root);
+        }
+
+        /** @return the next smallest number */
+        int next()
+        {
+            TreeNode *cur = st.top();
+            st.pop();
+            int ans = cur->val;
+            push_stack(cur->right);
+            return ans;
+        }
+
+        /** @return whether we have a next smallest number */
+        bool hasNext()
+        {
+            return !st.empty();
+        }
+    };
     ```
 
 - [200](https://leetcode.com/problems/number-of-islands/submissions/)
