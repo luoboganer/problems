@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-15 17:10:21
+ * @LastEditTime: 2019-11-15 21:48:38
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1622,26 +1622,29 @@
     在给定数组中查找是否有重复值，典型的集合的应用
 
     - 先排序然后一遍扫描，O(nlog(n))
+
+    ```cpp
+    bool containsDuplicate(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        int count = nums.size() - 1;
+        bool res = false;
+        for (int i = 0; i < count; i++)
+        {
+        	if (nums.at(i) == nums.at(i + 1))
+        	{
+        		res = true;
+        		break;
+        	}
+        }
+        return res;
+    }
+    ```
+
     - hash set，近似O(n)
 
     ```cpp
     bool containsDuplicate(vector<int> &nums)
     {
-        // method 1, sort and check, time complexity O(nlog(n))
-        // sort(nums.begin(), nums.end());
-        // int count = nums.size() - 1;
-        // bool res = false;
-        // for (int i = 0; i < count; i++)
-        // {
-        // 	if (nums.at(i) == nums.at(i + 1))
-        // 	{
-        // 		res = true;
-        // 		break;
-        // 	}
-        // }
-        // return res;
-
-        // method 2, hashset, approximate O(n)
         unordered_set<int> nums_set;
         int count = nums.size();
         bool res = false;
@@ -1655,6 +1658,145 @@
             nums_set.insert(nums.at(i));
         }
         return res;
+    }
+    ```
+
+    在n较小的情况下，hash查询的效率较高，在n较大的情况下，快速排序扫描的效率较高
+
+- [219](https://leetcode.com/problems/contains-duplicate-ii/)
+
+    在给定数组nums中下标i和j的间距在给定值k以内的滑动窗口内($abs(i-j) \le k$)是否存在重复值
+    
+    - 在线性扫描的过程中用hash map记录已经出现过的数下标，然后检查该数是否在之前已经出现并检查下标差距是否小于k（在滑动窗口内）即可
+
+    ```cpp
+    bool containsNearbyDuplicate(vector<int>& nums, int k) {
+        bool ret=false;
+		if(nums.size()>0){
+			unordered_map<int,int> record;
+			for(int i=0;i<nums.size();i++){
+				if(record.find(nums[i])==record.end()){
+					record[nums[i]]=i;
+				}else{
+					if(i-record[nums[i]]<=k){
+						ret=true;
+						break;
+					}else{
+						record[nums[i]]=i;
+					}
+				}
+			}
+		}
+		return ret;
+    }
+    ```
+
+    - 在线性扫描给定数组的过程中，用一个hash set记录长度为k的滑动窗口内出现过的数以备查询
+
+    ```cpp
+    bool containsNearbyDuplicate(vector<int> &nums, int k)
+    {
+        bool ret = false;
+        if (nums.size() > 0)
+        {
+            unordered_set<int> record;
+            for (int i = 0; i < nums.size(); i++)
+            {
+                if (record.find(nums[i]) != record.end())
+                {
+                    ret = true;
+                    break;
+                }
+                else
+                {
+                    record.insert(nums[i]);
+                    // 窗口向右滑动，把右侧下一个数包含进来
+                    if (i >= k)
+                    {
+                        record.erase(nums[i - k]);
+                        // slide window 向右滑动，删除窗口外左侧已经滑出的一个数
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+- [220](https://leetcode.com/problems/contains-duplicate-iii/)
+
+    - 题意：求给定数组nums中是否存在两个数nums[i]和nums[j]，下标差小于等于k（即在长度为k的滑动窗口内，$abs(i-j) \le k$）且两数差的绝对值小于等于t（$abs(nums[i]-nums[j]) \le t$）
+    
+    - 对比：题目要求即是在[219](https://leetcode.com/problems/contains-duplicate-ii/)的基础上添加了两数差的绝对值小于等于t（$abs(nums[i]-nums[j]) \le t$）的要求
+
+    - 思路：线性遍历数组nums的过程中用一个hash set来保存长度为k的滑动窗口内的数，并检验当前遍历到的nums[i]是否满足与hash set内的任何一个数差值小于等于限定值t即可
+
+    - 代码实现：
+
+    ```cpp
+    bool containsNearbyAlmostDuplicate(vector<int> &nums, int k, int t)
+    {
+        bool ret = false;
+        long long threshold = (long long)(t);
+        if (nums.size() > 0 && k > 0 && t >= 0)
+        {
+            unordered_set<int> record;
+            for (int i = 0; !ret && i < nums.size(); i++)
+            {
+                int cur_v = (long long)(nums[i]);
+                // 防止int型减法溢出
+                for (auto &&v : record)
+                {
+                    if (abs(cur_v - (long long)(v)) <= threshold)
+                    {
+                        ret = true;
+                        break;
+                    }
+                }
+                record.insert(nums[i]);
+                // 窗口向右滑动，把右侧下一个数包含进来
+                if (i >= k)
+                {
+                    record.erase(nums[i - k]);
+                    // slide window 向右滑动，删除窗口外左侧已经滑出的一个数
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+    该方法可以通过所有测试用例，但是会TLE(Time Limit Exceeded)，分析代码发现外层循环遍历每个数是必须的，无法降低复杂度，因此在内层循环hash set的遍历处着手，将其改为set，然后利用排序set的lower bound特性。另一方面将 $abs(nums[i]-nums[j]) \le t$ 分解为
+    $$nums[j] \ge nums[i] - t \quad and \quad nums[j] \le nums[i] + t$$
+    分别进行判断，从而降低遍历set的时间复杂度，代码如下：
+
+    参考[blog](https://leetcode.com/problems/contains-duplicate-iii/discuss/61641/C%2B%2B-using-set-(less-10-lines)-with-simple-explanation.)
+
+    ```cpp
+    bool containsNearbyAlmostDuplicate(vector<int> &nums, int k, int t)
+    {
+        bool ret = false;
+        long long threshold = (long long)(t);
+        if (nums.size() > 0 && k > 0 && t >= 0)
+        {
+            set<long long> record;
+            for (int i = 0; i < nums.size(); i++)
+            {
+                if (i > k)
+                {
+                    record.erase(nums[i - k - 1]);
+                    // slide window 向右滑动，删除窗口外左侧已经滑出的一个数
+                }
+                auto it = record.lower_bound((long long)(nums[i]) - (long long)t);
+                if ((it != record.end()) && (*it <= ((long long)(nums[i]) + (long long)(t))))
+                {
+                    ret = true;
+                    break;
+                }
+                record.insert(nums[i]);
+            }
+        }
+        return ret;
     }
     ```
 
