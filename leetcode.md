@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-15 21:48:38
+ * @LastEditTime: 2019-11-15 22:12:24
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1260,6 +1260,47 @@
             connect(root->right);
         }
         return root;
+    }
+    ```
+
+- [122](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/)
+
+    不限交易次数的股票交易
+
+    - 我的方法
+
+    ```cpp
+    int maxProfit(vector<int>& prices) {
+        int ans=0,cur_value=0;
+        for (int i = prices.size()-1; i >= 0; i--)
+        {
+            if(cur_value<=prices[i]){
+                cur_value=prices[i];
+            }else{
+                while(i>0 && prices[i-1]<=prices[i]){
+                    i--;
+                }
+                ans+=cur_value-prices[i];
+                cur_value=0;
+            }
+        }
+        return ans;
+    }
+    ```
+
+    - Solution方法
+
+    其实就是(c-b)+(b-a)=c-a的基本原理
+
+    ```cpp
+    int maxProfit(vector<int> &prices)
+    {
+        int ans = 0;
+        for (int i = 1; i < prices.size(); i++)
+        {
+            ans += max(prices[i] - prices[i - 1], 0);
+        }
+        return ans;
     }
     ```
 
