@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-15 16:50:17
+ * @LastEditTime: 2019-11-15 17:10:21
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -358,8 +358,7 @@
 
     Rotate Image，旋转图片90度，即将一个二维数组原地旋转90度。
     
-    - 我的蠢办法，冥思苦想半小时，Debug又是半小时
-    注意每次的坐标变换即可，按照每次旋转一个环（一圈），圈内从左到右一层一层旋转，每次基本的旋转单元只有四个数
+    - 我的蠢办法，冥思苦想半小时，Debug又是半小时，仔细设计每次的坐标变换即可，按照每次旋转一个环（一圈），圈内从左到右一层一层旋转，每次基本的旋转单元只有四个数
 
     ```cpp
     void rotate(vector<vector<int>>& matrix) {
@@ -2461,6 +2460,89 @@
 		}
 		return ret;
 	}
+    ```
+
+- [349](https://leetcode.com/problems/intersection-of-two-arrays/)
+
+    给定两个数组，求两个数组的交集，可以先用哈希表st存储第一个数组的值，然后遍历第二个数组，在哈希st中查询是否存在即可，时间复杂度$O(n)$
+
+    ```cpp
+    vector<int> intersection(vector<int> &nums1, vector<int> &nums2)
+    {
+        unordered_set<int> st(nums1.begin(), nums1.end()), intersection;
+        for (auto x : nums2)
+        {
+            if (st.find(x) != st.end() && intersection.find(x) == intersection.end())
+            {
+                intersection.insert(x);
+            }
+        }
+        return vector<int>(intersection.begin(), intersection.end());
+    }
+    ```
+
+    仿照[350](https://leetcode.com/problems/intersection-of-two-arrays-ii/)先排序再遍历的方式在$O(nlog(n))$时间内实现，在n较大时效率高于hash的$O(n)$时间
+
+    ```cpp
+    vector<int> intersection(vector<int> &nums1, vector<int> &nums2)
+    {
+        sort(nums1.begin(), nums1.end());
+        sort(nums2.begin(), nums2.end());
+        vector<int> intersection;
+        int i = 0, j = 0, count1 = nums1.size(), count2 = nums2.size();
+        while (i < count1 && j < count2)
+        {
+            if (nums1[i] == nums2[j])
+            {
+                if (intersection.empty() || intersection.back() != nums1[i])
+                {
+                    intersection.push_back(nums1[i]);
+                }
+                i++, j++;
+            }
+            else if (nums1[i] < nums2[j])
+            {
+                i++;
+            }
+            else
+            {
+                j++;
+            }
+        }
+        return intersection;
+    }
+    ```
+
+- [350](https://leetcode.com/problems/intersection-of-two-arrays-ii/)
+
+    与[349](https://leetcode.com/problems/intersection-of-two-arrays/)不同的是此题要求重复的数字也要在求得交集中重复出现，因此在$O(nlog(n))$时间内对两个数组排序，然后同时在线性时间内遍历两个数组，相同的数字插入交集中即可，实际上[349](https://leetcode.com/problems/intersection-of-two-arrays/)也可以用这种方式实现，只需要在将两个数组相同的数字插入交集前查询交集末尾是否存在相同的数即可，在n较大的情况下可能要比hash的方式效率更高
+
+    ```cpp
+    vector<int> intersect(vector<int> &nums1, vector<int> &nums2)
+    {
+        sort(nums1.begin(), nums1.end());
+        sort(nums2.begin(), nums2.end());
+        int i = 0, j = 0;
+        vector<int> ret;
+        while (i < nums1.size() && j < nums2.size())
+        {
+            if (nums1[i] == nums2[j])
+            {
+                ret.push_back(nums1[i]);
+                i++;
+                j++;
+            }
+            else if (nums1[i] < nums2[j])
+            {
+                i++;
+            }
+            else
+            {
+                j++;
+            }
+        }
+        return ret;
+    }
     ```
 
 - [367](https://leetcode.com/problems/valid-perfect-square/)
