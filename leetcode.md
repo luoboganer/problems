@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-15 11:33:24
+ * @LastEditTime: 2019-11-15 16:27:51
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -17,6 +17,30 @@
 - [1](https://leetcode.com/problems/two-sum/)
 
     题目要求在一个数组中寻找两个和为给定值的数，暴力枚举时两层遍历的时间复杂度为$O(n^2)$，因此使用**unorder_map**的接近$O(1)$的查询效率来实现$O(n)$一遍扫描的做法，这里注意cpp中STL template **unorder_map** 的用法
+
+    ```cpp
+    vector<int> twoSum(vector<int>& nums, int target) {
+		vector<int> res(2, 0);
+		unordered_map<int, int> tmp;
+		int count = nums.size();
+		for (int i = 0; i < count; i++)
+		{
+			int diff = target - nums[i];
+			unordered_map<int, int>::iterator got = tmp.find(diff);
+			if (got != tmp.end())
+			{
+				res[0] = got->second;
+				res[1] = i;
+				break;
+			}
+			else
+			{
+				tmp.insert(pair<int, int>{nums[i], i});
+			}
+		}
+		return res;
+    }
+    ```
 
 - [4](https://leetcode.com/problems/median-of-two-sorted-arrays/)
 
