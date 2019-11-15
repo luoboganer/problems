@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-15 11:15:41
+ * @LastEditTime: 2019-11-15 11:33:24
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2470,7 +2470,42 @@
         return a;
     }
     ```
-    
+
+- [384](https://leetcode.com/problems/shuffle-an-array/)
+
+    给定一个数组，实现shuffle操作，即每次等概率地返回他的任何一种全排列。倒序遍历数组nums从i到0，每次对nums[i]，生成一个随机数r使得$r \in [0,i]$，交换nums[i]和nums[r]即可，数学上可以证明这是等概率操作
+
+    ```cpp
+    class Solution
+    {
+        public:
+            vector<int> array;
+            Solution(vector<int> &nums)
+            {
+                array = nums;
+            }
+
+            /** Resets the array to its original configuration and return it. */
+            vector<int> reset()
+            {
+                vector<int> ans = array;
+                return ans;
+            }
+
+            /** Returns a random shuffling of the array. */
+            vector<int> shuffle()
+            {
+                vector<int> ans = array;
+                for (int i = ans.size() - 1; i >= 0; i--)
+                {
+                    int r = random() % (i + 1);
+                    swap(ans[i], ans[r]);
+                }
+                return ans;
+            }
+    };
+    ```
+
 - [394](https://leetcode.com/problems/decode-string/)
 
     关于括号中嵌套的问题，可以用递归的方法解决
