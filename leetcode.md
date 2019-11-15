@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-15 16:27:51
+ * @LastEditTime: 2019-11-15 16:50:17
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -357,7 +357,9 @@
 - [48](https://leetcode.com/problems/rotate-image/)
 
     Rotate Image，旋转图片90度，即将一个二维数组原地旋转90度。
-    注意每次的坐标变换即可，按照每次旋转一个环（一圈），圈内从左到右一层一层旋转，每次基本的旋转单元只有四个数。
+    
+    - 我的蠢办法，冥思苦想半小时，Debug又是半小时
+    注意每次的坐标变换即可，按照每次旋转一个环（一圈），圈内从左到右一层一层旋转，每次基本的旋转单元只有四个数
 
     ```cpp
     void rotate(vector<vector<int>>& matrix) {
@@ -375,6 +377,22 @@
                 matrix[n-1-level][circle]=matrix[n-1-circle][n-1-level];
                 matrix[n-1-circle][n-1-level]=matrix[level][n-1-circle];
                 matrix[level][n-1-circle]=tmp;
+            }
+        }
+    }
+    ```
+
+    - 大神的方案，令人虎躯一震，数学好真的是可以为所欲为 [Rotate Image Solution](https://leetcode.com/problems/rotate-image/discuss/18872/A-common-method-to-rotate-the-image)
+
+    ```cpp
+    void rotate(vector<vector<int>> &matrix)
+    {
+        reverse(matrix.begin(), matrix.end());
+        for (int i = 0; i < matrix.size(); i++)
+        {
+            for (int j = i + 1; j < matrix[i].size(); j++)
+            {
+                swap(matrix[i][j], matrix[j][i]);
             }
         }
     }
