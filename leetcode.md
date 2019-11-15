@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-14 16:53:03
+ * @LastEditTime: 2019-11-15 11:15:41
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1288,6 +1288,40 @@
 - [143](https://leetcode.com/problems/reorder-list/)
 
     链表、树、图等指针操作千千万万要注意空指针甚至是输入根节点为空的情况。
+
+- [155](https://leetcode.com/problems/min-stack/)
+
+    设计实现一个最小栈，即除正常的压栈、弹栈操作外，可以随时返回栈中元素的最小值，因此使用一个int型数组st来保存元素，在数组尾部操作实现压栈与弹栈操作，另外使用一个int型数组min_index，在每次压栈时用min_index[i]到记录st中从栈底到栈顶(st[0]到st[i])的最小值元素位置下标，即可随时返回栈中最小值元素，这样压栈、弹栈、返回最小值的操作均为$O(1)$时间
+
+    ```cpp
+    class MinStack {
+        private:
+            vector<int> st;
+            vector<int> min_indexs;
+        public:
+            /** initialize your data structure here. */
+            MinStack() {}
+            void push(int x) {
+                if(!st.empty()){
+                    int index=x<st[min_indexs.back()]?st.size():min_indexs.back();
+                    min_indexs.push_back(index);
+                }else{
+                    min_indexs.push_back(0);
+                }
+                st.push_back(x);
+            }
+            void pop() {
+                st.pop_back();
+                min_indexs.pop_back();
+            }
+            int top() {
+                return st.back();
+            }
+            int getMin() {
+                return st[min_indexs.back()];
+            }
+    };
+    ```
 
 - [162](https://leetcode.com/problems/find-peak-element/)
 
