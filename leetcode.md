@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-16 10:55:36
+ * @LastEditTime: 2019-11-17 00:06:07
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3444,6 +3444,14 @@
     }
     ```
 
+- [622](https://leetcode.com/problems/design-circular-queue/)
+
+    设计实现一个队列类，主要是队列为空或者队列为满的判断，设置front和tail两个指针，实现入队、出队、判满、判空等操作
+
+    ```cpp
+
+    ```
+
 - [669](https://leetcode.com/problems/trim-a-binary-search-tree/)
 
     binary search tree (BST)中减掉值小于L的节点和值大于R的节点。分两步先减掉小于L的节点，第二步减掉大于R的节点。[$\color{red}{分治思想}$]
@@ -5095,6 +5103,82 @@
         }
         return ans;
     }
+    ```
+
+- [1257](https://leetcode.com/problems/smallest-common-region/)
+
+    按照层次大小给定一些区域，大区域包含小区域，求包含两个给定区域的最小区域，按照区域的包含关系建立层次化的树结构，父节点为大区域，子节点为其包含的所有子区域，然后求两个给定区域的最低公共父节点即可
+
+    ```cpp
+    class Solution {
+        public:
+            struct TreeNodeString
+            {
+                /* data */
+                string region;
+                TreeNodeString *parent;
+                int level;
+                vector<TreeNodeString *> children;
+                TreeNodeString(string x, int v, TreeNodeString *p) : region(x), level(v), parent(p) {}
+            };
+            string findSmallestRegion(vector<vector<string>> &regions, string region1, string region2)
+            {
+                unordered_map<string, TreeNodeString *> queries;
+                TreeNodeString *root = new TreeNodeString("", 0, nullptr);
+                for (auto &&region : regions)
+                {
+                    string common_region = region[0];
+                    TreeNodeString *cur;
+                    // 确定父节点
+                    if (queries.find(common_region) != queries.end())
+                    {
+                        cur = queries[common_region];
+                    }
+                    else
+                    {
+                        cur = new TreeNodeString(common_region, 1, root);
+                        root->children.push_back(cur);
+                        queries[common_region] = cur;
+                    }
+                    for (int i = 1; i < region.size(); i++)
+                    {
+                        TreeNodeString *node = new TreeNodeString(region[i], cur->level + 1, cur);
+                        cur->children.push_back(node);
+                        queries[region[i]] = node;
+                    }
+                }
+                // 寻找给定的两个区域的最低公共父节点
+                TreeNodeString *r1 = queries[region1], *r2 = queries[region2];
+                while (r1->level > r2->level)
+                {
+                    r1 = r1->parent;
+                }
+                while (r1->level < r2->level)
+                {
+                    r2 = r2->parent;
+                }
+                while (r1 != r2)
+                {
+                    r1 = r1->parent;
+                    r2 = r2->parent;
+                }
+                return r1->region;
+            }
+    };
+    ```
+
+    一些测试案例
+
+    ```cpp
+    [["Earth","North America","South America"],["North America","United States","Canada"],["United States","New York","Boston"],["Canada","Ontario","Quebec"],["South America","Brazil"]]
+    "Quebec"
+    "New York"
+    [["Earth", "North America", "South America"],["North America", "United States", "Canada"],["United States", "New York", "Boston"],["Canada", "Ontario", "Quebec"],["South America", "Brazil"]]
+    "Canada"
+    "South America"
+    [["Earth", "North America", "South America"],["North America", "United States", "Canada"],["United States", "New York", "Boston"],["Canada", "Ontario", "Quebec"],["South America", "Brazil"]]
+    "Canada"
+    "Quebec"
     ```
 
 - [...](123)
