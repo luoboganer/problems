@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-15 22:12:24
+ * @LastEditTime: 2019-11-16 10:55:36
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2087,6 +2087,90 @@
     }
     ```
 
+- [234](https://leetcode.com/problems/palindrome-linked-list/)
+
+    判断一个链表是否回文
+    
+    - 没有空间使用限制时，可以one pass将链表值存入vector<int>，然后two pass对比是否相同
+
+    ```cpp
+    bool isPalindrome(ListNode *head)
+    {
+        bool ret = true;
+        if (head)
+        {
+            vector<int> nums;
+            ListNode *cur = head;
+            while (cur)
+            {
+                nums.push_back(cur->val);
+                cur = cur->next;
+            }
+            cur = head;
+            for (int i = nums.size() - 1; i >= 0; i--)
+            {
+                if (nums[i] != cur->val)
+                {
+                    ret = false;
+                    break;
+                }
+                else
+                {
+                    cur = cur->next;
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 在$O(n)$时间和$O(1)$空间下，使用slow和fast两个指针，第一次遍历找到链表中点，然后翻转链表后半部分并和前半部分进行比较
+
+    ```cpp
+    bool isPalindrome(ListNode *head)
+    {
+        bool ret = true;
+        if (head)
+        {
+            ListNode *slow = head, *fast = head;
+            while (fast && fast->next)
+            {
+                slow = slow->next;
+                fast = fast->next->next;
+            }
+            if (fast)
+            {
+                slow = slow->next;
+            }
+            // this time, pointer slow is the begin of the last half of the linked list
+            // reverse the last half of the linked list
+            ListNode *pre = nullptr, *next = nullptr;
+            while (slow)
+            {
+                next = slow->next;
+                slow->next = pre;
+                pre = slow;
+                slow = next;
+            }
+            slow = pre;  // negative
+            next = head; // positive
+            while (slow)
+            {
+                if (slow->val != next->val)
+                {
+                    ret = false;
+                    break;
+                }
+                else
+                {
+                    slow = slow->next, next = next->next;
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
 - [237](https://leetcode.com/problems/delete-node-in-a-linked-list/)
 
     给定链表中某个节点，删除该节点，难点在于该节点的前继节点未知。如果该节点有后继，则用后继节点来代替该节点，如果没有后继，则该节点指向空即可。
@@ -2102,9 +2186,29 @@
     }
     ```
 
-- [234](https://leetcode.com/problems/palindrome-linked-list/)
+- [238](https://leetcode.com/problems/product-of-array-except-self/)
 
-    在$O(n)$时间和$O(1)$空间下判断一个链表是否回文，第一次遍历找到中点，然后翻转后半部分和前半部分进行比较即可
+    数组双向遍历的典型应用
+
+    ```cpp
+    vector<int> productExceptSelf(vector<int> &nums)
+    {
+        int const n = nums.size();
+        vector<int> ret(n, 1);
+        for (int i = 1; i < n; i++)
+        {
+            ret[i] = ret[i - 1] * nums[i - 1];
+        }
+        int base = 1;
+        for (int i = n - 1; i > 0; i--)
+        {
+            ret[i] *= base;
+            base *= nums[i];
+        }
+        ret[0] *= base;
+        return ret;
+    }
+    ```
 
 - [239](https://leetcode.com/problems/sliding-window-maximum/)
 
