@@ -10,10 +10,12 @@
         "br_spaces": 4
     },
     "MD013": {
-        "line_length": 180
+        "line_length": 280
     },
     "MD033": {
-        "allowed_elements": ["int"]
+        "allowed_elements": [
+            "int"
+        ]
     },
     "no-hard-tabs": false
 }
