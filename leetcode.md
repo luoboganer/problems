@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-17 00:06:07
+ * @LastEditTime: 2019-11-18 10:50:50
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4893,6 +4893,39 @@
             {
                 ans.push_back(transactions[i]);
             }
+        }
+        return ans;
+    }
+    ```
+
+- [1217](https://leetcode.com/problems/play-with-chips/)
+
+    将指定位置的筹码chip集中移动到任何位置，移动一格的花费为1、移动两格的花费为0，因此偶数位置多时全部集中到0位置，奇数位置多时全部集中到1位置，即统计位置的奇偶数数量，返回最小值即可
+
+    ```cpp
+    int minCostToMoveChips(vector<int>& chips) {
+        int odd=0,even=0;
+        for(auto &&v:chips){
+            if(v&0x1){
+                odd++;
+            }else{
+                even++;
+            }
+        }
+        return min(odd,even);
+    }
+    ```
+
+- [1227](https://leetcode.com/problems/airplane-seat-assignment-probability/)
+
+    本题中，前n-1个人占据前n-1个座位的情况有$A_{n-1}^{n-1}$种，此时第n个人一定可以匹配到自己的位置，当前n-1个人在前n-1个座位中只占据了n-2个并占用第n个座位的可能情况有$A_{n-1}^{n-2}$种，此时第n个人只能坐在前n-1个座位中空出来的那个，因此第n个人坐在第n个座位的概率为
+    $$Prob=\left\{\begin{matrix} \frac{A_{n-1}^{n-1}}{A_{n-1}^{n-1}+A_{n-1}^{n-2}} = 0.5, \quad n \ge 2\\  1.0 \quad n=1 \end{matrix}\right.$$
+
+    ```cpp
+    double nthPersonGetsNthSeat(int n) {
+        double ans=1.0;
+        if(n>1){
+            ans=0.5;
         }
         return ans;
     }
