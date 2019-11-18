@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-18 11:38:03
+ * @LastEditTime: 2019-11-18 16:08:29
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4952,6 +4952,45 @@
             int index=arr[i]-difference+1e4;
             dp[arr[i]+1e4]=(index>=0 && index<length)?dp[index]+1:1;
             ret=max(ret,dp[arr[i]+1e4]);
+        }
+        return ret;
+    }
+    ```
+
+- [1219](https://leetcode.com/problems/path-with-maximum-gold/)
+
+    在给定矩阵中求出可以一笔连起来的非零数字和最大即可，根据给定的数据规模来看是典型的DFS应用，这里特别注意每次标记一个$visited[i][j]$之后，在完成与该点相关的计算之后，要释放该标记，以便回溯
+
+    ```cpp
+    int dfs_helper(vector<vector<int>> &grid, int i, int j, vector<vector<bool>> &visited)
+    {
+        int ret = 0;
+        if (!(i < 0 || j < 0 || i >= grid.size() || j >= grid[0].size() || grid[i][j] == 0 || visited[i][j] == 1))
+        {
+            visited[i][j] = true;
+            ret = max(ret, dfs_helper(grid, i - 1, j, visited));
+            ret = max(ret, dfs_helper(grid, i + 1, j, visited));
+            ret = max(ret, dfs_helper(grid, i, j - 1, visited));
+            ret = max(ret, dfs_helper(grid, i, j + 1, visited));
+            ret += grid[i][j];
+            visited[i][j] = false;  // for backtracing
+        }
+        return ret;
+    }
+    int getMaximumGold(vector<vector<int>> &grid)
+    {
+        int ret = 0;
+        if (grid.size() > 0 && grid[0].size() > 0)
+        {
+            const int m = grid.size(), n = grid[0].size();
+            vector<vector<bool>> visited(m, vector<bool>(n, false));
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    ret = max(ret, dfs_helper(grid, i, j, visited));
+                }
+            }
         }
         return ret;
     }
