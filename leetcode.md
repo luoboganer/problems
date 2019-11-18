@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-18 10:50:50
+ * @LastEditTime: 2019-11-18 11:38:03
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4913,6 +4913,47 @@
             }
         }
         return min(odd,even);
+    }
+    ```
+
+- [1218](https://leetcode.com/problems/longest-arithmetic-subsequence-of-given-difference/)
+
+    求给定数组中，公差为给定difference的等差子序列的最大长度，显然为动态规划类型
+
+    - 尝试用$dp[i]$表示包含数$arr[i]$的最长等差子序列长度，则$dp[i]=dp[j]+1$，其中$arr[j]$为$arr[i]$左侧第一个值为$arr[i]-difference$的数，需要遍历$i$左侧的数组查找，因此时间复杂度为$O(n^2)$，可以得出正确结果，但是$\color{red}{[TLE](Time Limit Exceeded)}$
+
+    ```cpp
+    int longestSubsequence(vector<int>& arr, int difference) {
+        const int count=arr.size();
+        vector<int> dp(count,1);
+        int ret=1;
+        for(int i=0;i<count;i++){
+            int target=arr[i]-difference;
+            for(int j=i-1;j>=0;j--){
+                if(arr[j]==target){
+                    dp[i]=dp[j]+1;
+                    break;
+                }
+            }
+            ret=max(ret,dp[i]);
+        }
+        return ret;
+    }
+    ```
+
+    - 注意到$arr[i]$的限定范围为$[-1e4,1e4]$，因此可以直接用$dp[v]$表示last element为$v$的最长等差子序列长度，这样$dp[v]=dp[v-difference]+1$，其中$dp[v-difference]$可以直接索引到，因此时间复杂度为$O(n)$
+
+    ```cpp
+    int longestSubsequence(vector<int>& arr, int difference) {
+        const int count=arr.size(),length=1e4*2+1;
+        vector<int> dp(length,0);
+        int ret=0;
+        for(int i=0;i<count;i++){
+            int index=arr[i]-difference+1e4;
+            dp[arr[i]+1e4]=(index>=0 && index<length)?dp[index]+1:1;
+            ret=max(ret,dp[arr[i]+1e4]);
+        }
+        return ret;
     }
     ```
 
