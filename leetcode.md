@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-18 16:08:29
+ * @LastEditTime: 2019-11-19 11:19:35
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3554,6 +3554,58 @@
 - [733](https://leetcode.com/problems/flood-fill/)
     
     类似于图像处理中区域增长的方式，采用DFS递归写法或者用栈stack实现
+
+- [739](https://leetcode.com/problems/daily-temperatures/)
+
+    在给定的一段时间的温度记录中，寻找下一个比当前温度高的日期与当前日期的间隔
+
+    - 从后往前遍历所有日期，对于每个日期，从次日向后遍历找到第一个比当前日期温度高的日期即可
+
+    ```cpp
+    vector<int> dailyTemperatures(vector<int>& T) {
+		int count = T.size();
+		vector<int> res(count, 0);
+		for (int i = count - 2; i >= 0; i--)
+		{
+			int j = i + 1;
+			while (T.at(i) >= T.at(j) && j < count)
+			{
+				if (res[j] != 0)
+				{
+					j += res[j];
+				}
+				else
+				{
+					j = i;
+					break;
+				}
+			}
+			res[i] = j - i;
+		}
+		return res;
+    }
+    ```
+
+    - 用栈的思想，从后往前遍历所有日期，维护一个温度降序的日期下标栈，这样每次遍历到一个日期，只需比较其与栈顶日期的温度，即可发现其右侧第一个比当前温度高的日期，这里注意因为时降序栈，因此栈顶的温度必然小于栈底，则在栈顶第一次发现比当前日期小的温度时，必然是其右侧出现的第一个比当前温度高所有值中最小的，这样每个日期下标最多在栈中进出一次，时间复杂度为$O(n)$
+
+    ```cpp
+    vector<int> dailyTemperatures(vector<int> &T)
+    {
+        int const count = T.size();
+        vector<int> ret(count, 0);
+        stack<int> st;
+        for (int i = count - 1; i >= 0; i--)
+        {
+            while (!st.empty() && T[i] >= T[st.top()])
+            {
+                st.pop();
+            }
+            ret[i] = st.empty() ? 0 : st.top() - i;
+            st.push(i);
+        }
+        return ret;
+    }
+    ```
 
 - [744](https://leetcode.com/problems/find-smallest-letter-greater-than-target/)
 
