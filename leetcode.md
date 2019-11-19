@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-19 11:19:35
+ * @LastEditTime: 2019-11-19 17:47:11
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -632,9 +632,9 @@
     一维dp(dynamic plan)
     $$dp[m,n]=dp[m-1,n]+dp[m,n-1],\left\{\begin{matrix} dp[0,0]=0\\  dp[0,1]=1\\ dp[1,0]=1 \end{matrix}\right.$$
 
-- [63](https://leetcode.com/problems/unique-paths-ii/submissions/)
+- [63](https://leetcode.com/problems/unique-paths-ii/)
 
-    在[62-unique-path](https://leetcode.com/problems/unique-paths/)的基础上增加了障碍点，因此需要考虑初始化调价，即第一行、第一列有障碍的问题，同时咱有障碍的点路径数为0。
+    在[62-unique-path](https://leetcode.com/problems/unique-paths/)的基础上增加了障碍点，因此需要考虑初始化条件，即第一行、第一列有障碍的问题，同时咱有障碍的点路径数为0。
 
     另外需要注意由于障碍点的0路径导致最终结果在int表示范围内，但是计算过程中可能会出现超出int表示范围的数字，需要用long long来表示并取模(mod INT_MAX)。
 
@@ -4503,6 +4503,61 @@
         {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}, y_{b}-y_{a}\right) ) \times\left(x_{c}-x_{a}, y_{c}-y_{a}\right) ) |} \\
         {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}\right)\left(y_{c}-y_{a}\right)-\left(x_{c}-x_{a}, y_{b}-y_{a}\right) ) |} \\
         {\text {Area}=\frac{1}{2}\left|x_{a} y_{b}+x_{b} y_{c}+x_{c} y_{a}-x_{a} y_{c}-x_{c} y_{b}-x_{b} y_{a}\right|}\end{array}$$
+
+- [980](https://leetcode.com/problems/unique-paths-iii/)
+
+    [62](https://leetcode.com/problems/unique-paths/)和[63](https://leetcode.com/problems/unique-paths-ii/)的进阶版，除了指定起点和终点之外，增加了不可通过的障碍点，求从起点到终点并经过所有无障碍点的路径数量，使用DFS进行递归遍历，在此过程中维护一个已经访问过的点的记录矩阵visited、可经过点的数量count_0，从而保证不循环访问已经访问过的点，同时当可经过的点count_0为0且到达指定终点时，发现一条符合条件的路径，路径计数器ans自增加一
+
+    ```cpp
+    void dfs_helper(vector<vector<int>> &grid, vector<vector<bool>> &visited, int i, int j, int *ans, int count_0)
+    {
+        if (!(i < 0 || j < 0 || i >= grid.size() || j >= grid[0].size() || grid[i][j] == -1 || visited[i][j] == true))
+        {
+            // 超出边界或者障碍(-1)或者已经访问过的节点，nothing to be done
+            if (grid[i][j] == 0 || grid[i][j] == 1)
+            {
+                visited[i][j] = true;
+                dfs_helper(grid, visited, i - 1, j, ans, count_0 - 1);
+                dfs_helper(grid, visited, i + 1, j, ans, count_0 - 1);
+                dfs_helper(grid, visited, i, j - 1, ans, count_0 - 1);
+                dfs_helper(grid, visited, i, j + 1, ans, count_0 - 1);
+                visited[i][j] = false;
+            }
+            else if (grid[i][j] == 2)
+            {
+                if (count_0 == 0)
+                {
+                    (*ans)++;
+                }
+            }
+        }
+    }
+    int uniquePathsIII(vector<vector<int>> &grid)
+    {
+        const int m = grid.size(), n = grid[0].size();
+        int ans = 0, count_0 = 0;
+        int row, col;
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (grid[i][j] == 1)
+                {
+                    // start point
+                    row = i, col = j;
+                    count_0++;
+                }
+                else if (grid[i][j] == 0)
+                {
+                    count_0++;
+                }
+            }
+        }
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+        dfs_helper(grid, visited, row, col, &ans, count_0);
+        return ans;
+    }
+    ```
 
 - [985](https://leetcode.com/problems/sum-of-even-numbers-after-queries/)
     注意每次query对应下标的数字在query前后的奇偶性，分别有不同的操作。time complexity O(n+q)，其中n(size of array) and q(the number of queries)。
