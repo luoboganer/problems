@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-19 17:47:11
+ * @LastEditTime: 2019-11-20 12:06:29
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3377,6 +3377,72 @@
 - [583](https://leetcode.com/problems/delete-operation-for-two-strings/)
 
     删除最少数量的字符使得两个字符串相等即可，因为删除完成之后要保证相等，因此保留下来的是最长公共子串(LCS)，递归求解LCS会TLE，需要二维DP或者一维DP。
+
+- [593](https://leetcode.com/problems/valid-square/)
+
+    验证给定的任意四个点是否可以组成一个正方形，思路如下：
+    - [1] 任意选定一个点p1，在剩余三个点中选择距离p1最远的点作为p2，另外两个点作为p3和p4
+    - [2] 首先验证连线(对角线)p1p2和p3p4垂直，这样可以组成筝形或者菱形
+    - [3] 验证对角线等长，这样排除菱形
+    - [4] 验证筝形的相邻两条边相等，即p1p2和p2p3相等，则构成正方形
+
+    ```cpp
+    long long edge_length_square(vector<int> &p1, vector<int> &p2)
+    {
+        return (p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1]);
+    }
+    bool validSquare(vector<int> &p1, vector<int> &p2, vector<int> &p3, vector<int> &p4)
+    {
+        bool ret = true;
+        // 知道距离p1最远的点构成一条线，另外两个点构成一条线
+        long long dist_12 = edge_length_square(p1, p2), dist_13 = edge_length_square(p1, p3), dist_14 = edge_length_square(p1, p4);
+        vector<int> indexs;
+        if (dist_12 > dist_13 && dist_12 > dist_14)
+        {
+            indexs = vector<int>{1, 2, 3, 4};
+        }
+        else if (dist_13 > dist_12 && dist_13 > dist_14)
+        {
+            indexs = vector<int>{1, 3, 2, 4};
+        }
+        else if (dist_14 > dist_12 && dist_14 > dist_13)
+        {
+            indexs = vector<int>{1, 4, 2, 3};
+        }
+        else
+        {
+            ret = false;
+        }
+        if (ret)
+        {
+            // 验证两条线等长且互相垂直
+            vector<vector<int>> nodes{p1, p2, p3, p4};
+            p1 = nodes[indexs[0] - 1], p2 = nodes[indexs[1] - 1], p3 = nodes[indexs[2] - 1], p4 = nodes[indexs[3] - 1];
+            ret = ret && (edge_length_square(p1, p2) == edge_length_square(p3, p4));
+            ret = ret && ((p4[0] - p3[0]) * (p2[0] - p1[0]) + (p4[1] - p3[1]) * (p2[1] - p1[1]) == 0);
+            // 验证相邻两条边相等，排除筝形
+            ret = ret && (edge_length_square(p1, p3) == edge_length_square(p2, p3));
+        }
+        return ret;
+    }
+    ```
+
+    三个经典的测试样例
+
+    ```cpp
+    [2,1]
+    [1,2]
+    [0,0]
+    [2,0]
+    [1,0]
+    [0,1]
+    [0,-1]
+    [-1,0]
+    [0,0]
+    [1,1]
+    [1,0]
+    [0,1]
+    ```
 
 - [606](https://leetcode.com/problems/construct-string-from-binary-tree/)
 
