@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-20 12:06:29
+ * @LastEditTime: 2019-11-20 14:45:12
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -978,6 +978,49 @@
         combination = vector<int>(k, 0);
         dfs_helper(n, k);
         return ans;
+    }
+    ```
+
+- [79](https://leetcode.com/problems/word-search/)
+
+    在一个给定的字符矩阵grid中搜索是否有连续的字符串组成单词word，典型的DFS深度优先搜索应用
+
+    ```cpp
+    bool dfs_helper(vector<vector<char>> &board, string word, int i, int j, int index)
+    {
+        bool ret = false;
+        if (index == word.length())
+        {
+            ret = true;
+        }
+        else if (!(i < 0 || j < 0 || i >= board.size() || j >= board[0].size() || board[i][j] == '#' || board[i][j] != word[index]))
+        {
+            // 数组越界、当前字符已被占用、当前字符不符合word当前index位置的值，直接返回false
+            board[i][j] = '#'; // flag for visited node
+            vector<int> direction{1, 0, -1, 0, 1};
+            for (int k = 0; !ret && k < 4; k++)
+            {
+                ret = dfs_helper(board, word, i + direction[k], j + direction[k + 1], index + 1);
+            }
+            board[i][j] = word[index]; // backtracking for visited node, mark it as unvisited
+        }
+        return ret;
+    }
+    bool exist(vector<vector<char>> &board, string word)
+    {
+        bool ret = false;
+        if (board.size() > 0 && board[0].size() > 0 && word.length() > 0)
+        {
+            const int m = board.size(), n = board[0].size();
+            for (int i = 0; !ret && i < m; i++)
+            {
+                for (int j = 0; !ret && j < n; j++)
+                {
+                    ret = dfs_helper(board, word, i, j, 0);
+                }
+            }
+        }
+        return ret;
     }
     ```
 
@@ -3427,9 +3470,13 @@
     }
     ```
 
-    三个经典的测试样例
+    四个经典的测试样例
 
     ```cpp
+    [1,1]
+    [5,3]
+    [3,5]
+    [7,7]
     [2,1]
     [1,2]
     [0,0]
