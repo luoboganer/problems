@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-21 12:19:30
+ * @LastEditTime: 2019-11-21 22:11:59
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1050,6 +1050,29 @@
     }
     ```
 
+- [78](https://leetcode.com/problems/subsets/)
+
+    给定一个没有重复数字的数组，求该数组所有可能的子集，即该集合的超集，首先求出n-1个元素的超集，然后将该超集中的每个集合添加第n个元素后添加入超集即可
+
+    ```cpp
+    vector<vector<int>> subsets(vector<int> &nums)
+    {
+        vector<vector<int>> ans;
+        ans.push_back({});
+        for (auto &&v : nums)
+        {
+            const int count = ans.size();
+            for (int i = 0; i < count; i++)
+            {
+                vector<int> temp = ans[i];
+                temp.push_back(v);
+                ans.push_back(temp);
+            }
+        }
+        return ans;
+    }
+    ```
+
 - [79](https://leetcode.com/problems/word-search/)
 
     在一个给定的字符矩阵grid中搜索是否有连续的字符串组成单词word，典型的DFS深度优先搜索应用
@@ -1197,6 +1220,38 @@
             {
                 ans.push_back(ans[j] + added);
             }
+        }
+        return ans;
+    }
+    ```
+
+- [90](https://leetcode.com/problems/subsets-ii/)
+
+    在[78](https://leetcode.com/problems/subsets/)的基础上，本题加入了给定数组中可能存在重复数字的条件
+
+    ```cpp
+    vector<vector<int>> subsetsWithDup(vector<int>& nums)
+    {
+        vector<vector<int>> ans;
+        vector<int> indexs;
+        ans.push_back({});
+        sort(nums.begin(), nums.end());
+        int last_count = 0;
+        for (int i = 0; i < nums.size(); i++)
+        {
+            const int count = ans.size();
+            int j = 0;
+            if (i > 0 && nums[i] == nums[i - 1])
+            {
+                j = last_count;
+            }
+            for (; j < count; j++)
+            {
+                vector<int> temp = ans[j];
+                temp.push_back(nums[i]);
+                ans.push_back(temp);
+            }
+            last_count = count;
         }
         return ans;
     }
