@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-20 14:45:12
+ * @LastEditTime: 2019-11-21 12:19:30
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -286,6 +286,75 @@
             }
         }
         return -1;
+    }
+    ```
+
+- [39](https://leetcode.com/problems/combination-sum/)
+
+    给定一个数组candidates，没有重复数字，从中选出一些数字（可以重复使用）使其和为给定的target，找出所有可能的组合，这里勇递归的方式解决，即遍历candidates中的数字，对于任意的$candidates[i]$递归求解满足和为$target-candidates[i]$的所有可能值即可，递归结束条件为$target=0$
+
+    ```cpp
+    void dfs_helper(vector<int> &candidates, int target, int index, vector<int> &cur, vector<vector<int>> &ans)
+    {
+        if (target == 0)
+        {
+            ans.push_back(cur);
+        }
+        else if (target > 0)
+        {
+            cur.push_back(candidates[index]);
+            for (int i = index; i < candidates.size() && candidates[i] <= target; i++)
+            {
+                dfs_helper(candidates, target - candidates[index], i, cur, ans);
+            }
+            cur.pop_back();
+        }
+    }
+    vector<vector<int>> combinationSum(vector<int> &candidates, int target)
+    {
+        vector<int> cur;
+        vector<vector<int>> ans;
+        sort(candidates.begin(), candidates.end());
+        for (int i = 0; i < candidates.size(); i++)
+        {
+            dfs_helper(candidates, target, i, cur, ans);
+        }
+        return ans;
+    }
+    ```
+
+- [40](https://leetcode.com/problems/combination-sum-ii/)
+
+    本题与[39](https://leetcode.com/problems/combination-sum/)的区别有两点，一是给定数字有重复，二是所有给定数字只允许使用一次，因此需要特别注意去重
+
+    ```cpp
+    void dfs_helper(vector<int> &candidates, int target, int index, vector<int> &cur, vector<vector<int>> &ans)
+    {
+        if (target == 0)
+        {
+            ans.push_back(cur);
+        }
+        else if (target > 0)
+        {
+            for (int i = index; i < candidates.size(); i++)
+            {
+                if (i > index && candidates[i] == candidates[i - 1])
+                {
+                    continue; // skip duplications
+                }
+                cur.push_back(candidates[i]);
+                dfs_helper(candidates, target - candidates[i], i + 1, cur, ans);
+                cur.pop_back();
+            }
+        }
+    }
+    vector<vector<int>> combinationSum2(vector<int> &candidates, int target)
+    {
+        vector<int> cur;
+        vector<vector<int>> ans;
+        sort(candidates.begin(), candidates.end());
+        dfs_helper(candidates, target, 0, cur, ans);
+        return ans;
     }
     ```
 
@@ -1701,6 +1770,39 @@
     }
     ```
 
+- [216](https://leetcode.com/problems/combination-sum-iii/)
+
+    从$[1,2,3,4,5,6,7,8,9]$这9个数字中选择k个使其和为n，则k和n的取值范围为$1 \le k \le 9, \frac{k(k+1)}{2} \le n \le \frac{k(19-k)}{2}$，在此有效范围内，$f(k,n)$可以在选择任一个数$x$后递归到$f(k-1,n-x)$
+
+    ```cpp
+    void dfs_helper(vector<vector<int>> &ans, vector<int> cur, int n, int k, int start_value)
+    {
+        if (n == 0 && k == 0)
+        {
+            ans.push_back(cur);
+        }
+        else if (n > 0 && k > 0)
+        {
+            for (int v = start_value; v < 10; v++)
+            {
+                cur.push_back(v);
+                dfs_helper(ans, cur, n - v, k - 1, v + 1);
+                cur.pop_back();
+            }
+        }
+    }
+    vector<vector<int>> combinationSum3(int k, int n)
+    {
+        vector<vector<int>> ans;
+        if (k >= 1 && k <= 9 && n >= k * (k + 1) / 2 && n <= k * (19 - k) / 2)
+        {
+            vector<int> cur;
+            dfs_helper(ans, cur, n, k, 1);
+        }
+        return ans;
+    }
+    ```
+
 - [217](https://leetcode.com/problems/contains-duplicate/submissions/)
 
     在给定数组中查找是否有重复值，典型的集合的应用
@@ -2922,6 +3024,27 @@
             */
         }
         return a;
+    }
+    ```
+
+- [377](https://leetcode.com/problems/combination-sum-iv/)
+
+    与前面三个组合数相关的题目[39](https://leetcode.com/problems/combination-sum/)、[40](https://leetcode.com/problems/combination-sum-ii/)、[216](https://leetcode.com/problems/combination-sum-iii/)不同的是，这里不需要给出所有可能的结果，只需要求出可能的结果种类数即可，DP方法足以胜任，这里注意DP数组中的数据类型为unsigned int，防止数字超出int的限制，直接使用long long也可以有正确结果，但是会浪费空间资源并降低运算速度
+
+    ```cpp
+    int combinationSum4(vector<int> &nums, int target)
+    {
+        vector<unsigned int> dp(target + 1, 0);
+        sort(nums.begin(), nums.end());
+        dp[0] = 1;
+        for (int i = 0; i <= target; i++)
+        {
+            for (int j = 0; j < nums.size() && nums[j] <= i; j++)
+            {
+                dp[i] += dp[i - nums[j]];
+            }
+        }
+        return dp.back(); // dp[target]
     }
     ```
 
