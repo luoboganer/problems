@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-21 22:11:59
+ * @LastEditTime: 2019-11-22 11:34:27
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -955,6 +955,40 @@
                 matrix[0][j] = 0;
             }
         }
+    }
+    ```
+
+- [74](https://leetcode.com/problems/search-a-2d-matrix/)
+
+    在一个排序矩阵中搜索某个数存在与否，$m*n$矩阵每一行都是升序的且每一行第一个元素都比前一行最后一个元素大，则reshape成$(m*n,1)$的形状后为升序的，则可binary search，时间复杂度$O(m*n)$
+
+    ```cpp
+    bool searchMatrix(vector<vector<int>> &matrix, int target)
+    {
+        bool ret = false;
+        if (matrix.size() > 0 && matrix[0].size() > 0)
+        {
+            int m = matrix.size(), n = matrix[0].size();
+            int left = 0, right = m * n - 1;
+            while (left <= right)
+            {
+                int mid = left + ((right - left) >> 1);
+                if (matrix[mid / n][mid % n] == target)
+                {
+                    ret = true;
+                    break;
+                }
+                else if (matrix[mid / n][mid % n] < target)
+                {
+                    left = mid + 1;
+                }
+                else
+                {
+                    right = mid - 1;
+                }
+            }
+        }
+        return ret;
     }
     ```
 
@@ -2432,6 +2466,79 @@
 			}
 		}
 		return ans;
+    }
+    ```
+
+- [240](https://leetcode.com/problems/search-a-2d-matrix-ii/)
+
+    和[74](https://leetcode.com/problems/search-a-2d-matrix/)不同的是，本题限定矩阵中每一行为升序、每一列为升序
+    
+    - 以中心点将矩阵分为四个部分，中心点值大于target时，目标区间缩小为左上、左下、右上三个子区间，中心点值小于target时，目标区间定位到右上、右下、左下三个子区间，即每次比较可以排除四分之一区域，时间复杂度$O(log_{\frac{4}{3}}{(m*n)})$，但是递归写法效率较低
+
+    ```cpp
+    bool searchMatrix(vector<vector<int>> &matrix, int target, int i, int j, int m, int n)
+    {
+        bool ret = false;
+        if (!(i > m || j > n))
+        {
+            // to ensure the matrix is not empty
+            int mid_i = i + ((m - i) >> 1), mid_j = j + ((n - j) >> 1);
+            if (matrix[mid_i][mid_j] == target)
+            {
+                ret = true;
+            }
+            else if (matrix[mid_i][mid_j] > target)
+            {
+                ret = searchMatrix(matrix, target, i, mid_j, mid_i - 1, n) || searchMatrix(matrix, target, i, j, m, mid_j - 1);
+            }
+            else
+            {
+                ret = searchMatrix(matrix, target, i, mid_j + 1, mid_i, n) || searchMatrix(matrix, target, mid_i + 1, j, m, n);
+                // right || bottom
+            }
+        }
+        return ret;
+    }
+    bool searchMatrix(vector<vector<int>> &matrix, int target)
+    {
+        bool ret = false;
+        if (matrix.size() > 0 && matrix[0].size() > 0)
+        {
+
+            ret = searchMatrix(matrix, target, 0, 0, matrix.size() - 1, matrix[0].size() - 1);
+        }
+        return ret;
+    }
+    ```
+
+    - 从左下向右上方向搜索，或者反向从右上到左下搜索，时间复杂度$O(m+n)$，迭代式写法效率较高
+
+    ```cpp
+    bool searchMatrix(vector<vector<int>> &matrix, int target)
+    {
+        bool ret = false;
+        if (matrix.size() > 0 && matrix[0].size() > 0)
+        {
+            int m = matrix.size(), n = matrix[0].size();
+            int i = m - 1, j = 0;
+            while (i >= 0 && j < n)
+            {
+                if (target == matrix[i][j])
+                {
+                    ret = true;
+                    break;
+                }
+                else if (target < matrix[i][j])
+                {
+                    i--;
+                }
+                else
+                {
+                    j++;
+                }
+            }
+        }
+        return ret;
     }
     ```
 
