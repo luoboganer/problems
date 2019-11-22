@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-22 11:34:27
+ * @LastEditTime: 2019-11-22 17:43:10
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -5108,6 +5108,42 @@
             st.push(cur);
         }
         return cur_root->left;
+    }
+    ```
+
+- [1014. Best Sightseeing Pair](https://leetcode.com/problems/best-sightseeing-pair/)
+
+    对于给定数组中的所有数对$A[i],A[j]$求$max(A[i]+A[j]+i-j)$
+
+    - 朴素的遍历所有可能的数对，时间复杂度$O(n^2)$，结果正确但是$\color{red}{TLE}$
+
+    ```cpp
+    int maxScoreSightseeingPair(vector<int> &A)
+    {
+        int ret = 0;
+        for (int i = 0; i < A.size(); i++)
+        {
+            for (int j = i + 1; j < A.size(); j++)
+            {
+                ret = max(ret, A[i] + A[j] + i - j);
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - one pass scan，时间复杂度$O(n)$，参考[ref](https://leetcode.com/problems/best-sightseeing-pair/discuss/260850/JavaC%2B%2BPython-One-Pass)
+
+    ```cpp
+    int maxScoreSightseeingPair(vector<int> &A)
+    {
+        int ret = 0, cur = 0;
+        for (int i = 0; i < A.size(); i++)
+        {
+            ret = max(ret, cur + A[i]);
+            cur = max(cur, A[i]) - 1;
+        }
+        return ret;
     }
     ```
 
