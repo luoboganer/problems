@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-22 17:43:10
+ * @LastEditTime: 2019-11-24 00:24:12
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4861,6 +4861,29 @@
     ```
 
     本题充分体现了hash存储的优势。
+
+- [974. Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k/)
+
+    此类连续子数组和差之类的问题，大多使用prefix sum的方式解决
+
+    ```cpp
+    int subarraysDivByK(vector<int> &A, int K)
+    {
+        int count = A.size(), prefix_sum = 0, ans = 0;
+        vector<int> remainder_count(K, 0);
+        remainder_count[0] = 1; // for the first prefix sum with value K
+        for (int i = 0; i < count; i++)
+        {
+            prefix_sum += A[i];
+            remainder_count[(prefix_sum % K + K) % K]++; // avoiding negative remainder
+        }
+        for (auto &&v : remainder_count)
+        {
+            ans += ((v * (v - 1)) >> 1);
+        }
+        return ans;
+    }
+    ```
 
 - [976](https://leetcode.com/problems/largest-perimeter-triangle/)
 
