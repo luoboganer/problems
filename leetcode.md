@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-24 00:24:12
+ * @LastEditTime: 2019-11-24 13:23:48
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -5856,6 +5856,128 @@
     [["Earth", "North America", "South America"],["North America", "United States", "Canada"],["United States", "New York", "Boston"],["Canada", "Ontario", "Quebec"],["South America", "Brazil"]]
     "Canada"
     "Quebec"
+    ```
+
+- [1268. Search Suggestions System](https://leetcode.com/problems/search-suggestions-system/)
+
+    做出类似于现代编辑器中代码提示、自动补全的功能，即在给定的所有字符串中，搜索符合当前已经键入的字符的串，按字典序排序只要前3个
+
+    - [Trie]字典树方法，这里不知道为什么我的字典树写法会超时(TLE)，讨论区有些人的字典树方法是可以AC的，很纠结
+
+    ```cpp
+    struct TrieNode
+    {
+        // 字典树节点的定义
+        bool isWord;
+        TrieNode *next[26];
+        TrieNode()
+        {
+            isWord = false;
+            for (int i = 0; i < 26; i++)
+            {
+                next[i] = nullptr;
+            }
+        }
+    };
+    class Solution
+    {
+    private:
+        void insertWordToDictory(TrieNode *root, string s)
+        {
+            for (int i = 0; i < s.length(); i++)
+            {
+                int index = (int)(s[i] - 'a');
+                if (root->next[index] == nullptr)
+                {
+                    root->next[index] = new TrieNode();
+                }
+                root = root->next[index];
+            }
+            root->isWord = true;
+        }
+        void dfs_query(vector<string> &ans, string s, TrieNode *root)
+        {
+            if (root && ans.size() < 3)
+            {
+                if (root->isWord)
+                {
+                    ans.push_back(s);
+                }
+                for (int i = 0; i < 26; i++)
+                {
+                    dfs_query(ans, s + (char)('a' + i), root->next[i]);
+                }
+            }
+        }
+        vector<string> query(TrieNode *root, string s)
+        {
+            vector<string> ans;
+            if (root && s.length() > 0)
+            {
+                // 首先保证目前已经键入的字母完全匹配
+                for (int i = 0; root && i < s.length(); i++)
+                {
+                    root = root->next[(int)(s[i] - 'a')];
+                }
+                dfs_query(ans, s, root);
+            }
+            return ans;
+        }
+
+    public:
+        vector<vector<string>> suggestedProducts(vector<string> &products, string searchWord)
+        {
+            TrieNode *dictionary = new TrieNode();
+            for (auto &&word : products)
+            {
+                insertWordToDictory(dictionary, word);
+            }
+            vector<vector<string>> ans;
+            string target;
+            for (auto &&ch : searchWord)
+            {
+                target.push_back(ch);
+                ans.push_back(query(dictionary, target));
+            }
+            return ans;
+        }
+    };
+    ```
+
+    - 统计公共前缀长度方法
+
+    ```cpp
+    vector<vector<string>> suggestedProducts(vector<string> &products, string searchWord)
+    {
+        const int nubmer_products = products.size(), length_word = searchWord.length();
+        vector<int> cnt(nubmer_products, 0);
+        sort(products.begin(), products.end());
+        for (int i = 0; i < nubmer_products; i++)
+        {
+            int j = 0;
+            while (j < length_word && j < products[i].length() && searchWord[j] == products[i][j])
+            {
+                j++;
+            }
+            cnt[i] = j;
+        }
+        vector<vector<string>> ans;
+        for (int i = 0; i < length_word; i++)
+        {
+            vector<string> cur;
+            int j = 0;
+            while (cur.size() < 3 && j < nubmer_products)
+            {
+                if (cnt[j] > i)
+                {
+                    cur.push_back(products[j]);
+                }
+                j++;
+            }
+            ans.push_back(cur);
+        }
+        return ans;
+    }
     ```
 
 - [...](123)
