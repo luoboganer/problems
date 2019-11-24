@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-24 13:23:48
+ * @LastEditTime: 2019-11-24 22:37:11
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -706,6 +706,98 @@
     在[62-unique-path](https://leetcode.com/problems/unique-paths/)的基础上增加了障碍点，因此需要考虑初始化条件，即第一行、第一列有障碍的问题，同时咱有障碍的点路径数为0。
 
     另外需要注意由于障碍点的0路径导致最终结果在int表示范围内，但是计算过程中可能会出现超出int表示范围的数字，需要用long long来表示并取模(mod INT_MAX)。
+
+- [65. Valid Number](https://leetcode.com/problems/valid-number/)
+
+    验证给定的字符串是否是一个符合科学计数法的十进制浮点数
+
+    ```cpp
+    bool isNumber(string s)
+    {
+        bool ret = false;
+        if (s.length() > 0)
+        {
+            int index_of_e = -1, index_of_dot = -1;
+            int start = 0;
+            // 首先去除首位的空字符
+            while (start < s.length() && s[start] == ' ')
+            {
+                start++;
+            }
+            while (s.back() == ' ')
+            {
+                s.pop_back();
+            }
+            if (start < s.length() && (s[start] == '+' || s[start] == '-'))
+            {
+                start++; // 过滤可能的空字符
+            }
+            if (start >= s.length())
+            {
+                return false;
+            }
+            // 检查此后所有字符必须为 0-9|e|.
+            // 其中e不出现或仅出现一次
+            // 小数点不出现或仅出现一次
+            // 如果小数点和e同时出现，小数点必须在e前面
+            for (int j = start; j < s.length(); j++)
+            {
+                if (isdigit(s[j]))
+                {
+                    continue;
+                }
+                else if (s[j] == 'e')
+                {
+                    if (index_of_e == -1)
+                    {
+                        index_of_e = j;
+                        if (j == start)
+                        {
+                            return false; // e前面必须有数
+                        }
+                        if (j + 1 < s.length() && (s[j + 1] == '+' || s[j + 1] == '-'))
+                        {
+                            j++; // e后面的指数部分必须是整数，但可以是负数或者0
+                        }
+                        if (j == s.length() - 1)
+                        {
+                            return false; // 指数部分必须有数
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else if (s[j] == '.')
+                {
+                    if (index_of_dot == -1)
+                    {
+                        index_of_dot = j;
+                        if (!((j > start && isdigit(s[j - 1])) || (j + 1 < s.length() && isdigit(s[j + 1]))))
+                        {
+                            return false; // 小数点前面或者后面至少有一个数字，即小数点不能单独出现
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            if (index_of_dot != -1 && index_of_e != -1 && index_of_dot >= index_of_e)
+            {
+                return false;
+            }
+            ret = true;
+        }
+        return ret;
+    }
+    ```
 
 - [69](https://leetcode.com/problems/sqrtx/)
 
