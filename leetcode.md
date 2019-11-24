@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-24 22:37:11
+ * @LastEditTime: 2019-11-24 23:30:51
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1919,6 +1919,94 @@
     }
     ```
 
+- [208. Implement Trie (Prefix Tree)](https://leetcode.com/problems/implement-trie-prefix-tree/)
+
+    建立字典树，有插入单词和查询单词函数
+
+    ```cpp
+    class Trie
+    {
+    private:
+        struct TrieNode
+        {
+            /* data */
+            bool is_word;
+            TrieNode *next[26];
+            TrieNode()
+            {
+                is_word = false;
+                for (int i = 0; i < 26; i++)
+                {
+                    next[i] = nullptr;
+                }
+            }
+        };
+
+        TrieNode *dictionary = nullptr;
+
+    public:
+        /** Initialize your data structure here. */
+        Trie()
+        {
+            dictionary = new TrieNode();
+        }
+
+        /** Inserts a word into the trie. */
+        void insert(string word)
+        {
+            TrieNode *root = dictionary;
+            for (int i = 0; i < word.length(); i++)
+            {
+                int index = (int)(word[i] - 'a');
+                if (!root->next[index])
+                {
+                    root->next[index] = new TrieNode();
+                }
+                root = root->next[index];
+            }
+            root->is_word = true;
+        }
+
+        /** Returns if the word is in the trie. */
+        bool search(string word)
+        {
+            TrieNode *root = dictionary;
+            for (auto &&ch : word)
+            {
+                int index = (int)(ch - 'a');
+                if (root->next[index])
+                {
+                    root = root->next[index];
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return root->is_word;
+        }
+
+        /** Returns if there is any word in the trie that starts with the given prefix. */
+        bool startsWith(string prefix)
+        {
+            TrieNode *root = dictionary;
+            for (auto &&ch : prefix)
+            {
+                int index = (int)(ch - 'a');
+                if (root->next[index])
+                {
+                    root = root->next[index];
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    };
+    ```
+
 - [209](https://leetcode.com/problems/minimum-size-subarray-sum/)
 
     用左右双指针left、right设置滑动窗口capacity来满足sum和的要求，求滑动窗口可能的最小值即可
@@ -1949,6 +2037,104 @@
         ret = (ret == numeric_limits<int>::max()) ? 0 : ret;
         return ret;
     }
+    ```
+
+- [211. Add and Search Word - Data structure design](https://leetcode.com/problems/add-and-search-word-data-structure-design/)
+
+    字典树的建立与使用，比[208. Implement Trie (Prefix Tree)](https://leetcode.com/problems/implement-trie-prefix-tree/)多了查询单词时满足通配符的要求，通配符的查询通过递归调用来实现
+
+    ```cpp
+    struct TrieNode
+    {
+        bool is_word;
+        TrieNode *next[26];
+        TrieNode()
+        {
+            is_word = false;
+            for (int i = 0; i < 26; i++)
+            {
+                next[i] = nullptr;
+            }
+        }
+    };
+
+    class WordDictionary
+    {
+    private:
+        TrieNode *dictionary = nullptr;
+
+    public:
+        /** Initialize your data structure here. */
+        WordDictionary()
+        {
+            dictionary = new TrieNode();
+        }
+
+        /** Adds a word into the data structure. */
+        void addWord(string word)
+        {
+            TrieNode *root = dictionary;
+            for (int i = 0; i < word.length(); i++)
+            {
+                int index = (int)(word[i] - 'a');
+                if (!root->next[index])
+                {
+                    root->next[index] = new TrieNode();
+                }
+                root = root->next[index];
+            }
+            root->is_word = true;
+        }
+
+        /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+        bool search_helper(string word, TrieNode *root)
+        {
+            for (int i = 0; i < word.length(); i++)
+            {
+                char ch = word[i];
+                if (ch == '.')
+                {
+                    bool ret = false;
+                    for (int j = 0; !ret && j < 26; j++)
+                    {
+                        if (root->next[j])
+                        {
+                            ret = search_helper(word.substr(i + 1, word.length() - i - 1), root->next[j]);
+                        }
+                    }
+                    return ret;
+                }
+                else if (isalpha(ch))
+                {
+                    int index = (int)(ch - 'a');
+                    if (root->next[index])
+                    {
+                        root = root->next[index];
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            if (root->is_word)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        bool search(string word)
+        {
+            return search_helper(word, dictionary);
+        }
+    };
     ```
 
 - [216](https://leetcode.com/problems/combination-sum-iii/)
