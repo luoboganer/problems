@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-24 23:30:51
+ * @LastEditTime: 2019-11-25 15:09:25
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4126,6 +4126,87 @@
 
     ```cpp
 
+    ```
+
+- [648. Replace Words](https://leetcode.com/problems/replace-words/)
+
+    给定一串单词前缀root，构建字典树，然后对给定句子中的每个单词，查询字典树，如果有前缀，则用前缀代替该单词，然后输出该句子
+
+    ```cpp
+    class Solution {
+    private:
+        struct TrieNode
+        {
+            /* data */
+            bool is_word;
+            TrieNode *next[26];
+            TrieNode()
+            {
+                is_word = false;
+                for (int i = 0; i < 26; i++)
+                {
+                    next[i] = nullptr;
+                }
+            }
+        };
+    public:
+        string replaceWords(vector<string> &dict, string sentence)
+        {
+            // build a Trie dictionary
+            TrieNode *dictionary = new TrieNode();
+            for (auto &&word : dict)
+            {
+                TrieNode *root = dictionary;
+                for (int i = 0; i < word.length(); i++)
+                {
+                    /* code */
+                    int index = (int)(word[i] - 'a');
+                    if (!root->next[index])
+                    {
+                        root->next[index] = new TrieNode();
+                    }
+                    root = root->next[index];
+                }
+                root->is_word = true;
+            }
+            // query dictionary for every word in the sentense
+            string ans, item;
+            stringstream ss(sentence);
+            while (getline(ss, item, ' '))
+            {
+                TrieNode *root = dictionary;
+                int root_length = -1;
+                for (int i = 0; i < item.length(); i++)
+                {
+                    /* code */
+                    if (root)
+                    {
+                        if (root->is_word)
+                        {
+                            root_length = i;
+                            break;
+                        }
+                        else
+                        {
+                            int index = (int)(item[i] - 'a');
+                            root = root->next[index];
+                        }
+                    }
+                }
+                if (root_length != -1)
+                {
+                    item = item.substr(0, root_length);
+                }
+                ans += item + ' ';
+            }
+            // return the answer
+            if (ans.length() > 0)
+            {
+                ans = ans.substr(0, ans.length() - 1); // delete the last space
+            }
+            return ans;
+        }
+    };
     ```
 
 - [669](https://leetcode.com/problems/trim-a-binary-search-tree/)
