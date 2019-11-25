@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-25 15:14:05
+ * @LastEditTime: 2019-11-25 15:53:34
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4375,6 +4375,72 @@
         }
         return ans;
     }
+    ```
+
+- [720. Longest Word in Dictionary](https://leetcode.com/problems/longest-word-in-dictionary/)
+
+    Trie + BFS
+
+    ```cpp
+    class Solution
+    {
+    private:
+        struct TrieNode
+        {
+            /* data */
+            bool is_word;
+            TrieNode *next[26];
+            TrieNode()
+            {
+                is_word = false;
+                for (int i = 0; i < 26; i++)
+                {
+                    next[i] = nullptr;
+                }
+            }
+        };
+        string find(TrieNode *root)
+        {
+            string ans;
+            if (root && root->is_word)
+            {
+                for (int i = 0; i < 26; i++)
+                {
+                    string temp = (char)('a' + i) + find(root->next[i]);
+                    if (temp.length() > ans.length())
+                    {
+                        ans = temp;
+                    }
+                }
+            }
+            return ans;
+        }
+
+    public:
+        string longestWord(vector<string> &words)
+        {
+            // build the Trie dictionary
+            TrieNode *dictionary = new TrieNode();
+            dictionary->is_word = true; // the word is "", empty
+            for (auto &&word : words)
+            {
+                TrieNode *root = dictionary;
+                for (auto &&ch : word)
+                {
+                    int index = (int)(ch - 'a');
+                    if (!root->next[index])
+                    {
+                        root->next[index] = new TrieNode();
+                    }
+                    root = root->next[index];
+                }
+                root->is_word = true;
+            }
+            // BFS查询
+            string ans = find(dictionary);
+            return ans.substr(0, ans.length() - 1); // for the last excess 'a'
+        }
+    };
     ```
 
 - [733](https://leetcode.com/problems/flood-fill/)
