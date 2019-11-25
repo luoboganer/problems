@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-25 15:09:25
+ * @LastEditTime: 2019-11-25 15:14:05
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4125,7 +4125,76 @@
     设计实现一个队列类，主要是队列为空或者队列为满的判断，设置front和tail两个指针，实现入队、出队、判满、判空等操作
 
     ```cpp
+    class MyCircularQueue
+    {
+    private:
+        vector<int> values;
+        int front = 0, tail = -1, count = 0, size = 0;
+        // front 指向队首元素，tail指向队尾元素
 
+    public:
+        /** Initialize your data structure here. Set the size of the queue to be k. */
+        MyCircularQueue(int k)
+        {
+            values = vector<int>(k, 0);
+            front = 0, tail = -1, count = 0, size = k;
+        }
+
+        /** Insert an element into the circular queue. Return true if the operation is successful. */
+        bool enQueue(int value)
+        {
+            if (count < size)
+            {
+                tail = (tail + 1) % size;
+                values[tail] = value;
+                count++;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /** Delete an element from the circular queue. Return true if the operation is successful. */
+        bool deQueue()
+        {
+            if (count > 0)
+            {
+                front = (front + 1) % size;
+                count--;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /** Get the front item from the queue. */
+        int Front()
+        {
+            return count > 0 ? values[front] : -1;
+        }
+
+        /** Get the last item from the queue. */
+        int Rear()
+        {
+            return count > 0 ? values[tail] : -1;
+        }
+
+        /** Checks whether the circular queue is empty or not. */
+        bool isEmpty()
+        {
+            return count == 0;
+        }
+
+        /** Checks whether the circular queue is full or not. */
+        bool isFull()
+        {
+            return count == size;
+        }
+    };
     ```
 
 - [648. Replace Words](https://leetcode.com/problems/replace-words/)
