@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-25 15:53:34
+ * @LastEditTime: 2019-11-26 14:57:03
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3467,6 +3467,34 @@
     }
     ```
 
+- [372. Super Pow](https://leetcode.com/problems/super-pow/)
+
+    求一个$a^b，其中b是一个巨大的数，结果对1337取模
+
+    ```cpp
+    int superPow(int a, vector<int> &b)
+    {
+        vector<int> powers(10, 1);
+        const int mode = 1337;
+        a %= mode;
+        for (int i = 1; i < 10; i++)
+        {
+            powers[i] = (powers[i - 1] * a) % mode;
+        }
+        int ans = 1;
+        for (auto &&v : b)
+        {
+            int base = ans;
+            for (int i = 1; i < 10; i++)
+            {
+                ans = (ans * base) % mode;
+            }
+            ans = (ans * powers[v]) % mode;
+        }
+        return ans;
+    }
+    ```
+
 - [377](https://leetcode.com/problems/combination-sum-iv/)
 
     与前面三个组合数相关的题目[39](https://leetcode.com/problems/combination-sum/)、[40](https://leetcode.com/problems/combination-sum-ii/)、[216](https://leetcode.com/problems/combination-sum-iii/)不同的是，这里不需要给出所有可能的结果，只需要求出可能的结果种类数即可，DP方法足以胜任，这里注意DP数组中的数据类型为unsigned int，防止数字超出int的限制，直接使用long long也可以有正确结果，但是会浪费空间资源并降低运算速度
@@ -5661,6 +5689,26 @@
             cur = max(cur, A[i]) - 1;
         }
         return ret;
+    }
+    ```
+
+- [1015. Smallest Integer Divisible by K](https://leetcode.com/problems/smallest-integer-divisible-by-k/)
+
+    求全部有1组成的、可以被K整除的十进制数字的位宽，因为是位宽而无需求出这个数字，因此可以在$ans=ans*10+1$的过程中不断对K取模以限制ans在int的范围内
+
+    ```cpp
+    int smallestRepunitDivByK(int K)
+    {
+        unsigned int ans = 0;
+        for (int i = 0; i < K; i++)
+        {
+            ans = (ans * 10 + 1) % K;
+            if (ans % K == 0)
+            {
+                return i + 1;
+            }
+        }
+        return -1;
     }
     ```
 
