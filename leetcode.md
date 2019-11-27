@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-26 14:57:03
+ * @LastEditTime: 2019-11-27 23:52:28
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2350,6 +2350,58 @@
             }
         }
         return ret;
+    }
+    ```
+
+- [222. Count Complete Tree Nodes](https://leetcode.com/problems/count-complete-tree-nodes/)
+
+    统计一颗完全二叉树的节点
+
+    - $O(n)$时间遍历所有节点
+
+    ```cpp
+    int countNodes(TreeNode *root)
+    {
+        int ans = 0;
+        if (root)
+        {
+            ans++;
+            ans += countNodes(root->left);
+            ans += countNodes(root->right);
+        }
+        return ans;
+    }
+    ```
+
+    - $O((log(n))^2)$时间内通过计算完全树的高度来计算其节点数量
+
+    ```cpp
+    int height(TreeNode *root)
+    {
+        int ans = -1;
+        while (root)
+        {
+            ans++;
+            root = root->left;
+        }
+        return ans;
+    }
+    int countNodes(TreeNode *root)
+    {
+        int ans = 0;
+        if (root)
+        {
+            int h = height(root);
+            if (h == height(root->right) + 1)
+            {
+                ans = (1 << h) + countNodes(root->right);
+            }
+            else
+            {
+                ans = (1 << (h - 1)) + countNodes(root->left);
+            }
+        }
+        return ans;
     }
     ```
 
