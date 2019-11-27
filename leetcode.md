@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-27 23:52:28
+ * @LastEditTime: 2019-11-28 00:37:36
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2919,6 +2919,60 @@
     - bit XOR
 
     下标是0到n-1，补充一个n作为初始值，然后这些数字是0-n且missing一个数，相当于从0-n除了missing的这个数只出现一次之外其他数字都出现了两次，因此可以用XOR操作找到这个只出现了一次的数即可。
+
+- [274. H-Index](https://leetcode.com/problems/h-index/)
+
+    给定一个科学家所有论文的引用次数，求其H指数
+    
+    - 先对其引用次数排序（快排），然后当H小于等于当前引用次数时H持续自增，时间复杂度$O(nlog(n))$
+
+    ```cpp
+    int hIndex(vector<int> &citations)
+    {
+        sort(citations.begin(), citations.end());
+        int h = 0;
+        for (int i = citations.size() - 1; i >= 0; i--)
+        {
+            if (h + 1 <= citations[i])
+            {
+                h++;
+            }
+        }
+        return h;
+    }
+    ```
+
+    - 利用桶排序实现，two pass the citations，时间复杂度$O(n)$
+
+    ```cpp
+    int hIndex(vector<int> &citations)
+    {
+        const int count = citations.size(); // number of papers
+        vector<int> buckets(count + 1, 0);
+        for (auto &&v : citations)
+        {
+            if (v > count)
+            {
+                buckets[count]++;
+            }
+            else
+            {
+                buckets[v]++;
+            }
+        }
+        int ans = 0, h_papers = 0;
+        for (int i = count; i >= 0; i--)
+        {
+            h_papers += buckets[i];
+            if (h_papers >= i)
+            {
+                ans = i;
+                break;
+            }
+        }
+        return ans;
+    }
+    ```
 
 - [278](https://leetcode.com/problems/first-bad-version/)
 
