@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-28 19:59:44
+ * @LastEditTime: 2019-11-28 22:13:12
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1475,6 +1475,46 @@
                 ans.push_back(temp);
             }
             last_count = count;
+        }
+        return ans;
+    }
+    ```
+
+- [91. Decode Ways](https://leetcode.com/problems/decode-ways/)
+
+    对于给定字符串s用dp[i+1]表示s的的前缀s[0]...s[i]可以构成的decode ways数，则
+    $$
+    dp[i]+=\left\{\begin{matrix}
+    dp[i-1], 1 \le s[i] \le 9 \quad and \\
+    dp[i-2], s[i-2]=1, 0 \le s[i] \le 9 \quad or \quad s[i-2]=2, 0 \le s[i] \le 6
+    \end{matrix}\right.
+    $$
+
+    ```cpp
+    int numDecodings(string s)
+    {
+        int ans = 0;
+        int const count = s.length();
+        if (count > 0)
+        {
+            vector<int> dp(count + 1, 0);
+            dp[0] = 1;
+            if (s[0] != '0')
+            {
+                dp[1] = 1;
+            }
+            for (int i = 1; i < count; i++)
+            {
+                if (s[i] != '0')
+                {
+                    dp[i + 1] += dp[i];
+                }
+                if (s[i - 1] == '1' || (s[i - 1] == '2' && (s[i] >= '0' && s[i] <= '6')))
+                {
+                    dp[i + 1] += dp[i - 1];
+                }
+            }
+            ans = dp.back();
         }
         return ans;
     }
@@ -4458,6 +4498,42 @@
             return count == size;
         }
     };
+    ```
+
+- [639. Decode Ways II](https://leetcode.com/problems/decode-ways-ii/)
+
+    与[91. Decode Ways](https://leetcode.com/problems/decode-ways/)不同的是，本题增加了一个可以表示1-9的通配符*
+
+    ```cpp
+    int numDecodings(string s)
+    {
+        const int mode = 1e9 + 7, count = s.length();
+        vector<long long> dp(count + 1, 0);
+        if (count > 0)
+        {
+            dp[0] = 1;
+            dp[1] = (s[0] == '*') ? 9 : (s[0] == '0' ? 0 : 1);
+            for (int i = 1; i < count; i++)
+            {
+                // dp[i], s[i] is a letter
+                dp[i + 1] = (s[i] == '*') ? ((dp[i] * 9) % mode) : (s[i] == '0' ? 0 : dp[i]);
+                // dp[i-1], s[i-1]s[i] is a letter
+                if (s[i - 1] == '1')
+                {
+                    dp[i + 1] = (dp[i + 1] + dp[i - 1] * (s[i] == '*' ? 9 : 1)) % mode;
+                }
+                else if (s[i - 1] == '2')
+                {
+                    dp[i + 1] = (dp[i + 1] + dp[i - 1] * (s[i] == '*' ? 6 : (s[i] <= '6' && s[i] >= '0') ? 1 : 0)) % mode;
+                }
+                else if (s[i - 1] == '*')
+                {
+                    dp[i + 1] = (dp[i + 1] + dp[i - 1] * (s[i] == '*' ? 9 : 1) + dp[i - 1] * (s[i] == '*' ? 6 : (s[i] <= '6' && s[i] >= '0') ? 1 : 0)) % mode;
+                }
+            }
+        }
+        return (int)dp.back();
+    }
     ```
 
 - [648. Replace Words](https://leetcode.com/problems/replace-words/)
