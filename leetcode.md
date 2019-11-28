@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-28 16:25:07
+ * @LastEditTime: 2019-11-28 16:58:20
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -666,6 +666,34 @@
     ```
 
     $\color{green}{时间复杂度O(n),Accepted,faster\  than\  99.96\%}$
+
+- [57. Insert Interval](https://leetcode.com/problems/insert-interval/)
+
+    将一个给定的区间[a,b]插入一个给定的区间序列，并合并重复区间
+
+    ```cpp
+    vector<vector<int>> insert(vector<vector<int>> &intervals, vector<int> &newInterval)
+    {
+        vector<vector<int>> ans;
+        int i = 0, count = intervals.size();
+        while (i < count && intervals[i][1] < newInterval[0])
+        {
+            ans.push_back(intervals[i++]);
+        }
+        while (i < count && intervals[i][0] <= newInterval[1])
+        {
+            newInterval[0] = min(newInterval[0], intervals[i][0]);
+            newInterval[1] = max(newInterval[1], intervals[i][1]);
+            i++; // merge two intervals with overlay
+        }
+        ans.push_back(newInterval);
+        while (i < count)
+        {
+            ans.push_back(intervals[i++]);
+        }
+        return ans;
+    }
+    ```
 
 - [60](https://leetcode.com/problems/permutation-sequence/)
 
