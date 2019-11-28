@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-28 00:37:36
+ * @LastEditTime: 2019-11-28 16:25:07
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2971,6 +2971,38 @@
             }
         }
         return ans;
+    }
+    ```
+
+- [275. H-Index II](https://leetcode.com/problems/h-index-ii/)
+
+    与[274. H-Index](https://leetcode.com/problems/h-index/)相比本题的citations数组保证升序，但是需要在对数时间复杂度呢解决求H指数问题
+
+    这里对数时间复杂度且为排序数组，则必然要用到二分法，则可以想到用right标记所有满足H指数的定义中最小的下标值，即$min_{right}{(citations[right] \ge citations.size() - right）}$
+
+    ```cpp
+    int hIndex(vector<int> &citations)
+    {
+        int size = citations.size();
+        int left = 0, right = size - 1;
+        while (left < right)
+        {
+            int mid = left + ((right - left) >> 1);
+            if (citations[mid] >= size - mid)
+            {
+                right = mid;
+            }
+            else
+            {
+                left = mid + 1;
+            }
+        }
+        int h_index = 0;
+        if (right >= 0 && citations[right] >= size - right)
+        {
+            h_index = size - right;
+        }
+        return h_index;
     }
     ```
 
