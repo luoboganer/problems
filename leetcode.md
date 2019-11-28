@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-28 16:58:20
+ * @LastEditTime: 2019-11-28 19:59:44
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -824,6 +824,75 @@
             ret = true;
         }
         return ret;
+    }
+    ```
+
+- [68. Text Justification](https://leetcode.com/problems/text-justification/)
+
+    将给定字符串根据固定行宽进行对齐操作
+
+    ```cpp
+    vector<string> fullJustify(vector<string> &words, int maxWidth)
+    {
+        vector<string> ans;
+        const int count = words.size();
+        int i = 0, j = 0, k = 0;
+        while (i < count)
+        {
+            string line = words[i];
+            int length = words[i].length();
+            j = i + 1;
+            while (j < count && length + words[j].length() + 1 <= maxWidth)
+            {
+                length += words[j++].length() + 1;
+            }
+            int number_spaces = j - i - 1, total_spaces = maxWidth - length + number_spaces;
+            if (number_spaces > 0)
+            {
+                // two or more word in a line
+                k = i + 1;
+                if (j < count)
+                {
+                    //this is not the last line, full-justified
+                    int single_spaces = total_spaces / number_spaces, remainder = total_spaces % number_spaces;
+                    while (k < j)
+                    {
+                        for (int r = 0; r < single_spaces; r++)
+                        {
+                            line += ' ';
+                        }
+                        if (k - i - 1 < remainder)
+                        {
+                            line += ' ';
+                        }
+                        line += words[k++];
+                    }
+                }
+                else
+                {
+                    // the last line, left-justified
+                    while (k < j)
+                    {
+                        line += ' ' + words[k++];
+                    }
+                    while (line.length() < maxWidth)
+                    {
+                        line += ' ';
+                    }
+                }
+            }
+            else
+            {
+                // only one word in a line, left-justified
+                while (line.length() < maxWidth)
+                {
+                    line += ' ';
+                }
+            }
+            ans.push_back(line);
+            i = j;
+        }
+        return ans;
     }
     ```
 
