@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-29 15:52:45
+ * @LastEditTime: 2019-11-29 17:29:04
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4203,6 +4203,30 @@
         }
         return ans;
     }
+    ```
+
+- [478. Generate Random Point in a Circle](https://leetcode.com/problems/generate-random-point-in-a-circle/)
+
+    在给定圆心坐标和半径的圆内，生成随机点的坐标
+    - 这里特别注意cpp中随机函数的应用，srand()函数设置随机数种子，rand()函数生成[0,RAND_MAX]之间的均匀分布随机数
+    - 圆内随机点的坐标可以通过随机生成r和theta两个极坐标参数来确定
+
+    ```cpp
+    #define random() ((double)(rand())/RAND_MAX)
+    class Solution {
+    private:
+        double r,x,y;
+        const double PI=3.14159265358979732384626433832795;
+    public:
+        Solution(double radius, double x_center, double y_center) {
+            r=radius,x=x_center,y=y_center;
+        }
+        vector<double> randPoint() {
+            double r0=random();
+            double theta=2*PI*random();
+            return vector<double>{x+r0*r*cos(theta),y+r0*r*sin(theta)};
+        }
+    };
     ```
 
 - [509](https://leetcode.com/problems/fibonacci-number/)
