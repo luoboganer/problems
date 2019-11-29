@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-29 17:44:45
+ * @LastEditTime: 2019-11-29 22:29:42
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2003,6 +2003,87 @@
             return !st.empty();
         }
     };
+    ```
+
+- [179. Largest Number](https://leetcode.com/problems/largest-number/)
+
+    将给定的一个数组中所有的数重新排列串联起来构成一个新的整数，使得其值最大，遵循越接近9的数字尽量靠前排就可以，注意潜在的前导0的处理
+
+    ```cpp
+    string largestNumber(vector<int> &nums)
+    {
+        vector<string> nums_str;
+        int count_zero = 0;
+        for (auto &&v : nums)
+        {
+            if (v != 0)
+            {
+                nums_str.push_back(to_string(v));
+            }
+            else
+            {
+                count_zero++;
+            }
+        }
+        sort(nums_str.begin(), nums_str.end(), [](string a, string b) {
+            while (true)
+            {
+                int i = 0, length_a = a.length(), length_b = b.length(), length = min(length_a, length_b);
+                if (length == 0)
+                {
+                    return true; // two equal string
+                }
+                while (i < length)
+                {
+                    if (a[i] > b[i])
+                    {
+                        return true;
+                    }
+                    else if (a[i] < b[i])
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        i++;
+                    }
+                }
+                if (i < length_a && i == length_b)
+                {
+                    a = a.substr(i, length_a - i);
+                }
+                else if (i == length_a && i < length_b)
+                {
+                    b = b.substr(i, length_b - i);
+                }
+                else
+                {
+                    return true; // two equal string
+                }
+            }
+        });
+        string ans;
+        for (auto &&s : nums_str)
+        {
+            ans += s;
+        }
+        if (count_zero != 0)
+        {
+            // for potential leading zero
+            if (ans.empty())
+            {
+                ans = "0";
+            }
+            else
+            {
+                for (int i = 0; i < count_zero; i++)
+                {
+                    ans.push_back('0');
+                }
+            }
+        }
+        return ans;
+    }
     ```
 
 - [200](https://leetcode.com/problems/number-of-islands/submissions/)
