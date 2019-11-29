@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-28 22:13:12
+ * @LastEditTime: 2019-11-29 15:52:45
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3875,6 +3875,62 @@
             }
         }
         return ans;
+    }
+    ```
+
+- [396. Rotate Function](https://leetcode.com/problems/rotate-function/)
+
+    对于给定整数（可能是负数）数组A，定义$F(k)=\sum_{i=0}^{n-1}{i*A[(i+k)\%n]},n=A.length()$，求$max_{0 \le k \le n-1}{F(k)}$
+
+    - 暴力搜索所有可能的$F(k)$，时间复杂度$O(n^2)$，结果正确，但是$\color{red}{TLE}$
+
+    ```cpp
+    int maxRotateFunction(vector<int> &A)
+    {
+        int ans = 0;
+        const int count = A.size();
+        if (count > 0)
+        {
+            ans = numeric_limits<int>::min();
+            for (int i = 0; i < count; i++)
+            {
+                int temp = 0;
+                for (int j = 0; j < count; j++)
+                {
+                    temp += j * A[(i + j) % count];
+                }
+                ans = max(ans, temp);
+            }
+        }
+        return ans;
+    }
+    ```
+
+    - 根据数学公式，在$O(n)$时间内遍历，$\color{red}{Accepted}$
+
+    在数学上可以推导$F(0)=\sum_{i=0}^{n-1}{i*A[i]}$且$sum=\sum_{i=0}^{n-1}A[i]$，其中$n=A.length()$，则之后类似于高中数学数列的错位相减法，有递推公式：
+    $$F(k+1)=F(k)-(n-1)*A[n-k]+sum-A[n-k]=F(k)+sum-n*A[n-k]$$
+
+    ```cpp
+    int maxRotateFunction(vector<int> &A)
+    {
+        const int count = A.size();
+        long long ans = 0, n = count;
+        if (count > 0)
+        {
+            long long F = 0, sum_of_A = 0;
+            for (int i = 0; i < count; i++)
+            {
+                F += i * A[i], sum_of_A += A[i];
+            }
+            ans = F; // f[0]
+            for (int i = 1; i < count; i++)
+            {
+                F = F + sum_of_A - n * A[count - i]; // F(k+1)=F(k)+sum-n*A[n-k]
+                ans = max(ans, F);
+            }
+        }
+        return (int)ans;
     }
     ```
 
