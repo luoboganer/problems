@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-29 17:29:04
+ * @LastEditTime: 2019-11-29 17:44:45
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4207,8 +4207,8 @@
 
 - [478. Generate Random Point in a Circle](https://leetcode.com/problems/generate-random-point-in-a-circle/)
 
-    在给定圆心坐标和半径的圆内，生成随机点的坐标
-    - 这里特别注意cpp中随机函数的应用，srand()函数设置随机数种子，rand()函数生成[0,RAND_MAX]之间的均匀分布随机数
+    在给定圆心坐标和半径的圆内，生成随机点的坐标，这里特别注意cpp中随机函数的应用，srand()函数设置随机数种子，rand()函数生成[0,RAND_MAX]之间的均匀分布随机数
+
     - 圆内随机点的坐标可以通过随机生成r和theta两个极坐标参数来确定
 
     ```cpp
@@ -4222,9 +4222,30 @@
             r=radius,x=x_center,y=y_center;
         }
         vector<double> randPoint() {
-            double r0=random();
+            double r0=sqrt(random()); // 在二维空间内[0,r^2]才是均匀采样
             double theta=2*PI*random();
             return vector<double>{x+r0*r*cos(theta),y+r0*r*sin(theta)};
+        }
+    };
+    ```
+    
+    - 拒绝采样法
+
+    ```cpp
+    #define random() ((double)(rand())/RAND_MAX)
+    class Solution {
+    private:
+        double r,x,y;
+    public:
+        Solution(double radius, double x_center, double y_center) {
+            r=radius,x=x_center,y=y_center;
+        }
+        vector<double> randPoint() {
+            double x0,y0;
+            do{
+                x0=random()*2-1,y0=random()*2-1;
+            }while(x0*x0+y0*y0>1);
+            return {x+x0*r,y+y0*r};
         }
     };
     ```
