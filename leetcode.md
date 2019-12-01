@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-01 17:31:59
+ * @LastEditTime: 2019-12-01 18:14:01
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -253,6 +253,77 @@
             }
         }
         return dp.back();
+    }
+    ```
+
+- [32. Longest Valid Parentheses](https://leetcode.com/problems/longest-valid-parentheses/)
+
+    在'('和')'组成的字符串中求出最长有效（左右括号匹配）括号串的长度
+
+    - 用栈st来存储当前有效'('的下标，然后遇到匹配的')'则当前有效串长为下标$index-st.top()$，时间复杂度$O(n)$，空间复杂度$O(n)$
+
+    ```cpp
+    int longestValidParentheses(string s)
+    {
+        int ans = 0;
+        stack<int> st;
+        st.push(-1);
+        for (int i = 0; i < s.length(); i++)
+        {
+            if (s[i] == '(')
+            {
+                st.push(i);
+            }
+            else
+            {
+                st.pop();
+                if (st.empty())
+                {
+                    st.push(i);
+                }
+                else
+                {
+                    ans = max(ans, i - st.top());
+                }
+            }
+        }
+        return ans;
+    }
+    ```
+
+    - 用left、right两个变量来统计当前有效地'('和')'数量，时间复杂度$O(n)$，空间复杂度$O(1)$
+
+    ```cpp
+    int singleDirection(string s, char ch)
+    {
+        int ans = 0, left = 0, right = 0;
+        for (int i = 0; i < s.length(); i++)
+        {
+            if (s[i] == ch)
+            {
+                left++;
+            }
+            else
+            {
+                right++;
+            }
+            if (left == right)
+            {
+                ans = max(ans, right * 2);
+            }
+            else if (left < right)
+            {
+                left = 0, right = 0;
+            }
+        }
+        return ans;
+    }
+    int longestValidParentheses(string s)
+    {
+        int ans = singleDirection(s,'(');
+        reverse(s.begin(), s.end());
+        ans = max(ans, singleDirection(s,')'));
+        return ans;
     }
     ```
 
