@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-11-29 22:29:42
+ * @LastEditTime: 2019-12-01 17:31:59
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -7010,6 +7010,47 @@
                 j++;
             }
             ans.push_back(cur);
+        }
+        return ans;
+    }
+    ```
+
+- [1277. Count Square Submatrices with All Ones](https://leetcode.com/problems/count-square-submatrices-with-all-ones/)
+
+    求一个0和1组成的矩阵中由1表示的正方形的个数，动态规划
+
+    ```cpp
+    int countSquares(vector<vector<int>> &matrix)
+    {
+        int ans = 0;
+        if (matrix.size() > 0 && matrix[0].size() > 0)
+        {
+            int row = matrix.size(), col = matrix[0].size();
+            for (int i = 1; i < row; i++)
+            {
+                for (int j = 1; j < col; j++)
+                {
+                    if (matrix[i][j] == 1)
+                    {
+                        int edge = min(matrix[i - 1][j], matrix[i][j - 1]);
+                        if (matrix[i - edge][j - edge] > 0)
+                        {
+                            matrix[i][j] = edge + 1;
+                        }
+                        else
+                        {
+                            matrix[i][j] = edge;
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < row; i++)
+            {
+                for (int j = 0; j < col; j++)
+                {
+                    ans += matrix[i][j];
+                }
+            }
         }
         return ans;
     }
