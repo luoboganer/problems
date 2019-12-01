@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-01 18:14:01
+ * @LastEditTime: 2019-12-01 22:22:38
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -253,6 +253,40 @@
             }
         }
         return dp.back();
+    }
+    ```
+
+- [29. Divide Two Integers](https://leetcode.com/problems/divide-two-integers/)
+
+    - 本题特别注意边界条件特别是超出signed int的处理
+    - 不用内置符号的两数之间的算术运算，加法用按位异或、按位与运算，减法转化为加法，除法用左右位移操作
+
+    ```cpp
+    int divide(int dividend, int divisor)
+    {
+        long long ans = 0, coef = 1, a = abs((long long)dividend), b = abs((long long)divisor);
+        if (dividend < 0)
+        {
+            coef *= -1;
+        }
+        if (divisor < 0)
+        {
+            coef *= -1;
+        }
+        while (a >= b)
+        {
+            int width = 0;
+            while (a >= (b << width))
+            {
+                width++;
+            }
+            ans += ((long long)1 << (width - 1));
+            a -= (b << (width - 1));
+        }
+        ans *= coef;
+        ans = max(ans, (long long)numeric_limits<int>::min());
+        ans = min(ans, (long long)numeric_limits<int>::max());
+        return (int)ans;
     }
     ```
 
