@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-01 22:22:38
+ * @LastEditTime: 2019-12-02 12:00:46
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2971,6 +2971,41 @@
             }
         }
         return ret;
+    }
+    ```
+
+- [230. Kth Smallest Element in a BST](https://leetcode.com/problems/kth-smallest-element-in-a-bst/)
+
+    在给定二叉搜索树中找到第K小的数，二叉搜索树中序遍历即为升序数列，则迭代式中序遍历这棵树，遍历到第K个输出值时，返回结果
+
+    ```cpp
+    int kthSmallest(TreeNode *root, int k)
+    {
+        int count = 0, ans;
+        stack<TreeNode *> st;
+        TreeNode *cur = root;
+        while (cur || !st.empty())
+        {
+            if (cur)
+            {
+                st.push(cur), cur = cur->left;
+            }
+            else
+            {
+                count++;
+                if (count == k)
+                {
+                    ans = st.top()->val;
+                    break;
+                }
+                else
+                {
+                    cur = st.top()->right;
+                    st.pop();
+                }
+            }
+        }
+        return ans;
     }
     ```
 
