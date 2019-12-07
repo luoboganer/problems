@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-02 12:00:46
+ * @LastEditTime: 2019-12-07 20:20:44
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -6634,6 +6634,44 @@
             }
         }
         return ans;
+    }
+    ```
+
+- [1209. Remove All Adjacent Duplicates in String II](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/)
+
+    删除一个字符串s中重复次数为k的串，可以使用栈的方式来存储每个字符及其出现的次数，每个字符至多被访问两次，时间复杂度$O(n)$
+
+    ```cpp
+    string removeDuplicates(string s, int k)
+    {
+        string st;
+        stack<int> count;
+        for (auto &&ch : s)
+        {
+            if (st.length() == 0)
+            {
+                st.push_back(ch);
+                count.push(1);
+            }
+            else
+            {
+                if (st.back() == ch)
+                {
+                    count.push(count.top() + 1);
+                }else{
+                    count.push(1);
+                }
+                st.push_back(ch);
+                if (count.top() == k)
+                {
+                    for (int i = 0; i < k; i++)
+                    {
+                        st.pop_back(), count.pop();
+                    }
+                }
+            }
+        }
+        return st;
     }
     ```
 
