@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-07 20:20:44
+ * @LastEditTime: 2019-12-09 17:44:38
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4188,6 +4188,36 @@
 
     有些问题要用逆向思维来解决，本题本来是要用给定二进制位中1的个数来拼凑出可能的时间表示，组合数过程不好写，可以反过来写所有$00:00 - 23:59$中所有可能的时间中二进制位中1的个数符合题目要求的时间点。
 
+- [437. Path Sum III](https://leetcode.com/problems/path-sum-iii/)
+
+    在一颗二叉树上任意节点为七点，统计向下的和为指定sum的路径数，首先统计以root为起点的和为sum的路径数，然后递归地统计以root的左右子树为起点的和为sum的路径数量
+
+    ```cpp
+    int helper(TreeNode *root, int pre, int sum)
+    {
+        int ret = 0;
+        if (root)
+        {
+            pre += root->val;
+            if (pre == sum)
+            {
+                ret = 1;
+            }
+            ret += helper(root->left, pre, sum) + helper(root->right, pre, sum);
+        }
+        return ret;
+    }
+    int pathSum(TreeNode *root, int sum)
+    {
+        int ret = 0;
+        if (root)
+        {
+            ret = pathSum(root->left, sum) + pathSum(root->right, sum) + helper(root, 0, sum);
+        }
+        return ret;
+    }
+    ```
+
 - [442](https://leetcode.com/problems/find-all-duplicates-in-an-array/)
     
     在一个数组$a_n,1 \le a_i \le n$中找出出现了两次的数字（其他数字只出现了一次），要求不占用额外的内存空间、$O(n)$时间复杂度
@@ -4599,6 +4629,61 @@
     }
     ```
 
+- [560. Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/)
+
+    在给定数组nums中，求其和为K的子数组的数量，如果数组中不含有负数，可以使用滑动窗口计算
+
+    - 计算数组nums的前缀和prefix，即$prefix[i]=\sum_{j=0}^{i}nums_j$，然后从0到j遍历，每次从prefix[i]中减掉前面的一个数，即可在$O(n^2)$时间内实现
+
+    ```cpp
+    int subarraySum(vector<int> &nums, int k)
+    {
+        int ret = 0, prefix_sum = 0;
+        for (int i = 0; i < nums.size(); i++)
+        {
+            prefix_sum += nums[i];
+            int base = prefix_sum;
+            for (int j = 0; j <= i; j++)
+            {
+                if (base == k)
+                {
+                    ret++;
+                }
+                base -= nums[j];
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 结合hashmap的$O(1)$存取效率与前缀和方式实现$O(n)$时间复杂度，其基本原理为如果前缀和$prefix[j]-prefix[i]=K$，则$\sum_{r=i+1}^{j}nums[r]=K$
+
+    ```cpp
+    int subarraySum(vector<int> &nums, int k)
+    {
+        int ret = 0, prefix_sum = 0;
+        unordered_map<int, int> prefix_count;
+        prefix_count[0] = 1;
+        for (int i = 0; i < nums.size(); i++)
+        {
+            prefix_sum += nums[i];
+            if (prefix_count.find(prefix_sum - k) != prefix_count.end())
+            {
+                ret += prefix_count[prefix_sum - k];
+            }
+            if (prefix_count.find(prefix_sum) != prefix_count.end())
+            {
+                prefix_count[prefix_sum]++;
+            }
+            else
+            {
+                prefix_count[prefix_sum] = 1;
+            }
+        }
+        return ret;
+    }
+    ```
+
 - [561](https://leetcode.com/problems/array-partition-i/)
     
     2n个给定范围的数据划分成n组使得每组最小值求和最大，基本思路是对所有数排序后对基数位置上的数求和即可，这里类似于NMS非极大值抑制的思路，主要的时间复杂度在排序上。
@@ -4968,6 +5053,40 @@
         root=trimLeftBST(root,L);
         root=trimRightBST(root,R);
         return root;
+    }
+    ```
+
+- [687. Longest Univalue Path](https://leetcode.com/problems/longest-univalue-path/)
+
+    求给定二叉树中节点值相同的连续路径最大长度
+
+    ```cpp
+    int ret;
+    int count(TreeNode *root)
+    {
+        int ans = 0;
+        if (root)
+        {
+            int left = count(root->left), right = count(root->right);
+            int countLeft = 0, countRight = 0;
+            if (root->left && root->val == root->left->val)
+            {
+                countLeft += left + 1;
+            }
+            if (root->right && root->val == root->right->val)
+            {
+                countRight += right + 1;
+            }
+            ret = max(ret, countLeft + countRight);
+            ans = max(countLeft, countRight);
+        }
+        return ans;
+    }
+    int longestUnivaluePath(TreeNode *root)
+    {
+        ret = 0;
+        count(root);
+        return ret;
     }
     ```
 
