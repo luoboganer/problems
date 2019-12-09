@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-09 17:44:38
+ * @LastEditTime: 2019-12-09 23:02:17
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -6006,6 +6006,64 @@
         return ans;
     }
     ```    
+
+- [937. Reorder Data in Log Files](https://leetcode.com/problems/reorder-data-in-log-files/)
+
+    - 先记录digit-logs，对letters-logs排序后加入digit-logs
+
+    ```cpp
+    vector<string> reorderLogFiles(vector<string> &logs)
+    {
+        vector<int> digital_logs_index;
+        vector<string> ans;
+        for (int i = 0; i < logs.size(); i++)
+        {
+            int index = logs[i].find_first_of(' ');
+            if (isdigit(logs[i][index + 1]))
+            {
+                digital_logs_index.push_back(i);
+            }
+            else
+            {
+                ans.push_back(logs[i]);
+            }
+        }
+        sort(ans.begin(), ans.end(), [](string a, string b) -> bool {
+            int pos_a = a.find_first_of(' '), pos_b = b.find_first_of(' ');
+            string x = a.substr(pos_a + 1, a.length() - pos_a - 1), y = b.substr(pos_b + 1, b.length() - pos_b - 1);
+            int ret = x.compare(y);
+            return (ret == 0) ? (a.compare(b) < 0) : (ret < 0);
+        });
+        for (auto &&index : digital_logs_index)
+        {
+            ans.push_back(logs[index]);
+        }
+        return ans;
+    }
+    ```
+
+    - 直接对全体logs稳定排序
+
+    ```cpp
+    vector<string> reorderLogFiles(vector<string> &logs)
+    {
+        stable_sort(logs.begin(), logs.end(), [](string a, string b) -> bool {
+            int pos_a = a.find_first_of(' '), pos_b = b.find_first_of(' ');
+            bool ret = false, digital_a = isdigit(a[pos_a + 1]), digital_b = isdigit(b[pos_b + 1]);
+            if (!digital_a && digital_b)
+            {
+                ret = true;
+            }
+            else if (!digital_a && !digital_b)
+            {
+                int cmp = a.substr(pos_a + 1, a.length() - pos_a - 1).compare(b.substr(pos_b + 1, b.length() - pos_b - 1));
+                ret = (cmp == 0) ? (a.compare(b) < 0) : (cmp < 0);
+            }
+            return ret;
+        });
+        return logs;
+    }
+    ```
 
 - [941](https://leetcode.com/problems/valid-mountain-array/)
 
