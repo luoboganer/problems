@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-09 23:02:17
+ * @LastEditTime: 2019-12-10 11:25:38
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -5771,6 +5771,59 @@
     };
     ```
 
+- [859. Buddy Strings](https://leetcode.com/problems/buddy-strings/)
+
+    给定两个字符串A和B，判断交换A中任意两个字符是否可以使得$A.compare(B)==0$，分成A和B相同、A和B不相同两种情况讨论，时间复杂度$O(n)$
+
+    ```cpp
+    bool buddyStrings(string A, string B)
+    {
+        bool ret = false;
+        if (A.length() == B.length())
+        {
+            vector<int> mis_match_index;
+            for (int i = 0; i < A.length() && mis_match_index.size() <= 2; i++)
+            {
+                if (A[i] != B[i])
+                {
+                    mis_match_index.push_back(i);
+                }
+            }
+            if (mis_match_index.size() == 2)
+            {
+                // 存在两个不一样的，交换之后相同
+                if (A[mis_match_index[0]] == B[mis_match_index[1]] && A[mis_match_index[1]] == B[mis_match_index[0]])
+                {
+                    ret = true;
+                }
+            }
+            else if (mis_match_index.empty())
+            {
+                // A和B在未交换前已经完全一样
+                vector<int> count(26, 0);
+                for (auto &&ch : A)
+                {
+                    count[(int)(ch - 'a')]++;
+                    if (count[(int)(ch - 'a')] >= 2)
+                    {
+                        ret = true;
+                        break;
+                    }
+                }
+                for (int i = 0; i < 26; i++)
+                {
+                    if (count[i] >= 2)
+                    {
+                        ret = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
 - [874](https://leetcode.com/problems/walking-robot-simulation/)
 
     用坐标$(0,1)-north,(1,0)-east,(0,-1)-north,(-1,0)-west$来表示四个方向模拟机器人行走过程即可，注意题目要求返回的是机器人在行走过程中距离原点的最远距离，而不是机器人结束行走后距离原点的最终距离。
@@ -5957,6 +6010,94 @@
 	}
     ```
 
+- [916. Word Subsets](https://leetcode.com/problems/word-subsets/)
+
+    - 要求A中universal的word，针对A中的每个word，如果是universal的需要满足$letters\_count\_s[j] \ge letters\_count\_B[i][j]$，其中i遍历B中的全部单词，j遍历26个字母，$letters\_count\_s[j]$表示A中单词word的组成字母统计，$letters\_count\_B[i][j]$表示B中每个单词的组成字母统计，时间复杂度$O(A.length*B.length)$，答案正确，显然会$\color{red}{TLE}$
+
+    ```cpp
+    vector<string> wordSubsets(vector<string> &A, vector<string> &B)
+    {
+        const int count_B = B.size();
+        vector<vector<int>> letters_count_B(count_B, vector<int>(26, 0));
+        for (int i = 0; i < count_B; i++)
+        {
+            for (auto &&ch : B[i])
+            {
+                letters_count_B[i][(int)(ch - 'a')]++;
+            }
+        }
+        vector<string> ans;
+        for (auto &&s : A)
+        {
+            vector<int> letters_count_s(26, 0);
+            for (auto &&ch : s)
+            {
+                letters_count_s[(int)(ch - 'a')]++;
+            }
+            bool flag = true;
+            for (int i = 0; flag && i < count_B; i++)
+            {
+                for (int j = 0; flag && j < 26; j++)
+                {
+                    if (letters_count_s[j] < letters_count_B[i][j])
+                    {
+                        flag = false;
+                    }
+                }
+            }
+            if (flag)
+            {
+                ans.push_back(s);
+            }
+        }
+        return ans;
+    }
+    ```
+
+    - 上述方法中的$letters\_count\_s[j] \ge letters\_count\_B[i][j]$可以压缩为$letters\_count\_s[j] \ge max_{i=0}^{B.length-1}letters\_count\_B[i][j]$，时间复杂度$O(A.length+B.length)$，$\color{green}{Accepted}$
+
+    ```cpp
+    vector<string> wordSubsets(vector<string> &A, vector<string> &B)
+    {
+        const int letters = 26;
+        vector<int> letters_count_max(26, 0);
+        for (auto &&s : B)
+        {
+            vector<int> letters_count_temp(26, 0);
+            for (auto &&ch : s)
+            {
+                letters_count_temp[(int)(ch - 'a')]++;
+            }
+            for (int i = 0; i < letters; i++)
+            {
+                letters_count_max[i] = max(letters_count_max[i], letters_count_temp[i]);
+            }
+        }
+        vector<string> ans;
+        for (auto &&s : A)
+        {
+            vector<int> letters_count_s(letters, 0);
+            for (auto &&ch : s)
+            {
+                letters_count_s[(int)(ch - 'a')]++;
+            }
+            bool flag = true;
+            for (int j = 0; flag && j < letters; j++)
+            {
+                if (letters_count_s[j] < letters_count_max[j])
+                {
+                    flag = false;
+                }
+            }
+            if (flag)
+            {
+                ans.push_back(s);
+            }
+        }
+        return ans;
+    }
+    ```
+
 - [929](https://leetcode.com/problems/unique-email-addresses/)
     两个考察点
     - cpp STL中的string操作，子串、查找、替换等
@@ -6008,6 +6149,11 @@
     ```    
 
 - [937. Reorder Data in Log Files](https://leetcode.com/problems/reorder-data-in-log-files/)
+
+    本题即为简单的字符串排序，但是题目意思要求的排序规则，英文很难理解，应该时:
+    - 首先letters-logs在前，digit-logs在后
+    - letters-logs部分按照identifier后面log的字典序排列，log相同的再按identifier的字典序
+    - digit-logs按照输入顺序排列不变
 
     - 先记录digit-logs，对letters-logs排序后加入digit-logs
 
