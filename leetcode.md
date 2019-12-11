@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-11 13:42:31
+ * @LastEditTime: 2019-12-11 15:34:38
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3686,6 +3686,42 @@
 	};
 	```
 
+- [319. Bulb Switcher](https://leetcode.com/problems/bulb-switcher/)
+
+    - 模拟操作，时间复杂度$O(n^2)$，结果正确，但是$\color{red}{TLE}$
+
+    ```cpp
+    int bulbSwitch(int n)
+    {
+        vector<bool> bulbs(n, false);
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = i; j < n; j += i + 1)
+            {
+                bulbs[j] = !bulbs[j];
+            }
+        }
+        int ret = 0;
+        for (int i = 0; i < n; i++)
+        {
+            if (bulbs[i])
+            {
+                ret++;
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - math方法，时间复杂度$O(1)$
+
+    ```cpp
+    int bulbSwitch(int n)
+    {
+        return (int)(sqrt(n));
+    }
+    ```
+
 - [326](https://leetcode.com/problems/power-of-three/)
 
     验证一个数是否是3的幂
@@ -3832,7 +3868,7 @@
 
 - [343. Integer Break](https://leetcode.com/problems/integer-break/)
 
-    动态规划，状态转移方程为$f(n)=max_{1\le k \le n-1}l*f(n-k)$，时间复杂度$O(n^2)$
+    动态规划，状态转移方程为$f(n)=max_{1\le k \le n-1}(max\left\{\begin{matrix}k*f(n-k)\\ k*(n-k)\end{matrix}\right.)$，时间复杂度$O(n^2)$
 
     ```cpp
     int integerBreak(int n)
