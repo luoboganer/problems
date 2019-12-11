@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-10 11:25:38
+ * @LastEditTime: 2019-12-11 13:42:31
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3830,6 +3830,26 @@
 	}
     ```
 
+- [343. Integer Break](https://leetcode.com/problems/integer-break/)
+
+    动态规划，状态转移方程为$f(n)=max_{1\le k \le n-1}l*f(n-k)$，时间复杂度$O(n^2)$
+
+    ```cpp
+    int integerBreak(int n)
+    {
+        vector<int> dp(n + 1, 0);
+        dp[1] = 1;
+        for (int v = 2; v <= n; v++)
+        {
+            for (int k = 1; k < v; k++)
+            {
+                dp[v] = max(dp[v], max(k * dp[v - k], k * (v - k)));
+            }
+        }
+        return dp.back();
+    }
+    ```
+
 - [349](https://leetcode.com/problems/intersection-of-two-arrays/)
 
     给定两个数组，求两个数组的交集，可以先用哈希表st存储第一个数组的值，然后遍历第二个数组，在哈希st中查询是否存在即可，时间复杂度$O(n)$
@@ -4301,6 +4321,46 @@
 - [448](https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/)
 
     本题和[442](https://leetcode.com/problems/find-all-duplicates-in-an-array/)很像，在遍历数组的过程中可以简单的用一个bool数组来标记每个下标是否出现即可，在不使用额外空间的情况下，可以用正负标记来代替true和false的bool标记在原数组中标记，只不过每次读取原数组的时候取绝对值即可。
+
+- [459. Repeated Substring Pattern](https://leetcode.com/problems/repeated-substring-pattern/)
+
+    判断一个字符串s是否是由字符串t经过$[t_1,t_2,...,t_n],n\ge2$构成
+
+    - 使用KMP，时间复杂度$O(n)$
+    - 将字符串s分割为k段($k \in [2,s.length]$)，检查每段是否相同，时间复杂度$O(n^3)$
+
+    ```cpp
+    bool repeatedSubstringPattern(string s)
+    {
+        int const length = s.length();
+        if (length > 1)
+        {
+            int count = (length >> 1);
+            for (int length_of_substring = count; length_of_substring >= 1; length_of_substring--)
+            {
+                if (length % length_of_substring == 0)
+                {
+                    int count_of_substring = length / length_of_substring;
+                    string base = s.substr(0, length_of_substring);
+                    bool flag = true;
+                    for (int j = 1; flag && j < count_of_substring; j++)
+                    {
+                        if (base.compare(s.substr(length_of_substring * j, length_of_substring)) != 0)
+                        {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    ```
 
 - [468](https://leetcode.com/problems/validate-ip-address/)
 
