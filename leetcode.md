@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-11 15:34:38
+ * @LastEditTime: 2019-12-12 15:30:01
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -5149,6 +5149,83 @@
         root=trimLeftBST(root,L);
         root=trimRightBST(root,R);
         return root;
+    }
+    ```
+
+- [673. Number of Longest Increasing Subsequence](https://leetcode.com/problems/number-of-longest-increasing-subsequence/)
+
+    使用动态规划，dp[i]表示数组截止到nums[i]的最长升序子序列，count[i]表示数组截止到nums[i]的最长升序子序列数量，然后找出dp中最大值，再累计该最大值在count中的数量即可
+
+    ```cpp
+    int findNumberOfLIS(vector<int> &nums)
+    {
+        const int n = nums.size();
+        int ret = 0, max_length = 0;
+        if (n > 1)
+        {
+            vector<int> dp(n, 0), count(n, 1);
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < i; j++)
+                {
+                    if (nums[i] > nums[j])
+                    {
+                        if (dp[i] <= dp[j])
+                        {
+                            dp[i] = dp[j] + 1, count[i] = count[j];
+                        }
+                        else if (dp[i] == dp[j] + 1)
+                        {
+                            count[i] += count[j];
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < n; i++)
+            {
+                if (dp[i] > max_length)
+                {
+                    max_length = dp[i], ret = count[i];
+                }
+                else if (dp[i] == max_length)
+                {
+                    ret += count[i];
+                }
+            }
+        }
+        else
+        {
+            ret = n;
+        }
+        return ret;
+    }
+    ```
+
+- [674. Longest Continuous Increasing Subsequence](https://leetcode.com/problems/longest-continuous-increasing-subsequence/)
+
+    使用滑动窗口框出所有严格递增子数组，取滑动窗口最大值即可，时间复杂度$O(n)$
+
+    ```cpp
+    int findLengthOfLCIS(vector<int> &nums)
+    {
+        int ans = 0, cur_length = 1, count = nums.size();
+        if (count > 0)
+        {
+            for (int i = 1; i < nums.size(); i++)
+            {
+                if (nums[i] > nums[i - 1])
+                {
+                    cur_length++;
+                }
+                else
+                {
+                    cur_length = 1;
+                    ans = max(ans, cur_length);
+                }
+            }
+            ans = max(ans, cur_length); // for first and last item
+        }
+        return ans;
     }
     ```
 
