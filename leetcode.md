@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-12 15:30:01
+ * @LastEditTime: 2019-12-13 17:51:51
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4211,6 +4211,78 @@
     }
     ```
 
+- [397. Integer Replacement](https://leetcode.com/problems/integer-replacement/)
+
+    - 递归写法，LeetCode提交时间效率30%
+
+    ```cpp
+    int integerReplacement(int n)
+    {
+        return unsignedIntegerReplacement((unsigned int)(n));
+    }
+    int unsignedIntegerReplacement(unsigned int n)
+    {
+        if (n > 1)
+        {
+            if (n & 0x1)
+            {
+                return 1 + min(unsignedIntegerReplacement(n + 1), unsignedIntegerReplacement(n - 1));
+            }
+            else
+            {
+                return 1 + unsignedIntegerReplacement(n >> 1);
+            }
+        }
+        return 0;
+    }
+    ```
+
+    - 非递归，统计1的数量并快速消除右侧的所有1，数学方法，LeetCode提交时间效率75%
+
+    ```cpp
+    int countbits(int n)
+    {
+        int ret = 0;
+        while (n)
+        {
+            ret++;
+            n &= n - 1;
+        }
+        return ret;
+    }
+    int integerReplacement(int n)
+    {
+        int ret = 0;
+        if (n == numeric_limits<int>::max())
+        {
+            ret = 32;
+        }
+        else
+        {
+            while (n != 1)
+            {
+                if (n & 0x1)
+                {
+                    if (n == 3 || countbits(n - 1) < countbits(n + 1))
+                    {
+                        n--;
+                    }
+                    else
+                    {
+                        n++;
+                    }
+                }
+                else
+                {
+                    n = (n >> 1);
+                }
+                ret++;
+            }
+        }
+        return ret;
+    }
+    ```
+
 - [400](https://leetcode.com/problems/nth-digit/)
     
     在$1,2,3,4,5,6,7,8,9,10,11,...$的数列中找到第n个数字，思想简单，分别计算不同位宽的数字个数即可(k位数一共占据$k*(9*10^k)$个位置)，但是注意实现时的具体细节处理。
@@ -6119,6 +6191,39 @@
     }
     ```
 
+- [885. Spiral Matrix III](https://leetcode.com/problems/spiral-matrix-iii/)
+
+    回字形填充，拒绝所有超出$R*C$矩阵范围的坐标即可，最坏情况下的时间复杂度$O(4*max(R,C)^2)$
+
+    ```cpp
+    vector<vector<int>> spiralMatrixIII(int R, int C, int r0, int c0)
+    {
+        vector<vector<int>> cords;
+        int v = 0, total = R * C;
+        int round = 0;
+        cords.push_back({r0, c0}), v++;
+        vector<int> directions{1, 0, -1, 0, 1};
+        while (v < total)
+        {
+            r0--, c0++, round++;
+            int i = r0, j = c0, distance = round * 2;
+            for (int d = 0; d < 4; d++)
+            {
+                int r = directions[d], c = directions[d + 1];
+                for (int k = 0; v < total && k < distance; k++)
+                {
+                    i += r, j += c;
+                    if (i >= 0 && j >= 0 && i < R && j < C)
+                    {
+                        cords.push_back({i, j}), v++;
+                    }
+                }
+            }
+        }
+        return cords;
+    }
+    ```
+
 - [896](https://leetcode.com/problems/monotonic-array/)
     判断一个数列是否单调，单调包含单调递增和单调递减，非严格单调还包含相等的情况
     - two pass，第一遍扫描判断是否全部 <= ，第二遍扫描判断是否全部 >=，两次结果取或关系
@@ -6181,6 +6286,57 @@
 		}
 		return ans;
 	}
+    ```
+
+- [914. X of a Kind in a Deck of Cards](https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/)
+
+    当给定数组deck长度小于2时明显不可能，当长度大于等于2时，统计每个不同的数出现的次数（桶统计或者hashmap），然后求所有次数的最大公约数（X）大约等于2即可
+
+    ```cpp
+    int gcd(int a, int b)
+    {
+        if (a < b){
+            swap(a, b);
+        }
+        while (b != 0){
+            int r = a % b;
+            a = b;
+            b = r;
+        }
+        return a;
+    }
+    bool hasGroupsSizeX(vector<int> &deck)
+    {
+        const int count = deck.size();
+        bool ret = false;
+        if (count >= 2)
+        {
+            unordered_map<int, int> number_of_unique_deck;
+            for (auto &&v : deck)
+            {
+                if (number_of_unique_deck.find(v) != number_of_unique_deck.end())
+                {
+                    number_of_unique_deck[v]++;
+                }
+                else
+                {
+                    number_of_unique_deck[v] = 1;
+                }
+            }
+            vector<int> values;
+            for (auto &&item : number_of_unique_deck)
+            {
+                values.push_back(item.second);
+            }
+            int x = values[0]; // deck非空时values至少有一个值
+            for (int i = 1; i < values.size(); i++)
+            {
+                x = gcd(x, values[i]);
+            }
+            ret = x >= 2;
+        }
+        return ret;
+    }
     ```
 
 - [916. Word Subsets](https://leetcode.com/problems/word-subsets/)
