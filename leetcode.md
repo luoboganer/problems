@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-14 17:01:23
+ * @LastEditTime: 2019-12-14 18:12:06
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1401,7 +1401,7 @@
     }
     ```
 
-- [79](https://leetcode.com/problems/word-search/)
+- [79. Word Search](https://leetcode.com/problems/word-search/)
 
     在一个给定的字符矩阵grid中搜索是否有连续的字符串组成单词word，典型的DFS深度优先搜索应用
 
@@ -2505,6 +2505,94 @@
         bool search(string word)
         {
             return search_helper(word, dictionary);
+        }
+    };
+    ```
+
+- [212. Word Search II](https://leetcode.com/problems/word-search-ii/)
+
+    与[79. Word Search](https://leetcode.com/problems/word-search/)类似，在给定的二维字符表格中搜索可能的单词，当单词数量太多时采用字典树（Trie）数据结构来存储所有单词，DFS方式遍历整个字符表格
+
+    ```cpp
+    class Solution
+    {
+    private:
+        struct TrieNode
+        {
+            bool isword;
+            TrieNode *next[26];
+            TrieNode()
+            {
+                isword = false;
+                for (int i = 0; i < 26; i++)
+                {
+                    next[i] = nullptr;
+                }
+            }
+        };
+        void dfs_helper(TrieNode *root, vector<vector<char>> &board, int i, int j, string &cur, vector<string> &ans)
+        {
+            if (i >= 0 && j >= 0 && i < board.size() && j < board[0].size() && board[i][j] != '#')
+            {
+                // 搜索范围没有超出board且当前字符未被使用
+                char ch = board[i][j];
+                int index = (int)(ch - 'a');
+                if (root->next[index])
+                {
+                    board[i][j] = '#';
+                    cur.push_back(ch);
+                    if (root->next[index]->isword)
+                    {
+                        ans.push_back(cur);                // find a word
+                        root->next[index]->isword = false; // remove the word to avoiding duplication
+                    }
+                    // 递归查找
+                    vector<int> directions{1, 0, -1, 0, 1};
+                    root = root->next[index];
+                    for (int k = 0; k < 4; k++)
+                    {
+                        dfs_helper(root, board, i + directions[k], j + directions[k + 1], cur, ans);
+                    }
+                    cur.pop_back();
+                    board[i][j] = ch;
+                }
+            }
+        }
+
+    public:
+        vector<string> findWords(vector<vector<char>> &board, vector<string> &words)
+        {
+            // 建立字典树
+            TrieNode *dictionary = new TrieNode();
+            for (auto &&word : words)
+            {
+                TrieNode *root = dictionary;
+                for (auto &&ch : word)
+                {
+                    int index = (int)(ch - 'a');
+                    if (!root->next[index])
+                    {
+                        root->next[index] = new TrieNode();
+                    }
+                    root = root->next[index];
+                }
+                root->isword = true;
+            }
+            // 在二维字母表中dfs搜索字典树中的每个单词
+            vector<string> ans;
+            if (board.size() > 0 && board[0].size() > 0)
+            {
+                int m = board.size(), n = board[0].size();
+                string cur;
+                for (int i = 0; i < m; i++)
+                {
+                    for (int j = 0; j < n; j++)
+                    {
+                        dfs_helper(dictionary, board, i, j, cur, ans);
+                    }
+                }
+            }
+            return ans;
         }
     };
     ```
