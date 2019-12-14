@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-13 17:51:51
+ * @LastEditTime: 2019-12-14 17:01:23
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1621,6 +1621,55 @@
             }
             ans = dp.back();
         }
+        return ans;
+    }
+    ```
+
+- [93. Restore IP Addresses](https://leetcode.com/problems/restore-ip-addresses/)
+
+    每次从剩余字符串的开头取出1到3位作为一个整型数，递归得处理剩余字符串，看是否构成四个0到255范围内的整型数时恰好用完字符串，其中注意0只能由字符串'0'构成，stoi('00')=0不符合要求
+
+    ```cpp
+    void helper(string &s, int i, int length, vector<int> &cur, vector<string> &ans)
+    {
+        if (i + length <= s.length())
+        {
+            int v = stoi(s.substr(i, length));
+            if (to_string(v).length() != length)
+            {
+                return; // for avoiding stoi(00)=0
+            }
+            if (v < 256 && v >= 0)
+            {
+                cur.push_back(v);
+                if (cur.size() < 4 && i + length < s.length())
+                {
+                    for (int k = 1; k <= 3; k++)
+                    {
+                        helper(s, i + length, k, cur, ans);
+                    }
+                }
+                else if (cur.size() == 4 && i + length == s.length())
+                {
+                    string ip;
+                    for (int i = 0; i < 4; i++)
+                    {
+                        ip += to_string(cur[i]);
+                        ip.push_back('.');
+                    }
+                    ans.push_back(ip.substr(0, ip.length() - 1));
+                }
+                cur.pop_back();
+            }
+        }
+    }
+    vector<string> restoreIpAddresses(string s)
+    {
+        vector<string> ans;
+        vector<int> cur;
+        helper(s, 0, 1, cur, ans);
+        helper(s, 0, 2, cur, ans);
+        helper(s, 0, 3, cur, ans);
         return ans;
     }
     ```
@@ -6072,6 +6121,34 @@
 - [874](https://leetcode.com/problems/walking-robot-simulation/)
 
     用坐标$(0,1)-north,(1,0)-east,(0,-1)-north,(-1,0)-west$来表示四个方向模拟机器人行走过程即可，注意题目要求返回的是机器人在行走过程中距离原点的最远距离，而不是机器人结束行走后距离原点的最终距离。
+
+- [875. Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/)
+
+    本题的题意为在$\sum_{i=0}^{n-1}\left \lceil \frac{piles[i]}{h}\right \rceil \le H$限制下求$min(h)$，符合题意的h值范围应该在区间$[1,max(piles)]$中，二分搜索即可，时间复杂度$O(nlog(m))$，其中$n=piles.length,m=max(piles)$
+
+    ```cpp
+    int minEatingSpeed(vector<int> &piles, int H)
+    {
+        int left = 1, right = *max_element(piles.begin(), piles.end());
+        while (left < right)
+        {
+            int mid = left + ((right - left) >> 1), hours = 0;
+            for (auto &&v : piles)
+            {
+                hours += (int)(ceil(v * 1.0 / mid));
+            }
+            if (hours <= H)
+            {
+                right = mid;
+            }
+            else
+            {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+    ```
 
 - [876](https://leetcode.com/problems/middle-of-the-linked-list/solution/)
     寻找单链表的中间节点，两种方法
