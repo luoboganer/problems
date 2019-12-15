@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-14 18:12:06
+ * @LastEditTime: 2019-12-15 17:58:36
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -6642,6 +6642,41 @@
     }
     ```    
 
+- [931. Minimum Falling Path Sum](https://leetcode.com/problems/minimum-falling-path-sum/)
+    
+    在给定的矩阵中每行选择一个数，如果第i行选择了第j列，则第i+1行只能在第j-1、j、j+1三列中选择，使得选择的所有数的和最小。典型的动态规划问题，用dp[i][j]表示以A[i][j]为终点的Minimum Falling Path Sum，则$dp[i][j]=A[i][j]+min(dp[i-1][j-1]+dp[i-1][j]+dp[i-1][j+1])$，然后在最后一行的值中取最小值即可。
+
+    ```cpp
+    int minFallingPathSum(vector<vector<int>>& A) {
+        int ans=0;
+		if(!((A.size()==0)||(A[0].size()==0))){
+			int rows=A.size(),cols=A[0].size();
+			if(cols<2){
+				for (int i = 0; i < rows; i++)
+				{
+					ans+=A[i][0];
+				}
+			}else{
+				for (size_t i = 1; i < rows; i++)
+				{
+					A[i][0]+=min(A[i-1][0],A[i-1][1]);
+					for (int j = 1; j < cols-1; j++)
+					{
+						A[i][j]+=min(min(A[i-1][j-1],A[i-1][j]),A[i-1][j+1]);
+					}
+					A[i][cols-1]+=min(A[i-1][cols-2],A[i-1][cols-1]);
+				}
+				ans=numeric_limits<int>::max();
+				for (int i = 0; i < rows; i++)
+				{
+					ans=min(ans,A[rows-1][i]);
+				}
+			}
+		}
+		return ans;
+    }
+    ```
+
 - [937. Reorder Data in Log Files](https://leetcode.com/problems/reorder-data-in-log-files/)
 
     本题即为简单的字符串排序，但是题目意思要求的排序规则，英文很难理解，应该时:
@@ -8046,6 +8081,359 @@
                     ans += matrix[i][j];
                 }
             }
+        }
+        return ans;
+    }
+    ```
+
+- [1287. Element Appearing More Than 25% In Sorted Array](https://leetcode.com/problems/element-appearing-more-than-25-in-sorted-array/)
+
+    寻找升序排序数组中出现次数超过$\frac{1}{4}$的元素
+
+    - 数组有序，则遍历数组统计所有元素出现的次数，直到该次数大于数组元素总数的$\frac{1}{4}$，时间复杂度$O(n)$
+
+    ```cpp
+    int findSpecialInteger(vector<int> &arr)
+    {
+        const int length = arr.size();
+        int value = -1, count = 0;
+        for (int i = 0; i < length; i++)
+        {
+            if (arr[i] == value)
+            {
+                count++;
+            }
+            else
+            {
+                count = 1, value = arr[i];
+            }
+            if (count * 4 > length)
+            {
+                break;
+            }
+        }
+        return value;
+    }
+    ```
+
+    - 出现次数超出元素总数的$\frac{1}{4}$，则该数一定会在$\frac{1}{4}$、$\frac{1}{2}$、$\frac{3}{4}$三个位置中的一个出现，统计这三个数的数量是否超出$\frac{1}{4}$即可，在此过程中还可以使用二叉搜索该数在数组中的位置，将时间复杂度降低到$O(log(n))$
+
+    ```cpp
+    int findSpecialInteger(vector<int> &arr)
+    {
+        const int length = arr.size();
+        vector<int> indexs{length / 4, length / 2, length * 3 / 4};
+        int value = -1, count = 0;
+        for (auto &&index : indexs)
+        {
+            value = arr[index], count = 1;
+            int i = index - 1;
+            while (i >= 0 && arr[i] == value)
+            {
+                count++, i--;
+            }
+            i = index + 1;
+            while (i < length && arr[i] == value)
+            {
+                count++, i++;
+            }
+            if (count * 4 > length)
+            {
+                break;
+            }
+        }
+        return value;
+    }
+    ```
+
+    - 方法二的binary search版本
+
+    ```cpp
+    int binary_search(vector<int> &arr, int index, bool left_end)
+    {
+        int target = arr[index];
+        if (left_end)
+        {
+            // find left-most index so that arr[index]=target
+            int left = 0, right = index;
+            while (left < right)
+            {
+                int mid = left + ((right - left - 1) >> 1);
+                if (arr[mid] < target)
+                {
+                    left = mid + 1;
+                }
+                else
+                {
+                    right = mid;
+                }
+            }
+            index = left;
+        }
+        else
+        {
+            // find right-most index so that arr[index]=target
+            int left = index, right = arr.size() - 1;
+            while (left < right)
+            {
+                int mid = left + ((right - left + 1) >> 1);
+                if (arr[mid] > target)
+                {
+                    right = mid - 1;
+                }
+                else
+                {
+                    left = mid;
+                }
+            }
+            index = left;
+        }
+        return index;
+    }
+    int findSpecialInteger(vector<int> &arr)
+    {
+        const int length = arr.size();
+        vector<int> indexs{length / 4, length / 2, length * 3 / 4};
+        int value = -1, count = 0;
+        for (auto &&index : indexs)
+        {
+            int left = binary_search(arr, index, true);
+            int right = binary_search(arr, index, false);
+            if ((right - left + 1) * 4 > length)
+            {
+                value = arr[index];
+                break;
+            }
+        }
+        return value;
+    }
+    ```
+
+- [1288. Remove Covered Intervals](https://leetcode.com/problems/remove-covered-intervals/)
+
+    给定n个时间段，移除被其他时间段完全覆盖的时间段，统计还剩下的时间段
+
+    - 顺序扫描所有的时间段interval，如果interval还未被移除，则和用除自己之外的所有其它时间段intervals[j]比较，如果intervals[j]被覆盖，则移除interv[j]，时间复杂度$O(n^2)$
+
+    ```cpp
+    int removeCoveredIntervals(vector<vector<int>> &intervals)
+    {
+        int count = intervals.size();
+        vector<bool> removed(count, false);
+        for (int i = 0; i < count; i++)
+        {
+            if (!removed[i])
+            {
+                int start = intervals[i][0], end = intervals[i][1];
+                int j = 0;
+                while (j < i)
+                {
+                    if (!removed[j] && intervals[j][0] >= start && intervals[j][1] <= end)
+                    {
+                        removed[j] = true;
+                    }
+                    j++;
+                }
+                j++; // avoiding to remove intervals[i] (itself)
+                while (j < count)
+                {
+                    if (!removed[j] && intervals[j][0] >= start && intervals[j][1] <= end)
+                    {
+                        removed[j] = true;
+                    }
+                    j++;
+                }
+            }
+        }
+        for (auto &&remove : removed)
+        {
+            if (remove)
+            {
+                count--;
+            }
+        }
+        return count;
+    }
+    ```
+
+    - 首先在$O(nlog(n))$时间内对intervals按照每个时间段的开时时间即intervals[i][0]排序，则当$j>i$时不可能存在$intervals[i][0]>intervals[j][0]$的情况，即此时intervals[i]不可能覆盖intervals[j]，可以将$O(n^2)$时间内检查的内存循环操作数减少一半
+
+    ```cpp
+    int removeCoveredIntervals(vector<vector<int>> &intervals)
+    {
+        int const count = intervals.size();
+        int ret = count;
+        sort(intervals.begin(), intervals.end(), [](vector<int> a, vector<int> b) -> bool { return a[0] < b[0]; });
+        vector<bool> removed(count, false);
+        for (int i = 0; i < count; i++)
+        {
+            if (!removed[i])
+            {
+                const int end_bound = intervals[i][1];
+                for (int j = i + 1; j < count; j++)
+                {
+                    if (!removed[j] && intervals[j][1] <= end_bound)
+                    {
+                        removed[j] = true, ret--;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 进一步，在排序时首先按照interval[0]升序排列，interval[0]相同的时间区间则按interval[1]升序排列，之后一次遍历intervals时标记当前右界right，如果$intervals[i][1]<right$则interval[i]一定可以被他之前的某个interval覆盖，时间复杂度直接降低到排序时间$O(nlog(n))$
+
+    ```cpp
+    int removeCoveredIntervals(vector<vector<int>> &intervals)
+    {
+        int const count = intervals.size();
+        int ret = 0, right_bound = 0;
+        sort(intervals.begin(), intervals.end(), [](vector<int> a, vector<int> b) -> bool { return (a[0] != b[0]) ? (a[0] < b[0]) : (a[1] < b[1]); });
+        for (auto &&interval : intervals)
+        {
+            if (interval[1] > right_bound)
+            {
+                ret++, right_bound = interval[1];
+            }
+        }
+        return ret;
+    }
+    ```
+
+- [1289. Minimum Falling Path Sum II](https://leetcode.com/problems/minimum-falling-path-sum-ii/)
+
+    和[931. Minimum Falling Path Sum](https://leetcode.com/problems/minimum-falling-path-sum/)不同的是，本题限定如果第i行选在第j列，则第i+1行不能选择第j列
+    
+    - 动态规划，用dp[i][j]表示以arr[i][j]为结尾的Falling Path Sum，状态转移方程为$dp[i][j]=arr[i][j]+min(dp[i-1][k]),k \neq j$，然后求$min(dp.back())$即可，时间复杂度$O(n^3)$，其中n为方阵arr的边长
+
+    ```cpp
+    int minFallingPathSum(vector<vector<int>> &arr)
+    {
+        int ans = 0;
+        if (arr.size() > 0 && arr[0].size() > 0)
+        {
+            int rows = arr.size(), cols = arr[0].size();
+            for (int i = 1; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    int temp = numeric_limits<int>::max(), k = 0;
+                    while (k < j)
+                    {
+                        temp = min(temp, arr[i - 1][k++]);
+                    }
+                    k++;
+                    while (k < cols)
+                    {
+                        temp = min(temp, arr[i - 1][k++]);
+                    }
+                    arr[i][j] += temp;
+                }
+            }
+            ans = numeric_limits<int>::max();
+            for (auto &&v : arr.back())
+            {
+                ans = min(ans, v);
+            }
+        }
+        return ans;
+    }
+    ```
+    
+    - 进一步优化，可以将求$min(dp[i-1][k]),k \neq j$的过程转化为求dp[i-1]中的最小值$dp[index_0]$和第二小值$dp[index_1]$，则$dp[i][j]=arr[i][j]+\left\{\begin{matrix} dp[i-1][index_0], index_0 \neq j\\  dp[i-1][index_1],index_0 = j \end{matrix}\right.$然后求$min(dp.back())$即可，时间复杂度降低到$O(n^2)$，其中n为方阵arr的边长
+
+    ```cpp
+    int minFallingPathSum(vector<vector<int>> &arr)
+    {
+        int ans = 0;
+        if (arr.size() > 0 && arr[0].size() > 0)
+        {
+            int rows = arr.size(), cols = arr[0].size();
+            for (int i = 1; i < rows; i++)
+            {
+                int first_min = numeric_limits<int>::max(), second_min = first_min;
+                int first = -1;
+                for (int j = 0; j < cols; j++)
+                {
+                    if (arr[i - 1][j] < first_min)
+                    {
+                        second_min = first_min, first_min = arr[i - 1][j], first = j;
+                    }
+                    else if (arr[i - 1][j] < second_min)
+                    {
+                        second_min = arr[i - 1][j];
+                    }
+                }
+                for (int j = 0; j < cols; j++)
+                {
+                    arr[i][j] += (first == j) ? second_min : first_min;
+                }
+            }
+            ans = *min_element(arr.back().begin(), arr.back().end());
+        }
+        return ans;
+    }
+    ```
+
+- [1291. Sequential Digits](https://leetcode.com/problems/sequential-digits/)
+
+    - 递归构造所有符合条件的数
+
+    ```cpp
+    string next(string s)
+    {
+        string ret;
+        if (!s.empty() && s.back() < '9')
+        {
+            s.push_back(s.back() + 1);
+            ret = s.substr(1, s.length() - 1);
+        }
+        return ret;
+    }
+    vector<int> sequentialDigits(int low, int high)
+    {
+        vector<int> ans;
+        string a = to_string(low), b = to_string(high), start;
+        char start_digit = '0';
+        int width_a = a.length(), width_b = b.length();
+        for (int i = 0; i < width_a; i++)
+        {
+            start.push_back(++start_digit);
+        }
+        for (int width = width_a; width <= width_b; width++)
+        {
+            string cur = start;
+            start.push_back(++start_digit);
+            while (!cur.empty() && cur.length() == width_a && cur.compare(a) < 0)
+            {
+                cur = next(cur);
+            }
+            while (!cur.empty() && (cur.length() < width_b || (cur.length() == width_b && cur.compare(b) <= 0)))
+            {
+                ans.push_back(stoi(cur));
+                cur = next(cur);
+            }
+        }
+        return ans;
+    }
+    ```
+
+    - 打表
+
+    ```cpp
+    vector<int> sequentialDigits(int low, int high)
+    {
+        vector<int> ans, table{12, 23, 34, 45, 56, 67, 78, 89, 123, 234, 345, 456, 567, 678, 789, 1234, 2345, 3456, 4567, 5678, 6789, 12345, 23456, 34567, 45678, 56789, 123456, 234567, 345678, 456789, 1234567, 2345678, 3456789, 12345678, 23456789, 123456789};
+        int i = 0, length = table.size();
+        while (i < length && table[i] < low)
+        {
+            i++;
+        }
+        while (i < length && table[i] <= high)
+        {
+            ans.push_back(table[i++]);
         }
         return ans;
     }
