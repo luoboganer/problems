@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-16 20:18:24
+ * @LastEditTime: 2019-12-16 21:24:22
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -7407,6 +7407,56 @@
         }
         return ret;
     
+    ```
+
+- [1091. Shortest Path in Binary Matrix](https://leetcode.com/problems/shortest-path-in-binary-matrix/)
+
+    BFS+Queue
+
+    ```cpp
+    int shortestPathBinaryMatrix(vector<vector<int>> &grid)
+    {
+        int ret = -1;
+        if (grid.size() > 0 && grid[0].size() > 0 && grid[0][0] == 0)
+        {
+            int rows = grid.size(), cols = grid[0].size();
+            vector<int> shifts{-1, 0, 1};
+            queue<vector<int>> cords;
+            cords.push({0, 0});
+            ret = 0;
+            bool notfound = true;
+            while (notfound && !cords.empty())
+            {
+                int count = cords.size();
+                while (count)
+                {
+                    int r0 = cords.front()[0], c0 = cords.front()[1];
+                    cords.pop();
+                    if (r0 == rows - 1 && c0 == cols - 1)
+                    {
+                        notfound = false;
+                        break;
+                    }
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            int r = r0 + shifts[i], c = c0 + shifts[j];
+                            if (r >= 0 && c >= 0 && r < rows && c < cols && grid[r][c] == 0)
+                            {
+                                grid[r][c] = 1;
+                                cords.push({r, c});
+                            }
+                        }
+                    }
+                    count--;
+                }
+                ret++;
+            }
+            ret = notfound ? -1 : ret;
+        }
+        return ret;
+    }
     ```
 
 - [1114](https://leetcode.com/problems/print-in-order/)
