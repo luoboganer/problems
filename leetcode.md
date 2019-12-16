@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-15 17:58:36
+ * @LastEditTime: 2019-12-16 20:18:24
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -6504,6 +6504,35 @@
     }
     ```
 
+- [915. Partition Array into Disjoint Intervals](https://leetcode.com/problems/partition-array-into-disjoint-intervals/)
+
+    设left长度为mid，则在满足$max_{i=0}^{mid-1}A[i] \le min_{i=mid}^{n-1}A[i]$的条件下求$min(mid)$，时间复杂度、空间复杂度均为$O(n)$
+    
+    ```cpp
+    int partitionDisjoint(vector<int> &A)
+    {
+        const int count = A.size();
+        vector<int> rightMin(count, 0);
+        rightMin[count - 1] = A[count - 1];
+        int leftMax = numeric_limits<int>::min();
+        for (int i = count - 2; i >= 0; i--)
+        {
+            rightMin[i] = min(A[i], rightMin[i + 1]);
+        }
+        int ret = 0;
+        for (int i = 0; i < count - 1; i++)
+        {
+            leftMax = max(leftMax, A[i]);
+            if (leftMax <= rightMin[i + 1])
+            {
+                ret = i + 1;
+                break;
+            }
+        }
+        return ret;
+    }
+    ```
+
 - [916. Word Subsets](https://leetcode.com/problems/word-subsets/)
 
     - 要求A中universal的word，针对A中的每个word，如果是universal的需要满足$letters\_count\_s[j] \ge letters\_count\_B[i][j]$，其中i遍历B中的全部单词，j遍历26个字母，$letters\_count\_s[j]$表示A中单词word的组成字母统计，$letters\_count\_B[i][j]$表示B中每个单词的组成字母统计，时间复杂度$O(A.length*B.length)$，答案正确，显然会$\color{red}{TLE}$
@@ -7323,6 +7352,63 @@
     }
     ```
     
+- [1090. Largest Values From Labels](https://leetcode.com/problems/largest-values-from-labels/)
+
+    贪心算法，将所有值values从大到小排序，然后在不超出限制的情况下优先选择更大的value，在此过程中用hashmap记录每个label的使用情况以备查询是否超出限制，时间复杂度$O(nlog(n))$
+    
+    ```cpp
+    void quick_sort(vector<int> &values, vector<int> &labels, int left, int right)
+    {
+        if (left < right)
+        {
+            int p = left + ((right - left) >> 1);
+            int i = left, j = right;
+            swap(values[i], values[p]), swap(labels[i], labels[p]);
+            int value = values[i], label = labels[i];
+            while (i < j)
+            {
+                while (i < j && values[j] <= value)
+                {
+                    j--;
+                }
+                values[i] = values[j], labels[i] = labels[j];
+                while (i < j && values[i] >= value)
+                {
+                    i++;
+                }
+                values[j] = values[i], labels[j] = labels[i];
+            }
+            values[i] = value, labels[i] = label;
+            quick_sort(values, labels, left, i - 1);
+            quick_sort(values, labels, i + 1, right);
+        }
+    }
+    int largestValsFromLabels(vector<int> &values, vector<int> &labels, int num_wanted, int use_limit)
+    {
+        int ret = 0;
+        // 手写快速排序
+        quick_sort(values, labels, 0, values.size() - 1);
+        // cout << integerVectorToString(values) << endl;
+        // cout << integerVectorToString(labels) << endl;
+        unordered_map<int, int> count;
+        for (auto &&label : labels)
+        {
+            if (count.find(label) == count.end())
+            {
+                count[label] = use_limit;
+            }
+        }
+        for (int i = 0; num_wanted > 0 && i < values.size(); i++)
+        {
+            if (count[labels[i]] > 0)
+            {
+                ret += values[i], count[labels[i]]--, num_wanted--;
+            }
+        }
+        return ret;
+    
+    ```
+
 - [1114](https://leetcode.com/problems/print-in-order/)
 
     注意cpp中的多线程与线程锁机制
