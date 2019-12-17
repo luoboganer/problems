@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-17 17:13:41
+ * @LastEditTime: 2019-12-17 17:36:29
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4994,6 +4994,46 @@
     2n个给定范围的数据划分成n组使得每组最小值求和最大，基本思路是对所有数排序后对基数位置上的数求和即可，这里类似于NMS非极大值抑制的思路，主要的时间复杂度在排序上。
     - 基本想法是quick sort，时间复杂度$O(nlog(n))$
     - 本题给出了数据范围，可以bucket sort，时间复杂度$O(n)$，但是需要$O(N)$的额外空间
+
+- [572. Subtree of Another Tree](https://leetcode.com/problems/subtree-of-another-tree/)
+
+    判断二叉树t是否是二叉树s的子树，递归地，s和t完全相同或者t是s->left的子树或者t是s->right的子树
+
+    ```cpp
+    bool same(TreeNode *s, TreeNode *t)
+    {
+        bool ret = false;
+        if (!s && !t)
+        {
+            ret = true;
+        }
+        else if (s && t && s->val == t->val)
+        {
+            ret = same(s->left, t->left) && same(s->right, t->right);
+        }
+        return ret;
+    }
+    bool isSubtree(TreeNode *s, TreeNode *t)
+    {
+        bool ret = false;
+        if (!t)
+        {
+            ret = true; // 空树是任何树的子树
+        }
+        else
+        {
+            if (!s)
+            {
+                ret = false; // t非空而s空，t不可能是s的子树
+            }
+            else
+            {
+                ret = same(s, t) || isSubtree(s->left, t) || isSubtree(s->right, t);
+            }
+        }
+        return ret;
+    }
+    ```
 
 - [583](https://leetcode.com/problems/delete-operation-for-two-strings/)
 
