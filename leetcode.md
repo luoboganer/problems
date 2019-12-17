@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-16 21:24:22
+ * @LastEditTime: 2019-12-17 17:13:41
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -5329,6 +5329,68 @@
     };
     ```
 
+- [665. Non-decreasing Array](https://leetcode.com/problems/non-decreasing-array/)
+
+    判断在最多修改一个数字的条件下是否给定数组可以成为非严格升序的，时间复杂度$O(n)$，注意在第一次遇到$nums[i]>nums[i+1]$的情况下，判断是否可以通过修改$nums[i]$来保证数组非严格升序，如果可以则按照符合条件的修改办法更新数组，第二次遇到$nums[i]>nums[i+1]$则直接返回$False$
+
+    ```cpp
+    bool checkPossibility(vector<int> &nums)
+    {
+        bool cached = false, ret = true;
+        int const count = nums.size();
+        for (int i = 0; i < count - 1; i++)
+        {
+            if (nums[i] > nums[i + 1])
+            {
+                if (cached)
+                {
+                    ret = false;
+                    break;
+                }
+                else
+                {
+                    cached = true;
+                    if (i == 0)
+                    {
+                        nums[0] = nums[1]; // nums[i]是第一个数
+                    }
+                    else if (i == count - 2)
+                    {
+                        nums[i + 1] = nums[i]; // nums[i]是倒数第二个数
+                    }
+                    else if (nums[i - 1] <= nums[i + 1])
+                    {
+                        nums[i] = nums[i - 1];
+                        // nums[i]在数组中间，即 0 < i < count-1
+                        // 把nums[i]降低到和nums[i-1]一样小
+                    }
+                    else if (nums[i] <= nums[i + 2])
+                    {
+                        nums[i] = nums[i + 1];
+                        // nums[i]在数组中间，即 0 < i < count-2
+                        // 把nums[i]提高到和nums[i+1]一样大
+                    }
+                    else
+                    {
+                        ret = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+    几个典型测试数据
+
+    ```cpp
+    [4,2,3]
+    [4,2,1]
+    [2,3,3,2,4]
+    [3,4,2,3]
+    ```
+
 - [669](https://leetcode.com/problems/trim-a-binary-search-tree/)
 
     binary search tree (BST)中减掉值小于L的节点和值大于R的节点。分两步先减掉小于L的节点，第二步减掉大于R的节点。[$\color{red}{分治思想}$]
@@ -6810,6 +6872,26 @@
     直到给定的数列完全被放到牌堆里
 
     时间复杂度$O(nlog(n))$
+
+- [951. Flip Equivalent Binary Trees](https://leetcode.com/problems/flip-equivalent-binary-trees/)
+
+    判断两颗二叉树是否相同或经过翻转后是否相同，递归判断
+
+    ```cpp
+    bool flipEquiv(TreeNode *root1, TreeNode *root2)
+    {
+        bool ret = false;
+        if (!root1 && !root2)
+        {
+            ret = true;
+        }
+        else if (root1 && root2 && root1->val == root2->val)
+        {
+            ret = (flipEquiv(root1->left, root2->left) && flipEquiv(root1->right, root2->right)) || (flipEquiv(root1->left, root2->right) && flipEquiv(root1->right, root2->left));
+        }
+        return ret;
+    }
+    ```
 
 - [961](https://leetcode.com/problems/n-repeated-element-in-size-2n-array/)
     In a array A of size 2N, there are N+1 unique elements, and exactly one of these elements is repeated N time, find and return this element.
