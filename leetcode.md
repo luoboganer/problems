@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-17 17:36:29
+ * @LastEditTime: 2019-12-17 20:55:23
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4804,6 +4804,66 @@
             return {x+x0*r,y+y0*r};
         }
     };
+    ```
+
+- [508. Most Frequent Subtree Sum](https://leetcode.com/problems/most-frequent-subtree-sum/)
+
+    递归地或者非递归自底向上的求所有节点的和，然后用hashmap统计每个值出现的频率，求频率最大的值
+
+    ```cpp
+    void sumOfNodes(TreeNode *root, unordered_map<int, int> &count)
+    {
+        if (root)
+        {
+            int v = root->val;
+            if (root->left)
+            {
+                sumOfNodes(root->left, count);
+                v += root->left->val;
+            }
+            if (root->right)
+            {
+                sumOfNodes(root->right, count);
+                v += root->right->val;
+            }
+            root->val = v;
+            if (count.find(v) != count.end())
+            {
+                count[v]++;
+            }
+            else
+            {
+                count[v] = 1;
+            }
+        }
+    }
+    vector<int> findFrequentTreeSum(TreeNode *root)
+    {
+        unordered_map<int, int> count;
+        sumOfNodes(root, count);
+        vector<int> ans;
+        int frequency;
+        for (auto &&item : count)
+        {
+            if (ans.empty())
+            {
+                ans.push_back(item.first), frequency = item.second;
+            }
+            else
+            {
+                if (item.second == frequency)
+                {
+                    ans.push_back(item.first);
+                }
+                else if (item.second > frequency)
+                {
+                    ans.clear();
+                    ans.push_back(item.first), frequency = item.second;
+                }
+            }
+        }
+        return ans;
+    }
     ```
 
 - [509](https://leetcode.com/problems/fibonacci-number/)
