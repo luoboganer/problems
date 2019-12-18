@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-17 20:55:23
+ * @LastEditTime: 2019-12-18 17:24:24
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -7466,6 +7466,36 @@
 - [1024](https://leetcode.com/problems/video-stitching/)
 
     一开始设定当前右端点$cur_right$，然后按照贪心策略寻找左端点小于等于当前右端点(保证可以连接而没有断点)且右端点最远(贪心原则，以便使用最少的视频片段)的没有用过的视频片段，直到所有视频片段被用完或者当前右端点$cur_right$超过了总时间长度要求$T$。
+
+- [1026. Maximum Difference Between Node and Ancestor](https://leetcode.com/problems/maximum-difference-between-node-and-ancestor/)
+
+    给定一颗树，自顶向下的找到全局最小值min和全局最大值max，返回$max-min$即可
+
+    ```cpp
+    int helper(TreeNode *root, int max_value, int min_value)
+    {
+        int ret = max_value - min_value;
+        if (root)
+        {
+            max_value = max(max_value, root->val), min_value = min(min_value, root->val);
+            ret = max(ret, max(helper(root->left, max_value, min_value), helper(root->right, max_value, min_value)));
+        }
+        return ret;
+    }
+    int maxAncestorDiff(TreeNode *root)
+    {
+        return helper(root, root->val, root->val);
+    }
+    ```
+
+    几组典型测试数据
+
+    ```cpp
+    [8,3,10,1,6,null,14,null,null,4,7,13]
+    [2,5,0,null,null,4,null,null,6,1,null,3]
+    [1,null,2,null,0,3]
+    [2,null,0,1]
+    ```
 
 - [1032](https://leetcode.com/problems/stream-of-characters/)
 
