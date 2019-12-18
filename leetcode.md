@@ -4,8 +4,8 @@
  * @Email: 14061115@buaa.edu.cn
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
- * @LastEditors: shifaqiang
- * @LastEditTime: 2019-12-18 17:24:24
+ * @LastEditors  : shifaqiang
+ * @LastEditTime : 2019-12-18 22:52:18
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -7773,6 +7773,60 @@
             if(count[i]!=0){
                 ans+=count[i]*(count[i]-1)/2;
             }
+        }
+        return ans;
+    }
+    ```
+
+- [1138. Alphabet Board Path](https://leetcode.com/problems/alphabet-board-path/)
+
+    难点在于涉及到z的移动，需要控制移动方向不要超出board的范围
+
+    ```cpp
+    string move(int src, int dst, bool horizontal)
+    {
+        vector<char> chars{'L', 'R', 'U', 'D'};
+        int shift = horizontal ? 0 : 2;
+        string ans;
+        if (dst > src)
+        {
+            while (src < dst)
+            {
+                src++, ans += chars[1 + shift];
+            }
+        }
+        else
+        {
+            while (src > dst)
+            {
+                src--, ans += chars[0 + shift];
+            }
+        }
+        return ans;
+    }
+    string alphabetBoardPath(string target)
+    {
+        int r0 = 0, c0 = 0;
+        string ans;
+        for (auto &&ch : target)
+        {
+            int r = (int)(ch - 'a') / 5, c = (int)(ch - 'a') % 5;
+            int mid_r = r0, mid_c = c, v = mid_r * 5 + mid_c;
+            if (v < 26)
+            {
+                // 先水平移动，后垂直移动
+                ans += move(c0, c, true);
+                ans += move(r0, r, false);
+                ans.push_back('!');
+            }
+            else
+            {
+                // 如果失败，先垂直移动，后水平移动
+                ans += move(r0, r, false);
+                ans += move(c0, c, true);
+                ans.push_back('!');
+            }
+            r0 = r, c0 = c;
         }
         return ans;
     }
