@@ -256,6 +256,50 @@
     }
     ```
 
+- [25. Reverse Nodes in k-Group](https://leetcode.com/problems/reverse-nodes-in-k-group/)
+
+    翻转链表的进化版，考察链表操作的基本功
+
+    ```cpp
+    ListNode *reverseKGroup(ListNode *head, int k)
+    {
+        ListNode *start = head, *tail = head, *new_head = new ListNode(0), *new_prev = new_head;
+        new_head->next = head;
+        while (tail)
+        {
+            int count = k;
+            while (tail && count > 0)
+            {
+                tail = tail->next, count--;
+            }
+            if (count == 0)
+            {
+                // 翻转k个 [start,tail)节点，左闭右开
+                ListNode *cur = start, *pre = nullptr;
+                while (cur != tail)
+                {
+                    // 翻转当前段的k个节点
+                    ListNode *next = cur->next;
+                    cur->next = pre;
+                    pre = cur;
+                    cur = next;
+                }
+                new_prev->next = pre; //上一段的结尾(new_prev->next)连接到当前段的开始(pre)
+                new_prev = start;     //当前段的结尾(start是当前段的开始，翻转之后变成当前段的结尾)
+                start = tail;         // 起始指针指向下一段
+                // cout << listNodeToString(pre) << endl;
+            }
+            else
+            {
+                // 到了当前段(结尾)不够k个节点，直接从上一段结尾连接到当前段的开始
+                new_prev->next = start;
+                break;
+            }
+        }
+        return new_head->next;
+    }
+    ```
+
 - [29. Divide Two Integers](https://leetcode.com/problems/divide-two-integers/)
 
     - 本题特别注意边界条件特别是超出signed int的处理
@@ -5765,6 +5809,50 @@
             return ans.substr(0, ans.length() - 1); // for the last excess 'a'
         }
     };
+    ```
+
+- [725. Split Linked List in Parts](https://leetcode.com/problems/split-linked-list-in-parts/)
+
+    将给定的单向链表截断为长度尽量相等的k组，链表节点数小于k的用空链表补足k组
+
+    ```cpp
+    vector<ListNode *> splitListToParts(ListNode *root, int k)
+    {
+        int count = 0;
+        ListNode *cur = root;
+        while (cur)
+        {
+            count++, cur = cur->next;
+        }
+        int part_id = 0, length_of_part = count / k, number_of_parts_with_additional = count % k;
+        vector<ListNode *> ret;
+        cur = root;
+        while (part_id < k)
+        {
+            ListNode *head = cur, *pre = nullptr;
+            int length = length_of_part;
+            if (head)
+            {
+                while (head && length > 0)
+                {
+                    pre = head, head = head->next, length--;
+                }
+                if (head && part_id < number_of_parts_with_additional)
+                {
+                    pre = head, head = head->next;
+                }
+                pre->next = nullptr;
+                ret.push_back(cur);
+            }
+            else
+            {
+                ret.push_back(nullptr);
+            }
+            cur = head;
+            part_id++; // 分出一组到ret
+        }
+        return ret;
+    }
     ```
 
 - [733](https://leetcode.com/problems/flood-fill/)
