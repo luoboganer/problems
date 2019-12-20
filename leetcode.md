@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2019-12-20 17:52:00
+ * @LastEditTime : 2019-12-20 18:31:03
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -6287,6 +6287,40 @@
             helper(graph, ans, cur);
         }
         return ans;
+    }
+    ```
+
+- [817. Linked List Components](https://leetcode.com/problems/linked-list-components/)
+
+    用数组标记G中的所有数为true，然后遍历链表head，对head中相邻的两个节点cur和cur->next，如果值的标记都是flag，则将cur值的标记改为false，最后统计标记中有多少个true即可
+
+    ```cpp
+    int numComponents(ListNode *head, vector<int> &G)
+    {
+        vector<bool> flags(10001, false);
+        for (auto &&v : G)
+        {
+            flags[v] = true;
+        }
+        if (head && head->next)
+        {
+            ListNode *next = head->next;
+            while (next)
+            {
+                if (flags[head->val] && flags[next->val])
+                {
+                    flags[head->val] = false;
+                }
+                head = head->next, next = next->next;
+            }
+        }
+        int ret = 0;
+        for(auto &&v:flags){
+            if(v){
+                ret++;
+            }
+        }
+        return ret;
     }
     ```
 
