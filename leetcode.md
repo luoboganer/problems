@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2019-12-18 22:52:18
+ * @LastEditTime : 2019-12-20 17:52:00
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1998,6 +1998,39 @@
 - [143](https://leetcode.com/problems/reorder-list/)
 
     链表、树、图等指针操作千千万万要注意空指针甚至是输入根节点为空的情况。
+
+- [147. Insertion Sort List](https://leetcode.com/problems/insertion-sort-list/)
+
+    链表存储的数组，插入排序操作
+
+    ```cpp
+    ListNode *insertionSortList(ListNode *head)
+    {
+        ListNode *new_head = new ListNode(0), *root = new_head, *cur = head, *pre_of_cur = new_head;
+        new_head->next = head;
+        while (cur)
+        {
+            root = new_head;
+            while (root->next != cur && root->next->val < cur->val)
+            {
+                // 为cur寻找合适的位置
+                root = root->next;
+            }
+            if (root->next != cur)
+            {
+                // cur不在合适的位置，需要移动
+                pre_of_cur->next = cur->next, cur->next = root->next, root->next = cur;
+                cur = pre_of_cur->next; // 将cur移动到下一个未排序节点
+            }
+            else
+            {
+                // 当前cur已经在正确位置，直接将cur移动到下一个未排序位置
+                pre_of_cur = cur, cur = cur->next;
+            }
+        }
+        return new_head->next;
+    }
+    ```
 
 - [155](https://leetcode.com/problems/min-stack/)
 
