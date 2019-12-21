@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2019-12-20 18:31:03
+ * @LastEditTime : 2019-12-21 16:18:20
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -1334,48 +1334,57 @@
 
     即荷兰国旗问题，三色排序，快速排序的基本思想练习
 
+    - two pass，count and set
+
     ```cpp
     void sortColors(vector<int> &nums)
     {
-        // method 1, two pass
+        vector<int> count(3, 0);
+        for (auto &&v : nums)
+        {
+            count[v]++;
+        }
+        int start = 0, end = 0;
+        for (int v = 0; v < 3; v++)
+        {
+            start = end, end += count[v];
+            for (int i = start; i < end; i++)
+            {
+                nums[i] = v;
+            }
+        }
+    }
+    ```
 
-        // int count[3] = {0, 0, 0};
-        // for (auto x : nums)
-        // {
-        // 	count[x]++;
-        // }
-        // int k = 0;
-        // for (int i = 0; i < 3; i++)
-        // {
-        // 	int j = 0;
-        // 	while (j < count[i])
-        // 	{
-        // 		j++;
-        // 		nums[k++] = count[i];
-        // 	}
-        // }
+    - one pass，method like quick sort
 
-        // method 2, one pass, quich sort
+    ```cpp
+    void sortColors(vector<int> &nums)
+    {
+        int left = -1, right = nums.size(), cur = 0;
+        while (cur < right)
+        {
+            if (nums[cur] == 0)
+            {
+                swap(nums[++left], nums[cur++]);
+            }
+            else if (nums[cur] == 2)
+            {
+                swap(nums[--right], nums[cur]);
+            }
+            else
+            {
+                cur++;
+            }
+        }
+    }
+    ```
 
-        // int left = 0, right = nums.size() - 1, cur = 0;
-        // while (cur <= right)
-        // {
-        // 	if (nums[cur] == 0)
-        // 	{
-        // 		swap(nums[left++], nums[cur++]);
-        // 	}
-        // 	else if (nums[cur] == 2)
-        // 	{
-        // 		swap(nums[right--], nums[cur]);
-        // 	}
-        // 	else
-        // 	{
-        // 		cur++;
-        // 	}
-        // }
+    - one pass , [0,i) - 0   [i,j) - 1    [j,k) - 2
 
-        // method 3, one pass , [0,i) - 0   [i,j) - 1    [j,k) - 2
-
+    ```cpp
+    void sortColors(vector<int> &nums)
+    {
         int i = 0, j = 0, tmp = 0;
         for (int k = 0; k < nums.size(); k++)
         {
@@ -4529,6 +4538,42 @@
 - [401](https://leetcode.com/problems/binary-watch/)
 
     有些问题要用逆向思维来解决，本题本来是要用给定二进制位中1的个数来拼凑出可能的时间表示，组合数过程不好写，可以反过来写所有$00:00 - 23:59$中所有可能的时间中二进制位中1的个数符合题目要求的时间点。
+
+- [430. Flatten a Multilevel Doubly Linked List](https://leetcode.com/problems/flatten-a-multilevel-doubly-linked-list/)
+
+    链表操作，拉平一个多级列表
+
+    ```cpp
+    Node *flatten(Node *head)
+    {
+        if (head)
+        {
+            stack<Node *> st;
+            Node *pre = nullptr, *cur = head;
+            while (cur || !st.empty())
+            {
+                if (cur)
+                {
+                    if (cur->child)
+                    {
+                        if(cur->next){
+                            st.push(cur->next);
+                        }
+                        cur->next = cur->child;
+                        cur->next->prev = cur;
+                        cur->child = nullptr;
+                    }
+                    pre = cur, cur = cur->next;
+                }
+                else
+                {
+                    cur = pre, cur->next = st.top(), st.top()->prev = cur, cur = cur->next, st.pop();
+                }
+            }
+        }
+        return head;
+    }
+    ```
 
 - [437. Path Sum III](https://leetcode.com/problems/path-sum-iii/)
 
