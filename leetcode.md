@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2019-12-21 16:18:20
+ * @LastEditTime : 2019-12-25 00:33:01
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4829,6 +4829,22 @@
     };
     ```
 
+- [470. Implement Rand10() Using Rand7()](https://leetcode.com/problems/implement-rand10-using-rand7/)
+
+    拒绝采样即可
+
+    ```cpp
+    int rand10()
+    {
+        int ret;
+        do
+        {
+            ret = rand7() + (rand7() - 1) * 7;
+        } while (ret>40);
+        return 1 + (ret - 1) % 10;
+    }
+    ```
+
 - [475](https://leetcode.com/problems/heaters/submissions/)
 
     在数轴上固定位置有一些house，同样在固定位置有一些heater，求heater的最小作用半径以覆盖所有的house，算法基本思想如下：
@@ -7868,6 +7884,44 @@
             ret = notfound ? -1 : ret;
         }
         return ret;
+    }
+    ```
+
+- [1109. Corporate Flight Bookings](https://leetcode.com/problems/corporate-flight-bookings/)
+
+    - 最直接的想法是用一个数组记录每个飞机的定位数，时间复杂度$O(n*bookings.length)$，但是会$\color{red}{TLE}$
+
+    ```cpp
+    vector<int> corpFlightBookings(vector<vector<int>>& bookings, int n) {
+        vector<int> ans(n+1,0);
+        for (int i = 0; i < bookings.size(); i++)
+        {
+            for (int j = bookings[i][0]; j <= bookings[i][1]; j++)
+            {
+                ans[j]+=bookings[i][2];
+            }
+        }
+        ans.erase(ans.begin());
+        return ans;
+    }
+    ```
+
+    - 使用扫描线（running scan）的概念，可以记录一个定位区间的首架飞机（定位数，正值）和最后一架飞机的下一架（负值），然后从左向右累加，时间复杂度$O(max(n,bookings.length))$，参考[BLOG](https://blog.csdn.net/sinat_27953939/article/details/95119024)
+
+    ```cpp
+    vector<int> corpFlightBookings(vector<vector<int>> &bookings, int n)
+    {
+        vector<int> count(n + 1, 0);
+        for (auto &&item : bookings)
+        {
+            count[item[0] - 1] += item[2], count[item[1]] -= item[2];
+        }
+        for (int i = 1; i < n; i++)
+        {
+            count[i] += count[i - 1];
+        }
+        count.pop_back(); // throw the last auxiliary value
+        return count;
     }
     ```
 
