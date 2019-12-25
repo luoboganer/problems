@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2019-12-25 17:23:53
+ * @LastEditTime : 2019-12-25 22:01:33
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -440,7 +440,7 @@
 
 - [37. Sudoku Solver](https://leetcode.com/problems/sudoku-solver/)
 
-    填满一个数独表格，用DFS的方式尝试、回溯即可
+    填满一个数独表格，每一个格子有9中可能，用DFS的方式尝试、回溯即可，时间复杂度$O(9^k),k \le 81$，其中$k$是给定数独表中待填充空格的数量
 
     ```cpp
     bool sudoku_dfs(vector<vector<int>> &sudoku, int index, vector<vector<bool>> &row, vector<vector<bool>> &col, vector<vector<bool>> &cell)
@@ -687,6 +687,176 @@
                 swap(matrix[i][j], matrix[j][i]);
             }
         }
+    }
+    ```
+
+- [51. N-Queens](https://leetcode.com/problems/n-queens/)
+
+    给定n，求所有可能的N皇后排列，N皇后的规则为N个皇后放入N*N的棋盘中使其不能互相攻击：
+    - 同行会互相攻击
+    - 同列会互相攻击
+    - 同斜线会互相攻击
+    解决该问题的基本思路是DFS+backtracking
+
+    - 基本的回溯法，并在每次尝试时检查是否会有互相攻击的情况（$\color{red}{52ms}$）
+    
+    ```cpp
+    bool check(vector<string> cur, int r, int c, int n)
+    {
+        bool ret = true;
+        // 同一列
+        for (int i = 0; ret && i < n; i++)
+        {
+            if (cur[i][c] == 'Q')
+            {
+                ret = false;
+            }
+        }
+        // 主对角线
+        int i = r - 1, j = c - 1;
+        while (ret && i >= 0 && j >= 0)
+        {
+            if (cur[i][j] == 'Q')
+            {
+                ret = false;
+            }
+            i--, j--;
+        }
+        i = r + 1, j = c + 1;
+        while (ret && i < n && j < n)
+        {
+            if (cur[i][j] == 'Q')
+            {
+                ret = false;
+            }
+            i++, j++;
+        }
+        // 副对角线
+        i = r - 1, j = c + 1;
+        while (ret && i >= 0 && j < n)
+        {
+            if (cur[i][j] == 'Q')
+            {
+                ret = false;
+            }
+            i--, j++;
+        }
+        i = r + 1, j = c - 1;
+        while (ret && i < n && j >= 0)
+        {
+            if (cur[i][j] == 'Q')
+            {
+                ret = false;
+            }
+            i++, j--;
+        }
+        return ret;
+    }
+    void dfs_NQueens(vector<vector<string>> &ans, vector<string> &cur, int row, int n)
+    {
+        if (row < n)
+        {
+            // setting cur[i][j]='Q'
+            for (int j = 0; j < n; j++)
+            {
+                if (check(cur, row, j, n))
+                {
+                    cur[row][j] = 'Q';
+                    dfs_NQueens(ans, cur, row + 1, n);
+                    cur[row][j] = '.'; // backtracking
+                }
+            }
+        }
+        else
+        {
+            ans.push_back(cur);
+        }
+    }
+    vector<vector<string>> solveNQueens(int n)
+    {
+        vector<vector<string>> ans;
+        string s;
+        for (int i = 0; i < n; i++)
+        {
+            s.push_back('.');
+        }
+        vector<string> cur(n, s);
+        dfs_NQueens(ans, cur, 0, n);
+        return ans;
+    }
+    ```
+
+    - 提前记录当前已经放在放置的皇后位置，bitmask方法，快速检查冲突，提高时间效率（$\color{red}{4ms}$），参见[BLOG](https://leetcode.com/problems/n-queens/discuss/19808/Accepted-4ms-c%2B%2B-solution-use-backtracking-and-bitmask-easy-understand.)
+
+    ```cpp
+    void dfs_NQueens(vector<vector<string>> &ans, vector<string> &cur, int row, int n, vector<int> &flag)
+    {
+        if (row < n)
+        {
+            // setting cur[i][j]='Q'
+            for (int j = 0; j < n; j++)
+            {
+                if (flag[j] && flag[n + row + j] && flag[4 * n - row - 2 + j])
+                {
+                    flag[j] = flag[n + row + j] = flag[4 * n - row - 2 + j] = 0;
+                    cur[row][j] = 'Q';
+                    dfs_NQueens(ans, cur, row + 1, n, flag);
+                    cur[row][j] = '.'; // backtracking
+                    flag[j] = flag[n + row + j] = flag[4 * n - row - 2 + j] = 1;
+                }
+            }
+        }
+        else
+        {
+            ans.push_back(cur);
+        }
+    }
+    vector<vector<string>> solveNQueens(int n)
+    {
+        vector<vector<string>> ans;
+        vector<string> cur(n, string(n, '.'));
+        vector<int> flag(5 * n - 2, 1);
+        // [col(n), row+col(2n-1), n-row-1+col(2n-1)], 累计有[col,n+row+col,4n+col-row-1](5n-2)
+        dfs_NQueens(ans, cur, 0, n, flag);
+        return ans;
+    }
+    ```
+
+- [52. N-Queens II](https://leetcode.com/problems/n-queens-ii/)
+
+    与[51. N-Queens](https://leetcode.com/problems/n-queens/)相同的N皇后问题，本题要求输出符合要求的排列个数即可，无需输出全部的排列，在回溯法与DFS搜索的基础上，可以利用对称性减少一半的计算量
+
+    ```cpp
+    void dfs_NQueens(int &ans, vector<string> &cur, int row, int n, vector<int> &flag)
+    {
+        if (row < n)
+        {
+            // setting cur[i][j]='Q'
+            for (int j = 0; j < n; j++)
+            {
+                if (flag[j] && flag[n + row + j] && flag[4 * n - row - 2 + j])
+                {
+                    flag[j] = flag[n + row + j] = flag[4 * n - row - 2 + j] = 0;
+                    cur[row][j] = 'Q';
+                    dfs_NQueens(ans, cur, row + 1, n, flag);
+                    cur[row][j] = '.'; // backtracking
+                    flag[j] = flag[n + row + j] = flag[4 * n - row - 2 + j] = 1;
+                }
+            }
+        }
+        else
+        {
+            ans++;
+        }
+    }
+    int totalNQueens(int n)
+    {
+        int ans = 0;
+        vector<string> cur(n, string(n, '.'));
+        vector<int> flag(5 * n - 2, 1);
+        // [col(n), row+col(2n-1), n-row-1+col(2n-1)], 累计有[col,n+row+col,4n+col-row-1](5n-2)
+        dfs_NQueens(ans, cur, 0, n, flag);
+        return ans;
     }
     ```
 
