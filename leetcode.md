@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2019-12-25 00:33:01
+ * @LastEditTime : 2019-12-25 17:23:53
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -435,6 +435,81 @@
             }
         }
         return -1;
+    }
+    ```
+
+- [37. Sudoku Solver](https://leetcode.com/problems/sudoku-solver/)
+
+    填满一个数独表格，用DFS的方式尝试、回溯即可
+
+    ```cpp
+    bool sudoku_dfs(vector<vector<int>> &sudoku, int index, vector<vector<bool>> &row, vector<vector<bool>> &col, vector<vector<bool>> &cell)
+    {
+        bool ret = false;
+        if (index < 81)
+        {
+            int i = index / 9, j = index % 9;
+            if (sudoku[i][j] == 0)
+            {
+                for (int v = 1; v <= 9; v++)
+                {
+                    if (row[i][v] && col[j][v] && cell[i / 3 * 3 + j / 3][v])
+                    {
+                        row[i][v] = false, col[j][v] = false, cell[i / 3 * 3 + j / 3][v] = false;
+                        sudoku[i][j] = v;
+                        if (sudoku_dfs(sudoku, index + 1, row, col, cell))
+                        {
+                            ret = true;
+                            break;
+                        }
+                        else
+                        {
+                            // backtracking
+                            row[i][v] = true, col[j][v] = true, cell[i / 3 * 3 + j / 3][v] = true;
+                            sudoku[i][j] = 0;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                ret = sudoku_dfs(sudoku, index + 1, row, col, cell);
+            }
+        }
+        else
+        {
+            ret = true; // 9*9=81个格子全部填满了
+        }
+        return ret;
+    }
+    void solveSudoku(vector<vector<char>> &board)
+    {
+        const int size = 9;
+        vector<vector<int>> sudoku(size, vector<int>(size, 0));
+        vector<vector<bool>> row(size, vector<bool>(size + 1, true)), col(size, vector<bool>(size + 1, true)),
+            cell(size, vector<bool>(size + 1, true));
+        // build the matrix
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                if (board[i][j] != '.')
+                {
+                    int v = (int)(board[i][j] - '0');
+                    sudoku[i][j] = v;
+                    row[i][v] = false, col[j][v] = false, cell[i / 3 * 3 + j / 3][v] = false;
+                }
+            }
+        }
+        sudoku_dfs(sudoku, 0, row, col, cell);
+        // convert the matrix to sudoku board
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                board[i][j] = (char)('0' + sudoku[i][j]);
+            }
+        }
     }
     ```
 
