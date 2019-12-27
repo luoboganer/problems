@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2019-12-25 22:01:33
+ * @LastEditTime : 2019-12-27 11:54:06
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4154,6 +4154,10 @@
 	};
 	```
 
+- [316. Remove Duplicate Letters](https://leetcode.com/problems/remove-duplicate-letters/)
+
+    与[1081. Smallest Subsequence of Distinct Characters](https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/)完全相同
+
 - [319. Bulb Switcher](https://leetcode.com/problems/bulb-switcher/)
 
     - 模拟操作，时间复杂度$O(n^2)$，结果正确，但是$\color{red}{TLE}$
@@ -4783,6 +4787,77 @@
 - [401](https://leetcode.com/problems/binary-watch/)
 
     有些问题要用逆向思维来解决，本题本来是要用给定二进制位中1的个数来拼凑出可能的时间表示，组合数过程不好写，可以反过来写所有$00:00 - 23:59$中所有可能的时间中二进制位中1的个数符合题目要求的时间点。
+
+- [419. Battleships in a Board](https://leetcode.com/problems/battleships-in-a-board/)
+
+    - 每次发现battleship则统计值count自增，并DFS标记其周边所有相连的X均为同一个battleship，LeetCode时间效率$\color{red}{12ms,12.8\%}$
+
+    ```CPP
+    void mark_dfs(vector<vector<char>> &board, int i, int j)
+    {
+        if (i >= 0 && j >= 0 && i < board.size() && j < board[0].size() && board[i][j] == 'X')
+        {
+            board[i][j] = '.';
+            vector<int> directions{1, 0, -1, 0, 1};
+            for (int k = 0; k < 4; k++)
+            {
+                mark_dfs(board, i + directions[k], j + directions[k + 1]);
+            }
+        }
+    }
+    int countBattleships(vector<vector<char>> &board)
+    {
+        int ret = 0;
+        if (board.size() > 0 && board[0].size() > 0)
+        {
+            int rows = board.size(), cols = board[0].size();
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    if (board[i][j] == 'X')
+                    {
+                        ret++;
+                        mark_dfs(board, i, j);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 因为battleship只能成横线或者竖线$(1*n or n*1)$，因此从left-top到right-bottom扫描的过程中重复统计只可能来自上侧或者左侧，规避这种重复计数接口，时间复杂度$O(N)$，其中N为board中总的节点数，即one pass+ $O(1)$ extra memory + without modifying the value of the board，LeetCode时间效率$\color{red}{8ms,71.21\%}$
+
+    ```cpp
+    int countBattleships(vector<vector<char>> &board)
+    {
+        int ret = 0;
+        if (board.size() > 0 && board[0].size() > 0)
+        {
+            int rows = board.size(), cols = board[0].size();
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    if (board[i][j] == 'X')
+                    {
+                        if (i > 0 && board[i - 1][j] == 'X')
+                        {
+                            continue; // 上方已经统计过
+                        }
+                        if (j > 0 && board[i][j - 1] == 'X')
+                        {
+                            continue; // 左侧已经统计过
+                        }
+                        ret++;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    ```
 
 - [430. Flatten a Multilevel Doubly Linked List](https://leetcode.com/problems/flatten-a-multilevel-doubly-linked-list/)
 
@@ -6308,6 +6383,38 @@
     }
     ```
 
+- [763. Partition Labels](https://leetcode.com/problems/partition-labels/submissions/)
+
+    下标cur从前往后遍历字符串S，在当前段内每个字符在整个字符串的最后出现位置更新为last，当cur等于last时截断即可
+
+    ```cpp
+    vector<int> partitionLabels(string S)
+    {
+        vector<int> last(26, -1);
+        for (int i = 0; i < S.length(); i++)
+        {
+            int index = (int)(S[i] - 'a');
+            last[index] = max(i, last[index]);
+        }
+        int start = -1, end = 0;
+        vector<int> ans;
+        for (int i = 0; i < S.length(); i++)
+        {
+            int index = (int)(S[i] - 'a');
+            if (last[index] > end)
+            {
+                end = last[index];
+            }
+            if (i == end)
+            {
+                ans.push_back(end - start);
+                start = end;
+            }
+        }
+        return ans;
+    }
+    ```
+
 - [784](https://leetcode.com/problems/letter-case-permutation/)
 
     对给定的字符串中的字母做大小写的全排列
@@ -7009,6 +7116,56 @@
             }
         }
         return cords;
+    }
+    ```
+
+- [890. Find and Replace Pattern](https://leetcode.com/problems/find-and-replace-pattern/)
+
+    在pattern的字母和word的字母之间建立一一映射关系即可
+
+    ```cpp
+    vector<string> findAndReplacePattern(vector<string> &words, string pattern)
+    {
+        vector<string> ret;
+        int length = pattern.length();
+        for (auto &&s : words)
+        {
+            if (length == s.length())
+            {
+                // 建立s与pattern之间的一一映射
+                unordered_map<char, char> map;
+                vector<int> used(26, 0);
+                bool flag = true;
+                for (int i = 0; flag && i < length; i++)
+                {
+                    if (map.find(pattern[i]) != map.end())
+                    {
+                        // 已经有从pattern[i]出发的映射，则保证s[i]与映射值相同
+                        if (map[pattern[i]] != s[i])
+                        {
+                            flag = false;
+                        }
+                    }
+                    else
+                    {
+                        if (used[(int)(s[i] - 'a')] == 1)
+                        {
+                            flag = false; // 作为被映射值s[i]已经被使用了
+                        }
+                        else
+                        {
+                            used[(int)(s[i] - 'a')] = 1;
+                            map[pattern[i]] = s[i]; // 设置从pattern[i]映射到s[i]
+                        }
+                    }
+                }
+                if (flag)
+                {
+                    ret.push_back(s);
+                }
+            }
+        }
+        return ret;
     }
     ```
 
@@ -8024,7 +8181,37 @@
         return ans;
     }
     ```
-    
+
+- [1081. Smallest Subsequence of Distinct Characters](https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/)
+
+    与[316. Remove Duplicate Letters](https://leetcode.com/problems/remove-duplicate-letters/)完全相同，在给定字符串s中选择一个子串使其每个字符最多出现一次且逻辑序最小，可以用栈的思想来实现，即在顺序扫描字符串的过程中遇到任何当前还未使用的字符ch，则必须入栈（保证每个字符至少出现一次且仅仅出现一次），然后将当前栈顶比ch逻辑序大且在后面仍然有备用（统计每个字符的数量，每当ch使用一次则减少一次其可用量，直到减为0时不可用）的字符弹栈，之后将当前字符ch入栈即可，在此过程中s的每个字符有最多进栈一次弹栈一次操作两次，加上前期统计每个字符总的可用数量操作一次，每个字符最多操作三次，时间复杂度$O(n)$
+
+    ```cpp
+    string smallestSubsequence(string text)
+    {
+        string ret;
+        vector<int> count(26, 0), unused(26, 1);
+        for (auto &&ch : text)
+        {
+            count[(int)(ch - 'a')]++;
+        }
+        for (auto &&ch : text)
+        {
+            if (unused[(int)(ch - 'a')] == 1)
+            {
+                while (!ret.empty() && ret.back() > ch && count[(int)(ret.back() - 'a')] > 0)
+                {
+                    unused[(int)(ret.back() - 'a')] = 1;
+                    ret.pop_back();
+                }
+                unused[(int)(ch - 'a')] = 0, ret.push_back(ch);
+            }
+            count[(int)(ch - 'a')]--;
+        }
+        return ret;
+    }
+    ```
+
 - [1090. Largest Values From Labels](https://leetcode.com/problems/largest-values-from-labels/)
 
     贪心算法，将所有值values从大到小排序，然后在不超出限制的情况下优先选择更大的value，在此过程中用hashmap记录每个label的使用情况以备查询是否超出限制，时间复杂度$O(nlog(n))$
