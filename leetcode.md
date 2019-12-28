@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2019-12-27 11:54:06
+ * @LastEditTime : 2019-12-28 17:12:19
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4788,6 +4788,52 @@
 
     有些问题要用逆向思维来解决，本题本来是要用给定二进制位中1的个数来拼凑出可能的时间表示，组合数过程不好写，可以反过来写所有$00:00 - 23:59$中所有可能的时间中二进制位中1的个数符合题目要求的时间点。
 
+- [402. Remove K Digits](https://leetcode.com/problems/remove-k-digits/)
+
+    用栈的思想在目标字符串中维护一个字符的字典序非严格升序（严格非降序）序列，即贪心地尽可能使高位的数字小，如果当前数字小于更高位，则在k允许的范围内移除更高位，在此过程中每个字符最多入栈、弹栈被处理两次，时间复杂度$O(n),n=num.length$，num为给定的数字字符串
+
+    需要注意的点有：
+    - 完成非严格升序栈后，可移除指标k仍然未用完，则从最低位开始移除，因为此时最低位数字值最大，移除之后先前的高位会顺次降为低位，且数字值更低
+    - k个移除指标用完后，num的后续部分无需处理直接拼接到结果串中即可
+    - 完成移除后要删除数字中可能出现的前导0
+    - 如果结果串为空要输出字符'0'
+
+    ```cpp
+    string removeKdigits(string num, int k)
+    {
+        string ret;
+        int i = 0, length = num.length();
+        while (k > 0 && i < length)
+        {
+            while (!ret.empty() && k > 0 && num[i] < ret.back())
+            {
+                ret.pop_back(), k--;
+            }
+            ret.push_back(num[i]), i++;
+        }
+        if (i < length)
+        {
+            // k个可移除指标已经用完，num中剩余的部分直接拼接到ret尾部
+            ret.insert(ret.end(), num.begin() + i, num.end());
+        }
+        while (k > 0 && !ret.empty())
+        {
+            k--, ret.pop_back(); // num已经遍历完，k个指标尚未用完，在ret中从后往前删除
+        }
+        i = 0, length = ret.length(); // 删除前导零
+        while (i < length && ret[i] == '0')
+        {
+            i++;
+        }
+        ret = string(ret.begin() + i, ret.end());
+        if (ret.empty())
+        {
+            ret.push_back('0');
+        }
+        return ret;
+    }
+    ```
+
 - [419. Battleships in a Board](https://leetcode.com/problems/battleships-in-a-board/)
 
     - 每次发现battleship则统计值count自增，并DFS标记其周边所有相连的X均为同一个battleship，LeetCode时间效率$\color{red}{12ms,12.8\%}$
@@ -4827,7 +4873,7 @@
     }
     ```
 
-    - 因为battleship只能成横线或者竖线$(1*n or n*1)$，因此从left-top到right-bottom扫描的过程中重复统计只可能来自上侧或者左侧，规避这种重复计数接口，时间复杂度$O(N)$，其中N为board中总的节点数，即one pass+ $O(1)$ extra memory + without modifying the value of the board，LeetCode时间效率$\color{red}{8ms,71.21\%}$
+    - 因为battleship只能成横线或者竖线$(1*n 或 n*1)$，因此从left-top到right-bottom扫描的过程中重复统计只可能来自上侧或者左侧，规避这种重复计数接口，时间复杂度$O(N)$，其中N为board中总的节点数，即one pass+ $O(1)$ extra memory + without modifying the value of the board，LeetCode时间效率$\color{red}{8ms,71.21\%}$
 
     ```cpp
     int countBattleships(vector<vector<char>> &board)
@@ -5981,6 +6027,33 @@
     }
     ```
 
+- [670. Maximum Swap](https://leetcode.com/problems/maximum-swap/)
+
+    将数字num作为字符串，从右向左记录当前最大字符的下标max_digit_index，然后由左向右找到第一个与当前最大字符不同的位置（不是当前最大字符的最高位），交换该位置与当前最大字符即可，时间复杂度为$O(n),n=num.length$，而题目限制$num \in [0,1e8]$，则$n \le 8$，时间复杂度为$O(1)$
+
+    ```cpp
+    int maximumSwap(int num)
+    {
+        string s = to_string(num);
+        const int length = s.length();
+        vector<int> max_digit_index(length, length - 1);
+        for (int i = length - 2; i >= 0; i--)
+        {
+            max_digit_index[i] = (s[i] > s[max_digit_index[i + 1]]) ? i : (max_digit_index[i + 1]);
+        }
+        for (int i = 0; i < length; i++)
+        {
+            if (s[i] != s[max_digit_index[i]])
+            {
+                swap(s[i], s[max_digit_index[i]]);
+                break;
+            }
+        }
+        int ret = stoi(s);
+        return ret;
+    }
+    ```
+
 - [673. Number of Longest Increasing Subsequence](https://leetcode.com/problems/number-of-longest-increasing-subsequence/)
 
     使用动态规划，dp[i]表示数组截止到nums[i]的最长升序子序列，count[i]表示数组截止到nums[i]的最长升序子序列数量，然后找出dp中最大值，再累计该最大值在count中的数量即可
@@ -6272,6 +6345,31 @@
 - [733](https://leetcode.com/problems/flood-fill/)
     
     类似于图像处理中区域增长的方式，采用DFS递归写法或者用栈stack实现
+
+- [738. Monotone Increasing Digits](https://leetcode.com/problems/monotone-increasing-digits/)
+
+    将给定数字N当做字符串s，从右向左遍历s并维护一个字符的非严格降序栈（逆转之后则为非严格升序栈，符合题目要求的结果），如果当前字符小于或等于栈顶则入栈，大于则$st=string(st.size, '9')$，并将当前字符自减（类比减法中的借位思想），最后将非严格降序的字符栈翻转并转化为int型数即可，时间复杂度$O(n),n=s.length$，其中n是给定数字N的字符宽度，当限定为int型数字时$n<10$，则时间复杂度为$O(1)$
+
+    ```cpp
+    int monotoneIncreasingDigits(int N)
+    {
+        string s = to_string(N);
+        string monotone_increasing;
+        for (int i = s.length() - 1; i >= 0; i--)
+        {
+            char cur = s[i];
+            if (!monotone_increasing.empty() && cur > monotone_increasing.back())
+            {
+                cur--;
+                monotone_increasing = string(monotone_increasing.length(), '9');
+            }
+            monotone_increasing.push_back(cur);
+        }
+        reverse(monotone_increasing.begin(), monotone_increasing.end());
+        int ret = stoi(monotone_increasing);
+        return ret;
+    }
+    ```
 
 - [739](https://leetcode.com/problems/daily-temperatures/)
 
@@ -6930,6 +7028,44 @@
                         break;
                     }
                 }
+            }
+        }
+        return ret;
+    }
+    ```
+
+- [861. Score After Flipping Matrix](https://leetcode.com/problems/score-after-flipping-matrix/)
+
+    贪心原则，尽量保证高位是1，则首先按行翻转抱着最高位全部为1，然后按列翻转保证每列0不多于1，时间复杂度$O(N)$，tow pass for A，其中N为给定矩阵A中全部元素的数量
+
+    ```cpp
+    int matrixScore(vector<vector<int>> &A)
+    {
+        int ret = 0;
+        if (A.size() > 0 && A[0].size() > 0)
+        {
+            int rows = A.size(), cols = A[0].size();
+            // 保证最高位全部是1
+            for (int i = 0; i < rows; i++)
+            {
+                if (A[i][0] == 0)
+                {
+                    for (int j = 0; j < cols; j++)
+                    {
+                        A[i][j] = 1 - A[i][j];
+                    }
+                }
+            }
+            ret = rows * (1 << (cols - 1));
+            // 保证每一列1比0多
+            for (int j = 1; j < cols; j++)
+            {
+                int number_of_one = 0;
+                for (int i = 0; i < rows; i++)
+                {
+                    number_of_one += A[i][j];
+                }
+                ret += max(number_of_one, rows - number_of_one) * (1 << (cols - 1 - j));
             }
         }
         return ret;
