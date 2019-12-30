@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2019-12-28 17:12:19
+ * @LastEditTime : 2019-12-30 10:53:29
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -9660,6 +9660,82 @@
             ans.push_back(table[i++]);
         }
         return ans;
+    }
+    ```
+
+- [1301. Number of Paths with Max Score](https://leetcode.com/problems/number-of-paths-with-max-score/)
+
+    典型的动态规划问题，用dp[i][j]表示当前状态，其中dp[i][j][0]表示到当前的max score，dp[i][j][1]表示到当前的number of  
+paths with max score，时间复杂度$O(n^2)$
+
+    ```cpp
+    vector<int> pathsWithMaxScore(vector<string> &board)
+    {
+        const int n = board.size(), mode = 1e9 + 7;
+        vector<int> ret{0, 0};
+        if (n > 0)
+        {
+            board.back().back() = '0';
+            vector<vector<int>> directions{{-1, -1}, {-1, 0}, {0, -1}};
+            vector<vector<vector<int>>> dp(n, vector<vector<int>>(n, vector<int>(2, 0)));
+            dp[0][0][1] = 1; // 出发点是永远可以到达的，且距离为0路径数为1
+            long long auxiliary = 0;
+            // first row and first col
+            for (int i = 1; i < n; i++)
+            {
+                if (board[0][i] == 'X')
+                {
+                    break;
+                }
+                else
+                {
+                    dp[0][i][0] = dp[0][i - 1][0] + (int)(board[0][i] - '0');
+                    dp[0][i][1] = 1; // 只有board[0][i-1]到board[0][i]一条路径
+                }
+            }
+            for (int i = 1; i < n; i++)
+            {
+                if (board[i][0] == 'X')
+                {
+                    break;
+                }
+                else
+                {
+                    dp[i][0][0] = dp[i - 1][0][0] + (int)(board[i][0] - '0');
+                    dp[i][0][1] = 1; // 只有board[i-1][0]到board[i][0]一条路径
+                }
+            }
+            for (int i = 1; i < n; i++)
+            {
+                for (int j = 1; j < n; j++)
+                {
+                    if (board[i][j] != 'X')
+                    {
+                        for (auto &&item : directions)
+                        {
+                            if (dp[i + item[0]][j + item[1]][1] > 0)
+                            {
+                                if (dp[i + item[0]][j + item[1]][0] > dp[i][j][0])
+                                {
+                                    dp[i][j][0] = dp[i + item[0]][j + item[1]][0]; // 可到达的路径
+                                    dp[i][j][1] = dp[i + item[0]][j + item[1]][1];
+                                }
+                                else if (dp[i + item[0]][j + item[1]][0] == dp[i][j][0])
+                                {
+                                    dp[i][j][1] = (auxiliary + dp[i][j][1] + dp[i + item[0]][j + item[1]][1]) % mode;
+                                }
+                            }
+                        }
+                        dp[i][j][0] += (int)(board[i][j] - '0');
+                    }
+                }
+            }
+            if (dp.back().back()[1] != 0)
+            {
+                ret = dp.back().back();
+            }
+        }
+        return ret;
     }
     ```
 
