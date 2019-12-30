@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2019-12-30 10:53:29
+ * @LastEditTime : 2019-12-30 18:01:04
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -7300,6 +7300,91 @@
                     ret.push_back(s);
                 }
             }
+        }
+        return ret;
+    }
+    ```
+
+- [894. All Possible Full Binary Trees](https://leetcode.com/problems/all-possible-full-binary-trees/)
+
+    输出具有N个节点的所有完全二叉树，首先N必须是奇数，然后动态地递归生成，leetcode时间效率$\color{red}{112ms,94\%}$，其中动态递归的状态转移方程为：
+    $$FBT(N) =[root],\left\{\begin{matrix}
+    root.val=0 \\
+    root.left=FBT(left) \\
+    root.right=FBT(right)
+    \end{matrix}\right. \forall left,\left\{\begin{matrix}1 \le left < N-1\\ left+right=N-1\end{matrix}\right.$$
+
+    ```cpp
+    TreeNode *clone(TreeNode *root)
+    {
+        TreeNode *ans = nullptr;
+        if (root)
+        {
+            ans = new TreeNode(0);
+            ans->left = clone(root->left), ans->right = clone(root->right);
+        }
+        return ans;
+    }
+    vector<TreeNode *> allPossibleFBT(int N)
+    {
+        vector<vector<TreeNode *>> dp;
+        vector<TreeNode *> ret;
+        if (N > 0 && (N & 0x1))
+        {
+            TreeNode *node = new TreeNode(0);
+            dp.push_back(vector<TreeNode *>{node}); // first node
+            for (int v = 3; v <= N; v += 2)
+            {
+                vector<TreeNode *> cur;
+                for (int left = 1, right = v - 2; left < v && right >= 1; left += 2, right -= 2)
+                {
+                    for (auto &&left_node : dp[left / 2])
+                    {
+                        for (auto &&right_node : dp[right / 2])
+                        {
+                            TreeNode *cur_node = new TreeNode(0);
+                            cur_node->left = clone(left_node), cur_node->right = clone(right_node);
+                            cur.push_back(cur_node);
+                        }
+                    }
+                }
+                dp.push_back(cur);
+            }
+            ret = dp.back();
+        }
+        return ret;
+    }
+    ```
+
+    由于树的链接结构，实际上子树的复制clone过程可以省略，直接用链接指针指向正确的子树即可，leetcode时间效率$\color{red}{88ms,98\%}$
+
+    ```cpp
+    vector<TreeNode *> allPossibleFBT(int N)
+    {
+        vector<vector<TreeNode *>> dp;
+        vector<TreeNode *> ret;
+        if (N > 0 && (N & 0x1))
+        {
+            TreeNode *node = new TreeNode(0);
+            dp.push_back(vector<TreeNode *>{node}); // first node
+            for (int v = 3; v <= N; v += 2)
+            {
+                vector<TreeNode *> cur;
+                for (int left = 1, right = v - 2; left < v && right >= 1; left += 2, right -= 2)
+                {
+                    for (auto &&left_node : dp[left / 2])
+                    {
+                        for (auto &&right_node : dp[right / 2])
+                        {
+                            TreeNode *cur_node = new TreeNode(0);
+                            cur_node->left = left_node, cur_node->right = right_node;
+                            cur.push_back(cur_node);
+                        }
+                    }
+                }
+                dp.push_back(cur);
+            }
+            ret = dp.back();
         }
         return ret;
     }
