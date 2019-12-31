@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2019-12-30 18:01:04
+ * @LastEditTime : 2019-12-31 16:17:21
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -7844,6 +7844,76 @@
     return A[0] == A[2] || A[0] == A[3] ? A[0] : A[1];
     ```
 
+- [962. Maximum Width Ramp](https://leetcode.com/problems/maximum-width-ramp/)
+
+    - 暴力搜索，对当前A[i]，从A的右侧开始找到第一个$A[j]>=A[i]$，则$ret=max(ret,j-i)$，时间复杂度$O(n^2)$，LeetCode时间效率$\color{red}{TLE}$
+
+    ```cpp
+    int maxWidthRamp(vector<int> &A)
+    {
+        const int length = A.size();
+        int ret = 0;
+        for (int i = 0; i < length; i++)
+        {
+            for (int j = length-1; j>i; j--)
+            {
+                if(A[i]<=A[j]){
+                    ret = max(ret, j - i);
+                    break;
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 根据数组A的大小对其下标进行排序(稳定排序)，时间复杂度$O(nlog(n))$
+
+    ```cpp
+    int maxWidthRamp(vector<int> &A)
+    {
+        vector<vector<int>> values;
+        for (int i = 0; i < A.size(); i++)
+        {
+            values.push_back({i, A[i]});
+        }
+        stable_sort(values.begin(), values.end(), [](const vector<int> &a, const vector<int> &b) -> bool { return a[1] < b[1]; });
+        int ramp = 0, pre_index = A.size();
+        for (auto &&item : values)
+        {
+            int i = item[0];
+            ramp = max(ramp, i - pre_index); // 通过排序保证A[pre_index]<=A[i]，即A[pre_index]是比A[i]小的数
+            pre_index = min(pre_index, i);   // 保证pre_index最小，从而i-pre_index是当前最大，即A[pre_index]是A中比A[i]小的数中最靠左的
+        }
+        return ramp;
+    }
+    ```
+
+    - 维护一个降序栈，时间复杂度$O(n)$
+
+    ```cpp
+    int maxWidthRamp(vector<int> &A)
+    {
+        stack<int> st;
+        for (int i = 0; i < A.size(); i++)
+        {
+            if (st.empty() || A[st.top()] > A[i])
+            {
+                st.push(i);
+            }
+        }
+        int ramp = 0;
+        for (int i = A.size() - 1; i > ramp; i--)
+        {
+            while (!st.empty() && A[i] >= A[st.top()])
+            {
+                ramp = max(ramp, i - st.top()), st.pop();
+            }
+        }
+        return ramp;
+    }
+    ```
+
 - [966](https://leetcode.com/problems/vowel-spellchecker/)
 
     给定一个字典wordlist，给定查询单词word：
@@ -8334,6 +8404,47 @@
     [2,5,0,null,null,4,null,null,6,1,null,3]
     [1,null,2,null,0,3]
     [2,null,0,1]
+    ```
+
+- [1031. Maximum Sum of Two Non-Overlapping Subarrays](https://leetcode.com/problems/maximum-sum-of-two-non-overlapping-subarrays/)
+
+    在给定数组A中选择两个长度分别为L和M的连续、无重叠子数组，使这两个子数组的和最大。用两个辅助数组subArraySumL、subArraySumM分别表示当前下标左侧L、M个数的和，即表示题目要求的两个长度分别为L和M的连续子数组的元素之和，然后在针对subArraySumL中每个值（下标i），在subArraySumM中找到下标i - M - 1及其左侧的最大值left（构成长度为M的数组）、下标i + L及其右侧的最大值right（构成长度为L的子数组）,这样$ret=max(ret,subArraySumL[i]+(max(let,right))$即为所求的最终值，时间复杂度$O(A.length)$
+
+    ```cpp
+    vector<int> getSubArraySum(vector<int> &nums, int length)
+    {
+        vector<int> ret(nums.size(), -1);
+        int i = 0, base = 0;
+        while (i < length)
+        {
+            base += nums[i++];
+        }
+        ret[i - 1] = base;
+        while (i < nums.size())
+        {
+            base += nums[i] - nums[i - length];
+            ret[i++] = base;
+        }
+        return ret;
+    }
+    int maxSumTwoNoOverlap(vector<int> &A, int L, int M)
+    {
+        const int length = A.size();
+        vector<int> subArraySumL = getSubArraySum(A, L), subArraySumM = getSubArraySum(A, M);
+        vector<int> leftMostL = subArraySumL, rightMostL = subArraySumL;
+        for (int i = 0; i < length - 1; i++)
+        {
+            leftMostL[i + 1] = (leftMostL[i + 1] == -1) ? leftMostL[i + 1] : max(leftMostL[i], leftMostL[i + 1]);
+            rightMostL[length - i - 2] = (rightMostL[length - i - 2] == -1) ? rightMostL[length - i - 2] : max(rightMostL[length - i - 2], rightMostL[length - i - 1]);
+        }
+        int ret = 0;
+        for (int i = M - 1; i < length; i++)
+        {
+            int left = (i - M - 1 >= 0) ? leftMostL[i - M - 1] : 0, right = (i + L < length) ? rightMostL[i + L] : 0;
+            ret = max(ret, subArraySumM[i] + max(left, right));
+        }
+        return ret;
+    }
     ```
 
 - [1032](https://leetcode.com/problems/stream-of-characters/)
