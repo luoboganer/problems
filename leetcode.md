@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2019-12-31 16:17:21
+ * @LastEditTime : 2020-01-01 14:55:52
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2340,6 +2340,67 @@
     ```
 
     注意peak element只需要比自己左右两侧的值大就可以了，没必要比最左端和最右端的值大
+
+- [166. Fraction to Recurring Decimal](https://leetcode.com/problems/fraction-to-recurring-decimal/)
+
+    基本思想是在小数部分除不尽的情况下用hashmap来记录出现过的所有余数，余数r重复出现时则从r第一次出现的位置到当前位置构成无限循环小数，本题的难点在于测试数据中的各种边界点，需要注意点有：
+    - 对负数的处理，可以转化为正数计算，然后再将可能有的负号添加到结果中，此时一定注意-2147483648转化为正数会导致int溢出，一定要用long long类型
+    - 除数为0没有意义，直接返回空串作为结果
+    - cpp STL中有内置的gcd()函数求最大公约数，可以不用自己写
+    - 结果为0是前面不能添加负号(eg, 0 / (-2) = 0)
+
+    ```cpp
+    string fractionToDecimal(int numerator, int denominator)
+    {
+        string ret, remainder;
+        long long a = numerator, b = denominator; // 防止-2147483648变为正数溢出
+        // 首先保证除数不为0
+        if (b != 0)
+        {
+            // 处理正负数的情况
+            int sign = 1;
+            if (a < 0)
+            {
+                a = -a, sign *= -1;
+            }
+            if (b < 0)
+            {
+                b = -b, sign *= -1;
+            }
+            // 计算整数部分
+            long long factor = gcd(a, b);
+            a /= factor, b /= factor;
+            long long q = a / b, r = a % b;
+            if (sign < 0 && a != 0)
+            {
+                ret.push_back('-');
+            }
+            ret += to_string(q);
+            unordered_map<long long, int> remainder2index;
+            int startPointOfRepeating = 0;
+            // 计算小数部分
+            while (r != 0)
+            {
+                remainder2index[r] = startPointOfRepeating++;
+                r *= 10;
+                q = r / b, r = r % b;
+                remainder.push_back((char)(q + '0'));
+                if (remainder2index.find(r) != remainder2index.end())
+                {
+                    // 如果余数出现重复，则是无限循环小数
+                    remainder.insert(remainder.begin() + remainder2index[r], '(');
+                    remainder.push_back(')');
+                    break;
+                }
+            }
+            if (remainder.length() > 0)
+            {
+                ret += '.' + remainder;
+            }
+        }
+        return ret;
+    }
+    ```
 
 - [167](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/)
 
