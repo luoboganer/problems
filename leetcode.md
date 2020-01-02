@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-01 14:55:52
+ * @LastEditTime : 2020-01-02 17:09:23
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -131,6 +131,162 @@
             }
         }
         return ans;
+    }
+    ```
+
+- [5. Longest Palindromic Substring](https://leetcode.com/problems/longest-palindromic-substring/)
+
+    在给定字符串s中求其最长回文子串
+
+    - 动态规划（DP），时间复杂度$O(n^2)$，dp[i][j]表示$s_i,...,s_j$是回文子串，则状态转移方程为：
+    $$dp[i][j]=\left\{\begin{matrix}True, dp[i+1][j-1] \ and \ s_i==s_j\\ False, otherwise \end{matrix}\right.$$
+
+    ```cpp
+    string longestPalindrome(string s)
+    {
+        string ret;
+        const int length = s.length();
+        if (length > 0)
+        {
+            vector<vector<int>> dp(length, vector<int>(length, 0));
+            int start = 0, substring_length = 1;
+            for (int i = length - 1; i >= 0; i--)
+            {
+                dp[i][i] = 1;
+                for (int j = i + 1; j < length; j++)
+                {
+                    dp[i][j] = ((dp[i + 1][j - 1] || (j - i < 3)) && s[i] == s[j]) ? 1 : 0;
+                    if (dp[i][j] && (j - i + 1 > substring_length))
+                    {
+                        start = i, substring_length = j - i + 1;
+                    }
+                }
+            }
+            ret = s.substr(start, substring_length);
+        }
+        return ret;
+    }
+    ```
+
+    - 以s中任何一字符为中心，向两边扩展求其回文子序列，时间复杂度$O(n^2)$
+
+        - 基本实现
+
+        ```cpp
+        string longestPalindrome(string s)
+        {
+            string ret;
+            const int length = s.length();
+            // 奇数长度的回文子串
+            for (int i = 0; i < length; i++)
+            {
+                int left = i, right = i, valid_start = i, valid_end = i;
+                while (left >= 0 && right < length && s[left] == s[right])
+                {
+                    valid_start = left, valid_end = right;
+                    left--, right++;
+                }
+                if (valid_end - valid_start + 1 > ret.length())
+                {
+                    ret = s.substr(valid_start, valid_end - valid_start + 1);
+                }
+            }
+            // 偶数长度的回文子串
+            for (int i = 0; i < length; i++)
+            {
+                int left = i, right = i + 1, valid_start = i, valid_end = i;
+                while (left >= 0 && right < length && s[left] == s[right])
+                {
+                    valid_start = left, valid_end = right;
+                    left--, right++;
+                }
+                if (valid_end - valid_start + 1 > ret.length())
+                {
+                    ret = s.substr(valid_start, valid_end - valid_start + 1);
+                }
+            }
+            return ret;
+        }
+        ```
+
+        - 一种改进的实现
+
+        ```cpp
+        vector<int> lengthOfExporedSubstring(string s, int left, int right)
+        {
+            int valid_left = left, valid_right = left, length = s.length();
+            while (left >= 0 && right < length && s[left] == s[right])
+            {
+                valid_left = left, valid_right = right;
+                left--, right++;
+            }
+            return {valid_left, valid_right};
+        }
+        string longestPalindrome(string s)
+        {
+            int start = 0, end = 0;
+            for (int i = 0; i < s.length(); i++)
+            {
+                vector<int> explored_odd = lengthOfExporedSubstring(s, i, i);
+                if (explored_odd[1] - explored_odd[0] > end - start)
+                {
+                    start = explored_odd[0], end = explored_odd[1];
+                }
+                vector<int> explored_even = lengthOfExporedSubstring(s, i, i + 1);
+                if (explored_even[1] - explored_even[0] > end - start)
+                {
+                    start = explored_even[0], end = explored_even[1];
+                }
+            }
+            return s.substr(start, end - start + 1);
+        }
+        ```
+
+    - 马拉车算法（Manacher's algorithm）[简书](https://www.jianshu.com/p/392172762e55)、[知乎专栏](https://zhuanlan.zhihu.com/p/62351445)、[Wikipad](https://en.wikipedia.org/wiki/Longest_palindromic_substring#Manacher%27s_algorithm)，时间复杂度$O(n)$
+
+    ```cpp
+    string longestPalindrome(string s)
+    {
+        string ret;
+        if (s.length() < 2)
+        {
+            ret = s;
+        }
+        else
+        {
+            // 预处理字符串
+            string t = "#";
+            for (auto &&ch : s)
+            {
+                t.push_back(ch), t.push_back('#');
+            }
+            t.push_back('%');
+            // 计算表示回文半径的p数组
+            int length = t.length(), mx = 0, id = 0, max_length = -1, index = 0;
+            vector<int> p(length, 0);
+            for (int i = 1; i < length - 1; i++)
+            {
+                p[i] = (mx > i) ? min(p[2 * id - i], mx - i) : 1;
+                while (i + p[i] < length && i - p[i] >= 0 && t.at(i + p[i]) == t.at(i - p[i]))
+                {
+                    p[i]++;
+                }
+                // 如果回文子串的右边界超过了mx，则需要更新mx和id的值
+                if (mx < p[i] + i)
+                {
+                    id = i, mx = p[i] + i;
+                }
+                // 如果回文子串的长度大于maxLength，则更新maxLength和index的值
+                if (p[i] - 1 > max_length)
+                {
+                    max_length = p[i] - 1;
+                    index = i;
+                }
+            }
+            int start = (index - max_length) / 2;
+            ret = s.substr(start, max_length);
+        }
+        return ret;
     }
     ```
 
