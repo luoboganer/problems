@@ -2497,6 +2497,105 @@
 
     注意peak element只需要比自己左右两侧的值大就可以了，没必要比最左端和最右端的值大
 
+- [164. Maximum Gap](https://leetcode.com/problems/maximum-gap/)
+
+    - 排序后求相邻两个数之间的gap，时间复杂度$O(nlog(n))$
+
+    ```cpp
+    int maximumGap(vector<int> &nums)
+    {
+        int ret = 0;
+        if(nums.size()>=2){
+            sort(nums.begin(), nums.end());
+            for (int i = 1; i < nums.size(); i++)
+            {
+                ret = max(ret, nums[i] - nums[i - 1]);
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - **桶排序(bucket sort)**，时间复杂度$O(n+m) \approx O(n)$，其中m为桶的大小
+
+    ```cpp
+    int maximumGap(vector<int> &nums)
+    {
+        int ret = 0;
+        if (nums.size() >= 2)
+        {
+            // bucket sort
+            int min_value = *min_element(nums.begin(), nums.end());
+            int max_value = *max_element(nums.begin(), nums.end());
+            int bucketSize = max(1, (max_value - min_value) / (int)(nums.size() - 1));
+            int bucketCount = (int)(ceil((max_value - min_value + 1) * 1.0 / bucketSize));
+            vector<vector<int>> buckets(bucketCount);
+            for (auto &&v : nums)
+            {
+                buckets[(v - min_value) / bucketSize].push_back(v);
+            }
+            nums.clear();
+            for (auto &&bucket : buckets)
+            {
+                if (!bucket.empty())
+                {
+                    sort(bucket.begin(), bucket.end());
+                    nums.insert(nums.end(), bucket.begin(), bucket.end());
+                }
+            }
+            // get the max gap
+            for (int i = 1; i < nums.size(); i++)
+            {
+                ret = max(ret, nums[i] - nums[i - 1]);
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 使用桶排序(bucket sort)的概念而不排序，直接在桶的内部比较，时间复杂度$O(n+m) \approx O(n)$
+
+    ```cpp
+    struct Bucket
+    {
+        bool used = false;
+        int low = numeric_limits<int>::max();
+        int high = numeric_limits<int>::min();
+    };
+
+    int maximumGap(vector<int> &nums)
+    {
+        int ret = 0;
+        if (nums.size() >= 2)
+        {
+            // bucket sort
+            int min_value = *min_element(nums.begin(), nums.end());
+            int max_value = *max_element(nums.begin(), nums.end());
+            int bucketSize = max(1, (max_value - min_value) / (int)(nums.size() - 1));
+            int bucketCount = (int)(ceil((max_value - min_value + 1) * 1.0 / bucketSize));
+            vector<Bucket> buckets(bucketCount);
+            for (auto &&v : nums)
+            {
+                int index = (v - min_value) / bucketSize;
+                buckets[index].used = true;
+                buckets[index].low = min(buckets[index].low, v);
+                buckets[index].high = max(buckets[index].high, v);
+            }
+            // get the max gap
+            int preBucketMax = min_value;
+            for (auto &&bucket : buckets)
+            {
+                if (bucket.used)
+                {
+                    ret = max(ret, bucket.low - preBucketMax);
+                    preBucketMax = bucket.high;
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
 - [166. Fraction to Recurring Decimal](https://leetcode.com/problems/fraction-to-recurring-decimal/)
 
     基本思想是在小数部分除不尽的情况下用hashmap来记录出现过的所有余数，余数r重复出现时则从r第一次出现的位置到当前位置构成无限循环小数，本题的难点在于测试数据中的各种边界点，需要注意点有：
