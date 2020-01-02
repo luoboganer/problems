@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-02 17:09:23
+ * @LastEditTime : 2020-01-02 20:27:20
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -9222,6 +9222,63 @@
             }
         }
         return ans;
+    }
+    ```
+
+- [1171. Remove Zero Sum Consecutive Nodes from Linked List](https://leetcode.com/problems/remove-zero-sum-consecutive-nodes-from-linked-list/)
+
+    给定链表存储的数组，删除其中和为0的连续子数组。将其视为array处理，首先求出前缀和，前缀和为0的数及之前的部分全部删除，然后在剩余的前缀和中，如果$prefix[j]-prefix[i]=0$，则数组中$nums_{i+1},...,nums_j$的连续和为0，删除这部分，时间复杂度$O(n^2)$
+
+    ```cpp
+    ListNode *removeZeroSumSublists(ListNode *head)
+    {
+        vector<int> nums, ret;
+        int prefixSum = 0;
+        ListNode *cur = head;
+        while (cur)
+        {
+            prefixSum += cur->val;
+            if (prefixSum)
+            {
+                nums.push_back(prefixSum);
+            }
+            else
+            {
+                nums.clear(), prefixSum = 0;
+            }
+            cur = cur->next;
+        }
+        for (int i = 0; i < nums.size(); i++)
+        {
+            if (nums[i] != 0)
+            {
+                for (int j = nums.size() - 1; j > i; j--)
+                {
+                    if (nums[j] - nums[i] == 0)
+                    {
+                        for (int k = i + 1; k <= j; k++)
+                        {
+                            nums[k] = 0;
+                        }
+                        i = j - 1; // with i++ in the outer for circle
+                        break;
+                    }
+                }
+            }
+        }
+        ListNode *auxiliary_head = new ListNode(0);
+        cur = auxiliary_head;
+        int i = 0, prev_non_zero = 0;
+        for (int i = 0; i < nums.size(); i++)
+        {
+            if (nums[i] != 0)
+            {
+                cur->next = new ListNode(nums[i] - prev_non_zero);
+                cur = cur->next;
+                prev_non_zero = nums[i];
+            }
+        }
+        return auxiliary_head->next;
     }
     ```
 
