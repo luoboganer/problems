@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-02 20:27:20
+ * @LastEditTime : 2020-01-03 16:49:31
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2342,6 +2342,63 @@
     }
     ```
 
+- [130. Surrounded Regions](https://leetcode.com/problems/surrounded-regions/)
+
+    时间复杂度$O(m*n)$，其中$m*n$为矩阵中所有元素的个数，具体算法流程：
+    - 遍历四个边界，寻找所有边界上的'O'，然后DFS该'O'及所有相连的'O'全部标记为'#'
+    - 遍历board，所有节点中'O'标记为'X'，'#'改回'O'
+
+    ```cpp
+    void dfs_marker(vector<vector<char>> &board, int r, int c)
+    {
+        if (r >= 0 && c >= 0 && r < board.size() && c < board[0].size() && board[r][c] == 'O')
+        {
+            board[r][c] = '#';
+            vector<int> directions{1, 0, -1, 0, 1};
+            for (int k = 0; k < 4; k++)
+            {
+                dfs_marker(board, r + directions[k], c + directions[k + 1]);
+            }
+        }
+    }
+    void solve(vector<vector<char>> &board)
+    {
+        if (board.size() > 0 && board[0].size() > 0)
+        {
+            const int m = board.size(), n = board[0].size();
+            for (int j = 0; j < n; j++)
+            {
+                if (board[0][j] == 'O')
+                {
+                    dfs_marker(board, 0, j);
+                }
+                if (board[m - 1][j] == 'O')
+                {
+                    dfs_marker(board, m - 1, j);
+                }
+            }
+            for (int j = 0; j < m; j++)
+            {
+                if (board[j][0] == 'O')
+                {
+                    dfs_marker(board, j, 0);
+                }
+                if (board[j][n - 1] == 'O')
+                {
+                    dfs_marker(board, j, n - 1);
+                }
+            }
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    board[i][j] = (board[i][j] == '#') ? 'O' : 'X';
+                }
+            }
+        }
+    }
+    ```
+
 - [136](https://leetcode.com/problems/single-number/)
 
     一个数组中只有一个数落单、其他数均成对出现，采用异或的按位操作一遍扫描找到那个落单的数。
@@ -2439,6 +2496,58 @@
             }
         }
         return new_head->next;
+    }
+    ```
+
+- [148. Sort List](https://leetcode.com/problems/sort-list/)
+
+    归并排序（merge sort），时间复杂度$O(nlog(n))$
+
+    ```cpp
+    ListNode *merge(ListNode *a, ListNode *b)
+    {
+        ListNode *auxiliary_head = new ListNode(0), *cur = auxiliary_head;
+        while (a && b)
+        {
+            if (a->val < b->val)
+            {
+                cur->next = a, cur = cur->next, a = a->next;
+            }
+            else
+            {
+                cur->next = b, cur = cur->next, b = b->next;
+            }
+        }
+        while (a)
+        {
+            cur->next = a, cur = cur->next, a = a->next;
+        }
+        while (b)
+        {
+            cur->next = b, cur = cur->next, b = b->next;
+        }
+        return auxiliary_head->next;
+    }
+    ListNode *sortList(ListNode *head)
+    {
+        ListNode *ret = nullptr;
+        if (!head || !head->next)
+        {
+            ret = head;
+        }
+        else
+        {
+            ListNode *slow = head, *fast = head;
+            while (fast->next && fast->next->next)
+            {
+                slow = slow->next, fast = fast->next->next;
+            }
+            fast = slow->next;
+            slow->next = nullptr;
+            head = sortList(head), fast = sortList(fast);
+            ret = merge(head, fast);
+        }
+        return ret;
     }
     ```
 
@@ -8367,6 +8476,32 @@
         {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}, y_{b}-y_{a}\right) ) \times\left(x_{c}-x_{a}, y_{c}-y_{a}\right) ) |} \\
         {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}\right)\left(y_{c}-y_{a}\right)-\left(x_{c}-x_{a}, y_{b}-y_{a}\right) ) |} \\
         {\text {Area}=\frac{1}{2}\left|x_{a} y_{b}+x_{b} y_{c}+x_{c} y_{a}-x_{a} y_{c}-x_{c} y_{b}-x_{b} y_{a}\right|}\end{array}$$
+
+- [979. Distribute Coins in Binary Tree](https://leetcode.com/problems/distribute-coins-in-binary-tree/)
+
+    DFS遍历每个节点，时间复杂度$O(n)$，其中n为给定树root中的节点数
+
+    ```cpp
+    int dfs_distributeCoins(TreeNode *root, int &ret)
+    {
+        int ans = 0;
+        if (root)
+        {
+            int left = dfs_distributeCoins(root->left, ret);
+            int right = dfs_distributeCoins(root->right, ret);
+            root->val += left + right;
+            ans = root->val - 1;
+            ret += abs(ans);
+        }
+        return ans;
+    }
+    int distributeCoins(TreeNode *root)
+    {
+        int ret = 0;
+        dfs_distributeCoins(root, ret);
+        return ret;
+    }
+    ```
 
 - [980](https://leetcode.com/problems/unique-paths-iii/)
 
