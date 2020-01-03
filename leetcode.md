@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-03 16:49:31
+ * @LastEditTime : 2020-01-03 20:39:08
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -8855,6 +8855,58 @@
     [2,5,0,null,null,4,null,null,6,1,null,3]
     [1,null,2,null,0,3]
     [2,null,0,1]
+    ```
+
+- [1028. Recover a Tree From Preorder Traversal](https://leetcode.com/problems/recover-a-tree-from-preorder-traversal/)
+
+    使用一个辅助栈来存储所有当前节点cur的父/祖节点，则栈的大小即是当前节点的深度，对新的数字构成节点后如果cur左子树为空，则优先挂到左子树，否则挂到右子树，时间复杂度$O(n),n=S.length$
+
+    ```cpp
+    TreeNode *recoverFromPreorder(string S)
+    {
+        TreeNode *auxiliary_root = new TreeNode(0), *cur = auxiliary_root;
+        if (S.length() > 0)
+        {
+            stack<TreeNode *> st;
+            int depth = 0;
+            int i = 0, length = S.length();
+            while (i < length)
+            {
+                if (S[i] == '-')
+                {
+                    depth = 0;
+                    while (i < length && S[i] == '-')
+                    {
+                        depth++, i++;
+                    }
+                }
+                else
+                {
+                    int base = 0;
+                    while (i < length && S[i] != '-')
+                    {
+                        base = base * 10 + (int)(S[i++] - '0');
+                    }
+                    TreeNode *temp = new TreeNode(base);
+                    while (st.size() != depth)
+                    {
+                        cur = st.top(), st.pop();
+                    }
+                    if (cur->left)
+                    {
+                        cur->right = temp, st.push(cur);
+                        cur = cur->right;
+                    }
+                    else
+                    {
+                        cur->left = temp, st.push(cur);
+                        cur = cur->left;
+                    }
+                }
+            }
+        }
+        return auxiliary_root->left;
+    }
     ```
 
 - [1031. Maximum Sum of Two Non-Overlapping Subarrays](https://leetcode.com/problems/maximum-sum-of-two-non-overlapping-subarrays/)
