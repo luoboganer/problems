@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-03 20:39:08
+ * @LastEditTime : 2020-01-04 13:55:03
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -6887,6 +6887,91 @@
             }
         }
         return letters[low%letters.size()];
+    }
+    ```
+
+- [748. Shortest Completing Word](748. Shortest Completing Word)
+
+    - letter count，时间复杂度$O(\sum{word.length()})$，LeetCode时间效率$\color{red}{16ms,91.56\%}$
+
+    ```cpp
+    string shortestCompletingWord(string licensePlate, vector<string> &words)
+    {
+        vector<int> cnt_license(26, 0);
+        for (auto &&ch : licensePlate)
+        {
+            if (islower(ch))
+            {
+                cnt_license[(int)(ch - 'a')]++;
+            }
+            else if (isupper(ch))
+            {
+                cnt_license[(int)(ch - 'A')]++;
+            }
+        }
+        string ret;
+        int length = numeric_limits<int>::max();
+        for (auto &&word : words)
+        {
+            if (word.length() < length)
+            {
+                vector<int> cnt_word(26, 0);
+                for (auto &&ch : word)
+                {
+                    cnt_word[(int)(ch - 'a')]++;
+                }
+                int i = 0;
+                while (i < 26 && cnt_word[i] >= cnt_license[i])
+                {
+                    i++;
+                }
+                if(i==26){
+                    length = word.length(), ret = word;
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - encode by prime numbers
+
+    ```cpp
+    uint64_t getCharProduct(string s, uint64_t mode)
+    {
+        // the first 26 prime numbers
+        vector<int> primes{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101};
+        uint64_t ret = 1;
+        for (auto &&ch : s)
+        {
+            ret = (ret * primes[(int)(ch - 'a')]) % mode;
+        }
+        return ret;
+    }
+    string shortestCompletingWord(string licensePlate, vector<string> &words)
+    {
+        string processed_licensePlate;
+        for (auto &&ch : licensePlate)
+        {
+            if (isupper(ch))
+            {
+                processed_licensePlate += ch - 'A' + 'a';
+            }
+            else if (islower(ch))
+            {
+                processed_licensePlate += ch;
+            }
+        }
+        uint64_t charProduct = getCharProduct(processed_licensePlate, UINT64_MAX);
+        string ret = "0123456789012345";
+        for (auto &&word : words)
+        {
+            if (word.length() < ret.length() && (getCharProduct(word, charProduct) % charProduct == 0))
+            {
+                ret = word;
+            }
+        }
+        return ret;
     }
     ```
 
