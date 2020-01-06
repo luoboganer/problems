@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-04 13:55:03
+ * @LastEditTime : 2020-01-06 11:15:02
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -6890,7 +6890,7 @@
     }
     ```
 
-- [748. Shortest Completing Word](748. Shortest Completing Word)
+- [748. Shortest Completing Word](https://leetcode.com/problems/shortest-completing-word/)
 
     - letter count，时间复杂度$O(\sum{word.length()})$，LeetCode时间效率$\color{red}{16ms,91.56\%}$
 
@@ -10578,6 +10578,79 @@ paths with max score，时间复杂度$O(n^2)$
         }
         return ret;
     }
+    ```
+
+- [1312. Minimum Insertion Steps to Make a String Palindrome](https://leetcode.com/problems/minimum-insertion-steps-to-make-a-string-palindrome/)
+
+    - 递归方法，$\color{red}{TLE}$
+
+    ```cpp
+    int findMinInsertions(string &s,int left,int right){
+        int ret = 0;
+        if(left>right){
+            ret = numeric_limits<int>::max();
+        }else if(left==right){
+            ret = 0;
+        }else if(left==right-1){
+            ret = s[left] == s[right] ? 0 : 1;
+        }else{
+            ret = (s[left] == s[right]) ? (findMinInsertions(s, left + 1, right - 1)) : (min(findMinInsertions(s, left + 1, right), findMinInsertions(s, left, right - 1)) + 1);
+        }
+        return ret;
+    }
+    int minInsertions(string s)
+    {
+        return findMinInsertions(s, 0, s.length() - 1);
+    }
+    ```
+
+    - DP方法直接求需要插入字符的次数，时间复杂度$O(n^2)$
+
+    ```cpp
+    int minInsertions(string s)
+    {
+        int n = s.length();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int gap = 1; gap < n; gap++)
+        {
+            for (int left = 0, right = gap; right < n; left++, right++)
+            {
+                dp[left][right] = (s[left] == s[right]) ? (dp[left + 1][right - 1]) : (min(dp[left + 1][right], dp[left][right - 1]) + 1);
+            }
+        }
+        return dp[0].back();
+    }
+    ```
+
+    - DP求最长公共子串，将剩下的部分补齐即可构成回文串，时间复杂度$O(n^2)$
+
+    ```cpp
+    int minInsertions(string s)
+    {
+        const int n = s.length();
+        string t(s.rbegin(), s.rend());
+        vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+        for (int i = 1; i <= n; i++)
+        {
+            for (int j = 1; j <= n; j++)
+            {
+                dp[i][j] = (s[i - 1] == t[j - 1]) ? (dp[i - 1][j - 1] + 1) : max(dp[i][j - 1], dp[i - 1][j]);
+            }
+        }
+        return n - dp.back().back();
+    }
+    ```
+
+    几个典型testcase
+
+    ```cpp
+    "zzazz"
+    "mbadm"
+    "leetcode"
+    "g"
+    "no"
+    "vsrgaxxpgfiqdnwvrlpddcz"
+    "tldjbqjdogipebqsohdypcxjqkrqltpgviqtqz"
     ```
 
 - [...](123)
