@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-06 11:15:02
+ * @LastEditTime : 2020-01-07 15:14:13
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2458,7 +2458,7 @@
     }
     ```
 
-- [142](https://leetcode.com/problems/linked-list-cycle-ii/)
+- [142. Linked List Cycle II](https://leetcode.com/problems/linked-list-cycle-ii/)
 
     在 141判断链表中是否有cycle的基础上找出cycle的入口entry pointer，[detail algorithm](https://leetcode.com/problems/linked-list-cycle-ii/discuss/44781/Concise-O(n)-solution-by-using-C%2B%2B-with-Detailed-Alogrithm-Description)。
 
@@ -3351,6 +3351,35 @@
             return ans;
         }
     };
+    ```
+
+- [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/)
+
+    - 排序，默认quick sort时间复杂度$O(nlog(n))$
+
+    ```cpp
+    int findKthLargest(vector<int> &nums, int k)
+    {
+        sort(nums.begin(), nums.end());
+        return nums[nums.size() - k];
+    }
+    ```
+
+    - 维护一个大顶堆，时间复杂度$O(n)$
+
+    ```cpp
+    int findKthLargest(vector<int> &nums, int k)
+    {
+        int ret;
+        make_heap(nums.begin(), nums.end()); // 大顶堆
+        for (int i = 0; i < k; i++)
+        {
+            pop_heap(nums.begin(), nums.end());
+            ret = nums.back();
+            nums.pop_back();
+        }
+        return ret;
+    }
     ```
 
 - [216](https://leetcode.com/problems/combination-sum-iii/)
@@ -4305,6 +4334,73 @@
                 swap(nums[i], nums[k++]);
             }
         }
+    }
+    ```
+
+- [287. Find the Duplicate Number](https://leetcode.com/problems/find-the-duplicate-number/)
+
+    - 线性扫描，使用bool数组标记出现过得所有数，时间复杂度$O(n)$、空间复杂度$O(n)$
+
+    ```cpp
+    int findDuplicate(vector<int> &nums)
+    {
+        int ret = -1;
+        vector<int> flag(nums.size() + 1, 0);
+        for (auto &&v : nums)
+        {
+            if (flag[v] == 1)
+            {
+                ret = v;
+                break;
+            }
+            else
+            {
+                flag[v] = 1;
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 更改数组，以下标作为该数出现与否的标记，时间复杂度$O(n)$，空间复杂度$O(1)$
+
+    ```cpp
+    int findDuplicate(vector<int> &nums)
+    {
+        int ret = -1;
+        for (int i = 0; i < nums.size(); i++)
+        {
+            int index = abs(nums[i]) - 1;
+            if (nums[index] > 0)
+            {
+                nums[index] = -nums[index];
+            }
+            else
+            {
+                ret = index + 1;
+                break;
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 按照题目要求，原数组只读不可写，空间复杂度$O(1)$，时间复杂度$O(n)$，Floyd cycle detection algorithm[wikipad](https://en.wikipedia.org/wiki/Cycle_detection)，与题目[142. Linked List Cycle II](https://leetcode.com/problems/linked-list-cycle-ii/)方法相同
+
+    ```cpp
+    int findDuplicate(vector<int> &nums)
+    {
+        int slow = nums[0], fast = nums[0];
+        do
+        {
+            slow = nums[slow], fast = nums[nums[fast]];
+        } while (slow != fast);
+        int ret = nums[0];
+        while (ret != slow)
+        {
+            slow = nums[slow], ret = nums[ret];
+        }
+        return ret;
     }
     ```
 
@@ -5479,6 +5575,76 @@
 - [448](https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/)
 
     本题和[442](https://leetcode.com/problems/find-all-duplicates-in-an-array/)很像，在遍历数组的过程中可以简单的用一个bool数组来标记每个下标是否出现即可，在不使用额外空间的情况下，可以用正负标记来代替true和false的bool标记在原数组中标记，只不过每次读取原数组的时候取绝对值即可。
+
+- [454. 4Sum II](https://leetcode.com/problems/4sum-ii/)
+
+    - 四个数组，两两组合求和形成两个数组，然后再遍历两个数组，时间复杂度$O(n^4)$，LeetCode提交$\color{red}{TLE}$
+
+    ```cpp
+    int fourSumCount(vector<int> &A, vector<int> &B, vector<int> &C, vector<int> &D)
+    {
+        int count = 0, length = A.size(), length_2 = length * length;
+        vector<int> a(length_2, 0), b(length_2, 0);
+        for (int i = 0, cur = 0; i < length; i++)
+        {
+            for (int j = 0; j < length; j++)
+            {
+                a[cur] = A[i] + B[j], b[cur] = C[i] + D[j];
+                cur++;
+            }
+        }
+        for (int i = 0; i < length_2; i++)
+        {
+            for (int j = 0; j < length_2; j++)
+            {
+                if (a[i] + b[j] == 0)
+                {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+    ```
+
+    - 使用hashmap存储两两组合求和形成的结果，时间复杂度$O(n^2)$，实际上hashmap在查询的过程中$O(1)$操作也很耗时，LeetCode提交$172ms,72.52\%$
+
+    ```cpp
+    int fourSumCount(vector<int> &A, vector<int> &B, vector<int> &C, vector<int> &D)
+    {
+        int count = 0, length = A.size();
+        unordered_map<int, int> record;
+        for (int i = 0, v = 0; i < length; i++)
+        {
+            for (int j = 0; j < length; j++)
+            {
+                v = A[i] + B[j];
+                auto it = record.find(v);
+                if (it != record.end())
+                {
+                    it->second++;
+                }
+                else
+                {
+                    record[v] = 1;
+                }
+            }
+        }
+        for (int i = 0, v = 0; i < length; i++)
+        {
+            for (int j = 0; j < length; j++)
+            {
+                v = C[i] + D[j];
+                auto it = record.find(-v);
+                if (it != record.end())
+                {
+                    count += it->second;
+                }
+            }
+        }
+        return count;
+    }
+    ```
 
 - [459. Repeated Substring Pattern](https://leetcode.com/problems/repeated-substring-pattern/)
 
@@ -7904,6 +8070,42 @@
     判断一个数列是否单调，单调包含单调递增和单调递减，非严格单调还包含相等的情况
     - two pass，第一遍扫描判断是否全部 <= ，第二遍扫描判断是否全部 >=，两次结果取或关系
     - one pass，一遍扫描过程中用${-1,0,1}$分别表示<,=,>三种状态，然后在第二次出现非零元素的情况下，如果和第一次非零元素不同，即可返回false
+
+- [900. RLE Iterator](https://leetcode.com/problems/rle-iterator/)
+
+    稀疏编码数组的迭代器iterator
+
+    ```cpp
+    class RLEIterator
+    {
+    private:
+        vector<int> records;
+        int cur_index, length;
+
+    public:
+        RLEIterator(vector<int> &A)
+        {
+            records = A;
+            cur_index = 0, length = A.size();
+        }
+
+        int next(int n)
+        {
+            while (cur_index < length && n > records[cur_index])
+            {
+                n -= records[cur_index];
+                cur_index += 2;
+            }
+            int ret = -1;
+            if (cur_index < length)
+            {
+                ret = records[cur_index + 1];
+                records[cur_index] -= n;
+            }
+            return ret;
+        }
+    };
+    ```
 
 - [905](https://leetcode.com/problems/sort-array-by-parity/)
     cpp的两个标准库函数，用于将vector按照一定的条件划分，例如将一个int类型数组按照奇数偶数划分
