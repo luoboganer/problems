@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-07 15:14:13
+ * @LastEditTime : 2020-01-09 16:11:32
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -6864,6 +6864,44 @@
     {
         ret = 0;
         count(root);
+        return ret;
+    }
+    ```
+
+- [692. Top K Frequent Words](https://leetcode.com/problems/top-k-frequent-words/)
+
+    hashmap统计+buckte sort，时间复杂度$O(n)$
+
+    ```cpp
+    vector<string> topKFrequent(vector<string> &words, int k)
+    {
+        unordered_map<string, int> counts;
+        for (auto &&word : words)
+        {
+            counts[word]++;
+        }
+        int n = words.size();
+        vector<vector<string>> buckets(n, vector<string>{});
+        for (auto &&item : counts)
+        {
+            buckets[item.second].push_back(item.first);
+        }
+        reverse(buckets.begin(), buckets.end());
+        auto it = buckets.begin();
+        vector<string> ret(k);
+        int index = 0;
+        for (auto &&item : buckets)
+        {
+            sort(item.begin(), item.end());
+            for (int i = 0; i < item.size() && index < k; i++)
+            {
+                ret[index++] = item[i];
+            }
+            if (index == k)
+            {
+                break;
+            }
+        }
         return ret;
     }
     ```
