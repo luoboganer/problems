@@ -4879,6 +4879,118 @@
     }
     ```
 
+- [347. Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/)
+
+    先用hashmap统计每个数出现的frequency，然后使用quick sort或者heap来定位frequency第k高的值
+
+    - quick sort，时间复杂度$O(nlog(n))$，LeetCode时间效率$\color{red}{24 ms, 41.43\%}$
+
+    ```cpp
+    vector<int> topKFrequent(vector<int> &nums, int k)
+    {
+        unordered_map<int, int> count;
+        for (auto &&v : nums)
+        {
+            auto it = count.find(v);
+            if (it == count.end())
+            {
+                count[v] = 1;
+            }
+            else
+            {
+                it->second++;
+            }
+        }
+        vector<vector<int>> value_frequency;
+        for (auto &&item : count)
+        {
+            value_frequency.push_back({item.first, item.second});
+        }
+        sort(value_frequency.begin(), value_frequency.end(), [](const vector<int> &a, const vector<int> &b) -> bool { return a[1] > b[1]; });
+        vector<int> ret(k, 0);
+        for (int i = 0; i < k; i++)
+        {
+            ret[i] = value_frequency[i][0];
+        }
+        return ret;
+    }
+    ```
+
+    - heap，时间复杂度$O(nlog(k))$，LeetCode时间效率$\color{red}{20 ms, 80.85\%}$
+
+    ```cpp
+    vector<int> topKFrequent(vector<int> &nums, int k)
+    {
+        unordered_map<int, int> count;
+        for (auto &&v : nums)
+        {
+            auto it = count.find(v);
+            if (it == count.end())
+            {
+                count[v] = 1;
+            }
+            else
+            {
+                it->second++;
+            }
+        }
+        priority_queue<int, vector<int>, greater<int>> max_k;
+        for (auto &&item : count)
+        {
+            max_k.push(item.second);
+            while (max_k.size() > k)
+            {
+                max_k.pop();
+            }
+        }
+        vector<int> ret;
+        for (auto &&item : count)
+        {
+            if (item.second >= max_k.top())
+            {
+                ret.push_back(item.first);
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - bucket sort，时间复杂度$O(n)$，LeetCode时间效率$\color{red}{24 ms, 41.43\%}$
+
+    ```cpp
+    vector<int> topKFrequent(vector<int> &nums, int k)
+    {
+        unordered_map<int, int> count;
+        for (auto &&v : nums)
+        {
+            auto it = count.find(v);
+            if (it == count.end())
+            {
+                count[v] = 1;
+            }
+            else
+            {
+                it->second++;
+            }
+        }
+        vector<vector<int>> buckets(nums.size() + 1, vector<int>{});
+        for (auto &&item : count)
+        {
+            buckets[item.second].push_back(item.first);
+        }
+        vector<int> ret(k, 0);
+        for (int i = nums.size(), j = 0; i >= 0 && j < k; i--)
+        {
+            int r = 0;
+            while (r < buckets[i].size() && j < k)
+            {
+                ret[j++] = buckets[i][r++];
+            }
+        }
+        return ret;
+    }
+    ```
+
 - [349](https://leetcode.com/problems/intersection-of-two-arrays/)
 
     给定两个数组，求两个数组的交集，可以先用哈希表st存储第一个数组的值，然后遍历第二个数组，在哈希st中查询是否存在即可，时间复杂度$O(n)$
