@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-10 17:28:21
+ * @LastEditTime : 2020-01-13 16:25:54
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -11137,6 +11137,63 @@ paths with max score，时间复杂度$O(n^2)$
     "no"
     "vsrgaxxpgfiqdnwvrlpddcz"
     "tldjbqjdogipebqsohdypcxjqkrqltpgviqtqz"
+    ```
+
+- [1314. Matrix Block Sum](https://leetcode.com/problems/matrix-block-sum/)
+
+    - 暴力求和，时间复杂度$O(n^2*k^2)$，LeetCode时间效率$\color{red}{872 ms, 14.37\%}$
+
+    ```cpp
+    vector<vector<int>> matrixBlockSum(vector<vector<int>> &mat, int K)
+    {
+        const int m = mat.size(), n = mat[0].size();
+        vector<vector<int>> ret(m, vector<int>(n, 0));
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                int r = i, c = j;
+                for (int x = r - K; x <= r + K; x++)
+                {
+                    for (int y = c - K; y <= c + K; y++)
+                    {
+                        if (x >= 0 && y >= 0 && x < m && y < n)
+                        {
+                            ret[r][c] += mat[x][y];
+                        }
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 对原数组从左上至右下累加求和（前缀和），时间复杂度$O(n^2)$，LeetCode时间效率$\color{red}{24 ms, 96.44\%}$
+
+    ```cpp
+    vector<vector<int>> matrixBlockSum(vector<vector<int>> &mat, int K)
+    {
+        const int m = mat.size(), n = mat[0].size();
+        vector<vector<int>> prefixSum(m + 1, vector<int>(n + 1, 0));
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                prefixSum[i + 1][j + 1] += mat[i][j] - prefixSum[i][j] + prefixSum[i][j + 1] + prefixSum[i + 1][j];
+            }
+        }
+        vector<vector<int>> ret(m, vector<int>(n, 0));
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                int r1 = max(0, i - K), c1 = max(0, j - K), r2 = min(i + 1 + K, m), c2 = min(j + 1 + K, n);
+                ret[i][j] = prefixSum[r2][c2] + prefixSum[r1][c1] - prefixSum[r1][c2] - prefixSum[r2][c1];
+            }
+        }
+        return ret;
+    }
     ```
 
 - [...](123)
