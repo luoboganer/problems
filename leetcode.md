@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-13 16:25:54
+ * @LastEditTime : 2020-01-14 20:49:45
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -11190,6 +11190,86 @@ paths with max score，时间复杂度$O(n^2)$
             {
                 int r1 = max(0, i - K), c1 = max(0, j - K), r2 = min(i + 1 + K, m), c2 = min(j + 1 + K, n);
                 ret[i][j] = prefixSum[r2][c2] + prefixSum[r1][c1] - prefixSum[r1][c2] - prefixSum[r2][c1];
+            }
+        }
+        return ret;
+    }
+    ```
+
+- [1316. Distinct Echo Substrings](https://leetcode.com/problems/distinct-echo-substrings/)
+
+    - 用一个hashset来存储所有符合条件的子串，统计数量，时间复杂度$O(n^2),n=text.length$，LeetCode时间效率$\color{red}{184 ms, 76.06\%}$
+
+    ```cpp
+    int distinctEchoSubstrings(string text)
+    {
+        unordered_set<string> substrings;
+        const int n = text.length() / 2;
+        for (int i = 1; i <= n; i++)
+        {
+            // 搜索所有被重复子串长度为i的子串substring
+            int left = 0, right = i, c = 0;
+            while (right < text.length())
+            {
+                if (text[left++] == text[right++])
+                {
+                    c++;
+                }
+                else
+                {
+                    c = 0;
+                }
+                if (c >= i && c < i * 2)
+                {
+                    substrings.insert(text.substr(left, i));
+                }
+            }
+        }
+        return substrings.size();
+    }
+    ```
+
+    - 抛弃hashset，两次遍历，避免重复，时间复杂度$O(n^2),n=text.length$，LeetCode时间效率$\color{red}{80 ms, 88.09\%}$
+
+    ```cpp
+    int distinctEchoSubstrings(string text)
+    {
+        const int n = text.length();
+        vector<int> copy_n(n + 1, 0);
+        for (int i = 1; i < n; i++)
+        {
+            int left = 0, right = i, c = 0;
+            while (right < n)
+            {
+                if (text[left++] == text[right++])
+                {
+                    c++;
+                }
+                else
+                {
+                    c = 0;
+                }
+                copy_n[right] = max(copy_n[right], c);
+            }
+        }
+        int ret = 0;
+        for (int i = 1; i <= n / 2; i++)
+        {
+            int left = 0, right = i, c = 0;
+            while (right < n)
+            {
+                if (text[left++] == text[right++])
+                {
+                    c++;
+                }
+                else
+                {
+                    c = 0;
+                }
+                if (c >= i && copy_n[right] < i * 2)
+                {
+                    ret++;
+                }
             }
         }
         return ret;
