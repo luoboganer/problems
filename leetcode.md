@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-16 16:53:41
+ * @LastEditTime : 2020-01-16 17:53:55
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4490,6 +4490,99 @@
             slow = nums[slow], ret = nums[ret];
         }
         return ret;
+    }
+    ```
+
+- [289. Game of Life](https://leetcode.com/problems/game-of-life/)
+
+    - 仿真模拟，统计每个cell周边的live数，时间复杂度$O(m*n)$，空间复杂度$O(m*n)$
+
+    ```cpp
+    void gameOfLife(vector<vector<int>> &board)
+    {
+        if (board.size() > 0 && board[0].size() > 0)
+        {
+            int m = board.size(), n = board[0].size();
+            vector<vector<int>> auxiliary(m, vector<int>(n, 0));
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    auxiliary[i][j] = board[i][j];
+                }
+            }
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    int live = -auxiliary[i][j]; // 下面的9宫格求和会计算中心点自己，提前除去
+                    for (int r = -1; r <= 1; r++)
+                    {
+                        for (int c = -1; c <= 1; c++)
+                        {
+                            int a = i + r, b = j + c;
+                            if (a >= 0 && a < m && b >= 0 && b < n)
+                            {
+                                live += auxiliary[a][b];
+                            }
+                        }
+                    }
+                    if (board[i][j] == 1)
+                    {
+                        board[i][j] = (live == 2 || live == 3) ? 1 : 0;
+                    }
+                    else if (board[i][j] == 0 && live == 3)
+                    {
+                        board[i][j] = 1;
+                    }
+                }
+            }
+        }
+    }
+    ```
+
+    - 用值的正负状态来表示live和dead，实现inplace的update，时间复杂度$O(m*n)$，空间复杂度$O(1)$
+
+    ```cpp
+    void gameOfLife(vector<vector<int>> &board)
+    {
+        if (board.size() > 0 && board[0].size() > 0)
+        {
+            int m = board.size(), n = board[0].size();
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    int live = -board[i][j]; // 下面的9宫格求和会计算中心点自己，提前出去
+                    for (int r = -1; r <= 1; r++)
+                    {
+                        for (int c = -1; c <= 1; c++)
+                        {
+                            int a = i + r, b = j + c;
+                            if (a >= 0 && a < m && b >= 0 && b < n)
+                            {
+                                live += abs(board[a][b]) == 1 ? 1 : 0;
+                            }
+                        }
+                    }
+                    if (board[i][j] == 1)
+                    {
+                        board[i][j] = (live == 2 || live == 3) ? 1 : -1;
+                    }
+                    else if (board[i][j] == 0 && live == 3)
+                    {
+                        board[i][j] = 2;
+                    }
+                }
+            }
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    board[i][j] = board[i][j] > 0 ? 1 : 0;
+                }
+            }
+        }
     }
     ```
 
