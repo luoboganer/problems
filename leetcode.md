@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-14 20:49:45
+ * @LastEditTime : 2020-01-16 16:53:41
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2125,6 +2125,95 @@
         helper(s, 0, 2, cur, ans);
         helper(s, 0, 3, cur, ans);
         return ans;
+    }
+    ```
+
+- [95. Unique Binary Search Trees II](https://leetcode.com/problems/unique-binary-search-trees-ii/)
+
+    - 递归生成从1到n的二叉搜索树
+
+    ```cpp
+    vector<TreeNode *> generate_recursive(int left, int right)
+    {
+        vector<TreeNode *> ret;
+        if (left <= right)
+        {
+            for (int k = left; k <= right; k++)
+            {
+                vector<TreeNode *> left_children = generate_recursive(left, k - 1);
+                vector<TreeNode *> right_children = generate_recursive(k + 1, right);
+                for (auto &&left_node : left_children)
+                {
+                    for (auto &&right_node : right_children)
+                    {
+                        TreeNode *root = new TreeNode(k);
+                        root->left = left_node;
+                        root->right = right_node;
+                        ret.push_back(root);
+                    }
+                }
+            }
+        }
+        else
+        {
+            ret.push_back(nullptr);
+        }
+        return ret;
+    }
+    vector<TreeNode *> generateTrees(int n)
+    {
+        vector<TreeNode *> ret;
+        if (n > 0)
+        {
+            ret = generate_recursive(1, n);
+        }
+        return ret;
+    }
+    ```
+
+    - 减少递归次数，提高时间效率的实现
+
+    ```cpp
+    vector<TreeNode *> generate_recursive(int left, int right)
+    {
+        vector<TreeNode *> ret;
+        if (left < right)
+        {
+            for (int k = left; k <= right; k++)
+            {
+                vector<TreeNode *> left_children = generate_recursive(left, k - 1);
+                vector<TreeNode *> right_children = generate_recursive(k + 1, right);
+                for (auto &&left_node : left_children)
+                {
+                    for (auto &&right_node : right_children)
+                    {
+                        TreeNode *root = new TreeNode(k);
+                        root->left = left_node;
+                        root->right = right_node;
+                        ret.push_back(root);
+                    }
+                }
+            }
+        }
+        else if (left == right)
+        {
+            TreeNode *node = new TreeNode(left);
+            ret.push_back(node);
+        }
+        else
+        {
+            ret.push_back(nullptr);
+        }
+        return ret;
+    }
+    vector<TreeNode *> generateTrees(int n)
+    {
+        vector<TreeNode *> ret;
+        if (n > 0)
+        {
+            ret = generate_recursive(1, n);
+        }
+        return ret;
     }
     ```
 
