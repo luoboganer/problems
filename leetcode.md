@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-17 14:50:18
+ * @LastEditTime : 2020-01-17 15:57:42
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -9743,6 +9743,28 @@
             }
         }
         return ans;
+    }
+    ```
+
+- [1043. Partition Array for Maximum Sum](https://leetcode.com/problems/partition-array-for-maximum-sum/)
+
+    动态规划，dp[i]表示可以从dp[0,1,...,i]得到的最大和，则$dp[i]=\max_{1 \le size \le K }(dp[i-size]+max_{i-szie \le j \le i}A[j])$，时间复杂度$O(K*A.length)$
+
+    ```cpp
+    int maxSumAfterPartitioning(vector<int> &A, int K)
+    {
+        const int n = A.size();
+        vector<int> dp(n + 1, 0);
+        for (int i = 0; i < n; i++)
+        {
+            int cur_max_value = A[i];
+            for (int size = 1; size <= i + 1 && size <= K; size++)
+            {
+                cur_max_value = max(cur_max_value, A[i - size + 1]);
+                dp[i + 1] = max(dp[i + 1], dp[i - size + 1] + cur_max_value * size);
+            }
+        }
+        return dp.back();
     }
     ```
 
