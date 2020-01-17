@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-16 17:53:55
+ * @LastEditTime : 2020-01-17 14:50:18
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -9767,6 +9767,66 @@
             ans=min(ans,abs(sum_stones-dp[i]*2*i));
         }
         return ans;
+    }
+    ```
+
+- [1079. Letter Tile Possibilities](https://leetcode.com/problems/letter-tile-possibilities/)
+
+    可以用递归的DFS实现，模拟所有可能被组成的字符串
+
+    - 引用传值实现
+
+    ```cpp
+    void dfs(int &ret, vector<int> &count)
+    {
+        for (int i = 0; i < 26; i++)
+        {
+            if (count[i] != 0)
+            {
+                ret++, count[i]--;
+                dfs(ret, count);
+                count[i]++;
+            }
+        }
+    }
+    int numTilePossibilities(string tiles)
+    {
+        vector<int> count(26, 0);
+        for (auto &&ch : tiles)
+        {
+            count[(int)(ch - 'A')]++;
+        }
+        int ret = 0;
+        dfs(ret, count);
+        return ret;
+    }
+    ```
+
+    - 函数返回值实现
+
+    ```cpp
+    int dfs(vector<int> &count)
+    {
+        int ret = 0;
+        for (int i = 0; i < 26; i++)
+        {
+            if (count[i] != 0)
+            {
+                ret++, count[i]--;
+                ret += dfs(count);
+                count[i]++;
+            }
+        }
+        return ret;
+    }
+    int numTilePossibilities(string tiles)
+    {
+        vector<int> count(26, 0);
+        for (auto &&ch : tiles)
+        {
+            count[(int)(ch - 'A')]++;
+        }
+        return dfs(count);
     }
     ```
 
