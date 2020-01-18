@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-17 15:57:42
+ * @LastEditTime : 2020-01-18 23:23:22
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -5737,6 +5737,48 @@
             }
         }
         return ret;
+    }
+    ```
+    
+- [427. Construct Quad Tree](https://leetcode.com/problems/construct-quad-tree/)
+
+    递归construct
+
+    ```cpp
+    Node *construct_rec(vector<vector<int>> &grid, int i, int j, int n)
+    {
+        Node *ret = nullptr;
+        if (n == 1)
+        {
+            ret = new Node(grid[i][j], true, nullptr, nullptr, nullptr, nullptr);
+        }
+        else
+        {
+            int width = n / 2;
+            Node *tl = construct_rec(grid, i, j, width);
+            Node *tr = construct_rec(grid, i, j + width, width);
+            Node *bl = construct_rec(grid, i + width, j, width);
+            Node *br = construct_rec(grid, i + width, j + width, width);
+            if (tl->isLeaf && tr->isLeaf && bl->isLeaf && br->isLeaf && tl->val == tr->val && bl->val == br->val && tl->val == bl->val)
+            {
+                ret = new Node(tl->val, true, nullptr, nullptr, nullptr, nullptr);
+            }
+            else
+            {
+                ret = new Node(grid[i][j], false, tl, tr, bl, br);
+            }
+        }
+        return ret;
+    }
+    Node *construct(vector<vector<int>> &grid)
+    {
+        Node *root = nullptr;
+        if (grid.size() > 0)
+        {
+            int n = grid.size();
+            root = construct_rec(grid, 0, 0, n);
+        }
+        return root;
     }
     ```
 
