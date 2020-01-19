@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-19 16:26:02
+ * @LastEditTime : 2020-01-19 17:49:55
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -9350,6 +9350,42 @@
         vector<vector<bool>> visited(m, vector<bool>(n, false));
         dfs_helper(grid, visited, row, col, &ans, count_0);
         return ans;
+    }
+    ```
+
+- [984. String Without AAA or BBB](https://leetcode.com/problems/string-without-aaa-or-bbb/)
+
+    贪心原则，时间复杂度$O(A+B)$
+
+    ```cpp
+    string strWithout3a3b(int A, int B)
+    {
+        char a = 'a', b = 'b';
+        if (A < B)
+        {
+            swap(A, B), swap(a, b);
+        }
+        string ret(A + B, ' ');
+        int i = 0;
+        while (A > 0 && B > 0 && A > B)
+        {
+            ret[i++] = a, ret[i++] = a, A -= 2;
+            ret[i++] = b, B--;
+        }
+        while (A > 0 && B > 0)
+        {
+            A--, B--;
+            ret[i++] = a, ret[i++] = b;
+        }
+        while (A > 0)
+        {
+            ret[i++] = a, A--;
+        }
+        while (B > 0)
+        {
+            ret[i++] = b, B--;
+        }
+        return ret;
     }
     ```
 
