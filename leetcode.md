@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-18 23:23:22
+ * @LastEditTime : 2020-01-19 16:26:02
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -11580,6 +11580,125 @@ paths with max score，时间复杂度$O(n^2)$
         }
         return ret;
     }
+    ```
+
+- [1325. Delete Leaves With a Given Value](https://leetcode.com/problems/delete-leaves-with-a-given-value/)
+
+    - 迭代式post-order遍历二叉树，将符合条件的节点值标记为-1，然后递归式遍历所有节点，删除值为-1的节点，时间复杂度$O(n)$，其中n为二叉树所有节点的数量
+
+    ```cpp
+    TreeNode *dfs_remove(TreeNode *root)
+    {
+        if (root)
+        {
+            if (root->val == -1)
+            {
+                root = nullptr;
+            }
+            else
+            {
+                root->left = dfs_remove(root->left);
+                root->right = dfs_remove(root->right);
+            }
+        }
+        return root;
+    }
+    TreeNode *removeLeafNodes(TreeNode *root, int target)
+    {
+        if (root)
+        {
+            TreeNode *cur = root;
+            stack<TreeNode *> st;
+            unordered_set<TreeNode *> visited;
+            while (cur || !st.empty())
+            {
+                if (cur)
+                {
+                    st.push(cur);
+                    cur = cur->left;
+                }
+                else
+                {
+                    if (visited.find(st.top()->right) != visited.end())
+                    {
+                        cur = st.top(), st.pop();
+                        if (cur->val == target && (!cur->left || cur->left->val == -1) && (!cur->right || cur->right->val == -1))
+                        {
+                            cur->val = -1;
+                        }
+                        cur = nullptr;
+                    }
+                    else
+                    {
+                        cur = st.top()->right;
+                        visited.insert(cur);
+                    }
+                }
+            }
+            root = dfs_remove(root);
+        }
+        return root;
+    }
+    ```
+
+    - 将迭代式post-order遍历改为递归式
+
+    ```cpp
+    TreeNode *dfs_remove(TreeNode *root)
+    {
+        if (root)
+        {
+            if (root->val == -1)
+            {
+                root = nullptr;
+            }
+            else
+            {
+                root->left = dfs_remove(root->left);
+                root->right = dfs_remove(root->right);
+            }
+        }
+        return root;
+    }
+    void dfs_mark(TreeNode *root, int target)
+    {
+        if (root)
+        {
+            if (root->left)
+            {
+                dfs_mark(root->left, target);
+            }
+            if (root->right)
+            {
+                dfs_mark(root->right, target);
+            }
+            if (root->val == target && (!root->left || root->left->val == -1) && (!root->right || root->right->val == -1))
+            {
+                root->val = -1;
+            }
+        }
+    }
+    TreeNode *removeLeafNodes(TreeNode *root, int target)
+    {
+        dfs_mark(root, target);
+        root = dfs_remove(root);
+        return root;
+    }
+    ```
+
+    部分测试数据
+
+    ```cpp
+    [1,2,3,2,null,2,4]
+    2
+    [1,3,3,3,2]
+    3
+    [1,2,null,2,null,2]
+    2
+    [1,1,1]
+    1
+    [1,2,3]
+    1
     ```
 
 - [...](123)
