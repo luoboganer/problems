@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-19 17:49:55
+ * @LastEditTime : 2020-01-20 09:28:09
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -6209,6 +6209,62 @@
             // ans在所有house选择的heater距离中选择最大值即可
         }
         return ans;
+    }
+    ```
+
+- [477. Total Hamming Distance](https://leetcode.com/problems/total-hamming-distance/)
+
+    - 二重遍历求异或值后统计bit位中1的个数，暴力计算，时间复杂度$O(n^2)$，显然遇到了$\color{red}{TLE}$
+
+    ```cpp
+    int count_bits(int v)
+    {
+        int ret = 0;
+        while (v)
+        {
+            v = v & (v - 1);
+            ret++;
+        }
+        return ret;
+    }
+    int totalHammingDistance(vector<int> &nums)
+    {
+        int ret = 0, count = nums.size();
+        for (int i = 0; i < count; i++)
+        {
+            for (int j = i + 1; j < count; j++)
+            {
+                ret += count_bits(nums[i] ^ nums[j]);
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 统计所有数中在每一位置上1的个数，然后计算每个bit位0和1的组合数之和，时间复杂度$O(n)$
+
+    ```cpp
+    int totalHammingDistance(vector<int> &nums)
+    {
+        const int length = 32;
+        vector<int> count(length, 0);
+        for (auto &&v : nums)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                if (v & 0x1)
+                {
+                    count[i]++;
+                }
+                v >>= 1;
+            }
+        }
+        int ret = 0, total_numbers = nums.size();
+        for (int i = 0; i < length; i++)
+        {
+            ret += count[i] * (total_numbers - count[i]);
+        }
+        return ret;
     }
     ```
 
