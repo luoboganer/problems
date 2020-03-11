@@ -4,8 +4,8 @@
  * @Email: 14061115@buaa.edu.cn
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
- * @LastEditors  : shifaqiang
- * @LastEditTime : 2020-01-20 09:28:09
+ * @LastEditors: shifaqiang
+ * @LastEditTime: 2020-03-12 00:48:07
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -11791,6 +11791,72 @@ paths with max score，时间复杂度$O(n^2)$
     1
     [1,2,3]
     1
+    ```
+
+- [1346. Check If N and Its Double Exist](https://leetcode.com/problems/check-if-n-and-its-double-exist/)
+
+    - 快速排序后从前向后遍历arr[i]和arr[j]是否存在二倍关系，时间复杂度$O(n^2)$
+
+    ```cpp
+    bool checkIfExist(vector<int> &arr)
+    {
+        int const count = arr.size();
+        sort(arr.begin(), arr.end());
+        bool ans = true;
+        for (int i = 0; ans && i < count; i++)
+        {
+            for (int j = i + 1; ans && j < count; j++)
+            {
+                if (arr[i] * 2 == arr[j] || arr[i] == arr[j] * 2)
+                {
+                    ans = false;
+                }
+            }
+        }
+        return !ans;
+    }
+    ```
+
+    - 快排后对任意arr[i]二分查找是否存在arr[j]与其存在二倍关系切$i!=j$，时间复杂度$O(n)$
+
+    ```cpp
+    int binary_search(vector<int> &arr, int v)
+    {
+        int left = 0, right = arr.size() - 1, ans = -1;
+        while (left <= right)
+        {
+            int mid = left + (right - left) / 2;
+            if (arr[mid] == v)
+            {
+                ans = mid;
+                break;
+            }
+            else if (arr[mid] > v)
+            {
+                right = mid - 1;
+            }
+            else
+            {
+                left = mid + 1;
+            }
+        }
+        return ans;
+    }
+    bool checkIfExist(vector<int> &arr)
+    {
+        int const count = arr.size();
+        sort(arr.begin(), arr.end());
+        bool ans = false;
+        for (int i = 0; !ans & i < count; i++)
+        {
+            int j = binary_search(arr, arr[i] * 2);
+            if (j != -1 && i != j)
+            {
+                ans = true;
+            }
+        }
+        return ans;
+    }
     ```
 
 - [...](123)
