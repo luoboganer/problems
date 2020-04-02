@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-03-12 00:48:07
+ * @LastEditTime: 2020-04-02 17:49:23
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -11857,6 +11857,79 @@ paths with max score，时间复杂度$O(n^2)$
         }
         return ans;
     }
+    ```
+
+- [1387. Sort Integers by The Power Value](https://leetcode.com/problems/sort-integers-by-the-power-value/)
+
+    - lo和hi数据范围未知情况下每个数字单独计算power，时间效率$\color{red}{92 ms, 46.65\%}$
+
+    ```cpp
+    int getKth(int lo, int hi, int k)
+    {
+        const int count = hi - lo + 1;
+        vector<vector<int>> powers(count, vector<int>(2, -1));
+        for (int v = lo; v <= hi; v++)
+        {
+            int power = 0, temp_v = v;
+            while (temp_v != 1)
+            {
+                if (lo <= temp_v && temp_v <= hi && powers[temp_v - lo][1] != -1)
+                {
+                    power += powers[temp_v - lo][1];
+                    temp_v = 1;
+                }
+                else
+                {
+                    power++;
+                    temp_v = (temp_v & 0x1) ? (3 * temp_v + 1) : (temp_v >> 1);
+                }
+            }
+            powers[v - lo][0] = v, powers[v - lo][1] = power;
+        }
+        sort(powers.begin(), powers.end(), [](auto &a, auto &b) -> bool { return a[1] < b[1] || (a[1] == b[1] && a[0] < b[0]); });
+        return powers[k - 1][0];
+    }
+    ```
+
+    - 给定lo和hi的数据范围，固定DP或者recursion，时间效率$\color{red}{100 ms, 45.50\%}$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        int getPower(int v, vector<int> &powers)
+        {
+            int ret = 0;
+            if (v <= 1000)
+            {
+                if (powers[v] == -1)
+                {
+                    powers[v] = 1 + ((v & 0x1) ? getPower(v * 3 + 1, powers) : getPower(v / 2, powers));
+                }
+                ret = powers[v];
+            }
+            else
+            {
+                ret = 1 + ((v & 0x1) ? getPower(v * 3 + 1, powers) : getPower(v / 2, powers));
+            }
+            return ret;
+        }
+
+    public:
+        int getKth(int lo, int hi, int k)
+        {
+            const int count = hi - lo + 1, max_hi = 3001;
+            vector<int> powers_maxHi(max_hi, -1);
+            powers_maxHi[1] = 0;
+            vector<vector<int>> powers(count, vector<int>(2, -1));
+            for (int v = lo; v <= hi; v++)
+            {
+                powers[v - lo][0] = v, powers[v - lo][1] = getPower(v, powers_maxHi);
+            }
+            sort(powers.begin(), powers.end(), [](auto &a, auto &b) -> bool { return a[1] < b[1] || (a[1] == b[1] && a[0] < b[0]); });
+            return powers[k - 1][0];
+        }
+    };
     ```
 
 - [...](123)
