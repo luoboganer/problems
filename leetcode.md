@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-04-02 17:49:23
+ * @LastEditTime: 2020-04-06 15:36:30
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -843,6 +843,93 @@
                 swap(matrix[i][j], matrix[j][i]);
             }
         }
+    }
+    ```
+
+- [49. Group Anagrams](https://leetcode.com/problems/group-anagrams/)
+
+    将给定的一串单词按照组成字符分组
+
+    - 统计每个单词中每个字母的数量并逐个对比，$\color{red}{TLE}$
+
+    ```cpp
+	bool check(vector<int> &a, vector<int> &b)
+	{
+		bool ret = true;
+		if (a.size() != b.size())
+		{
+			ret = false;
+		}
+		else
+		{
+			for (int i = 0; i < a.size(); i++)
+			{
+				if (a[i] != b[i])
+				{
+					ret = false;
+					break;
+				}
+			}
+		}
+		return ret;
+	}
+	vector<vector<string>> groupAnagrams(vector<string> &strs)
+	{
+		vector<vector<string>> ret;
+		int length_of_strings = strs.size(), number_of_lowercase = 26;
+		vector<vector<int>> count(length_of_strings, vector<int>(number_of_lowercase, 0));
+		vector<bool> used(length_of_strings, false);
+		// 统计每个字符串中每个小写字母出现的次数
+		for (int i = 0; i < length_of_strings; i++)
+		{
+			for (auto x : strs[i])
+			{
+				count[i][int(x - 'a')]++;
+			}
+		}
+		// grouping
+		for (int i = 0; i < length_of_strings; i++)
+		{
+			if (!used[i])
+			{
+				used[i] = true;
+                vector<string> anagrams_of_cur_string{strs[i]};
+				for (int j = i + 1; j < length_of_strings; j++)
+				{
+					if (!used[j])
+					{
+						if (check(count[i], count[j]))
+						{
+							used[j] = true;
+                            anagrams_of_cur_string.push_back(strs[j]);
+						}
+					}
+				}
+				ret.push_back(anagrams_of_cur_string);
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - 将每个单词中所有字母排序并用哈希表存储，时间复杂度$O(nklogk)$，其中$n$是给定单词数量，$k$是单词的最大长度
+
+    ```cpp
+    vector<vector<string>> groupAnagrams(vector<string> &strs)
+    {
+        unordered_map<string, vector<string>> records;
+        vector<vector<string>> ret;
+        for (auto &&s : strs)
+        {
+            string temp = s;
+            sort(temp.begin(), temp.end());
+            records[temp].push_back(s);
+        }
+        for (auto &&item : records)
+        {
+            ret.push_back(item.second);
+        }
+        return ret;
     }
     ```
 
