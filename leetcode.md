@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-04-06 15:36:30
+ * @LastEditTime: 2020-04-10 19:54:30
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -11943,6 +11943,73 @@ paths with max score，时间复杂度$O(n^2)$
             }
         }
         return ans;
+    }
+    ```
+
+- [1379. Find a Corresponding Node of a Binary Tree in a Clone of That Tree](https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/)
+
+    - 递归方法，DFS，时间效率$\color{red}{688 ms, 53.45\%}$
+
+    ```cpp
+    TreeNode *findTargetNode(TreeNode *node, TreeNode *target)
+    {
+        TreeNode *ret = nullptr;
+        if (node != nullptr)
+        {
+            if (node->val == target->val)
+            {
+                ret = node;
+            }
+            else
+            {
+                TreeNode *left = findTargetNode(node->left, target);
+                if (left != nullptr)
+                {
+                    ret = left;
+                }
+                else
+                {
+                    ret = findTargetNode(node->right, target);
+                }
+            }
+        }
+        return ret;
+    }
+    TreeNode *getTargetCopy(TreeNode *original, TreeNode *cloned, TreeNode *target)
+    {
+        return findTargetNode(cloned, target);
+    }
+    ```
+
+    - 队列实现，BFS，时间效率$\color{red}{732 ms, 20.92\%}$
+
+    ```cpp
+    TreeNode *getTargetCopy(TreeNode *original, TreeNode *cloned, TreeNode *target)
+    {
+        queue<TreeNode *> qe;
+        qe.push(cloned);
+        TreeNode *ret = nullptr, *current_node = nullptr;
+        while (ret == nullptr && !qe.empty())
+        {
+            current_node = qe.front();
+            qe.pop();
+            if (current_node->val == target->val)
+            {
+                ret = current_node;
+            }
+            else
+            {
+                if (current_node->left)
+                {
+                    qe.push(current_node->left);
+                }
+                if (current_node->right)
+                {
+                    qe.push(current_node->right);
+                }
+            }
+        }
+        return ret;
     }
     ```
 
