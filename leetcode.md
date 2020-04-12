@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-04-10 19:54:30
+ * @LastEditTime: 2020-04-12 09:30:10
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -6587,6 +6587,30 @@
         return dist;
     }
     ```
+
+- [543. Diameter of Binary Tree](https://leetcode.com/problems/diameter-of-binary-tree/)
+
+    - 递归方法，DFS，时间复杂度$O(n)$
+
+    ```cpp
+    int ans = 1;
+    int depth(TreeNode *node)
+    {
+        int ret = 0;
+        if (node)
+        {
+            int left = depth(node->left);
+            int right = depth(node->right);
+            ans = max(left + right + 1, ans);
+            ret = max(left, right) + 1;
+        }
+        return ret;
+    }
+    int diameterOfBinaryTree(TreeNode *root)
+    {
+        depth(root);
+        return ans - 1;
+    }
 
 - [560. Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/)
 
