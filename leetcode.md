@@ -6499,6 +6499,60 @@
 
     注意理解最长非公共子串儿的正确含义，即只有两个字符串完全相同时才构成公共子串，否则最长非公共子串就是两个字符串中较长的一个。
 
+- [525. Contiguous Array](https://leetcode.com/problems/contiguous-array/)
+
+    - 统计数组截止到nums[i]位置0和1的数量zeros[i]和ones[i]，然后比较zeros[j] - zeros[i] == ones[j] - ones[i]$，时间复杂度$O(n^2)$，$LeetCode评测机$\color{red}{TLE}$
+
+    ```cpp
+    int findMaxLength(vector<int> &nums)
+    {
+        int ret = 0;
+        const int count = nums.size();
+        vector<int> zeros(count + 1, 0), ones(count + 1, 0);
+        int zero = 0, one = 0;
+        for (auto i = 0; i < count; i++)
+        {
+            nums[i] == 0 ? zero++ : one++;
+            zeros[i + 1] = zero, ones[i + 1] = one;
+        }
+        for (int i = 0; i <= count; i++)
+        {
+            for (int j = i + 1; j <= count; j++)
+            {
+                if (zeros[j] - zeros[i] == ones[j] - ones[i])
+                {
+                    ret = max(ret, ones[j] - ones[i]);
+                }
+            }
+        }
+        return ret * 2;
+    }
+    ```
+
+    - 用一个count变量来统计0和1出现的次数，出现1自增，出现0自减，则count在两个位置i和j出现同一个数的时候意味着i和j之间0和1的数量相同，寻找$max(j-i)$即可，时间复杂度$O(n)$，参考[solution](https://leetcode.com/problems/contiguous-array/solution/)，时间效率$\color{red}{ 96 ms, 90.38\%}$
+
+    ```cpp
+    int findMaxLength(vector<int> &nums)
+    {
+        int ret = 0, count = 0, n = nums.size();
+        vector<int> count2index(2 * n + 1, -2);
+        count2index[n] = -1;
+        for (auto i = 0; i < n; i++)
+        {
+            nums[i] == 1 ? count++ : count--;
+            if (count2index[count + n] == -2)
+            {
+                count2index[count + n] = i;
+            }
+            else
+            {
+                ret = max(ret, i - count2index[count + n]);
+            }
+        }
+        return ret;
+    }
+    ```
+
 - [535](https://leetcode.com/problems/encode-and-decode-tinyurl/)
 
     tinyURL的encode与decode算法
