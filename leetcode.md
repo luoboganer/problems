@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-04-12 09:30:10
+ * @LastEditTime: 2020-04-13 15:23:21
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -12108,6 +12108,113 @@ paths with max score，时间复杂度$O(n^2)$
             return powers[k - 1][0];
         }
     };
+    ```
+
+- [1410. HTML Entity Parser](https://leetcode.com/problems/html-entity-parser/)
+
+    - 暴利比较是否字符串相同，LeetCode评测机$\color{red}{TLE}$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        int get_index(string text, int start_pointer)
+        {
+            // start_pointer is the index of the next char of '&'
+            int index = 6; // not found
+            bool not_found = true;
+            int count = text.length(), partial_length = count - start_pointer;
+            if (not_found && partial_length >= 6 && text.substr(start_pointer, 6).compare("frasl;") == 0)
+            {
+                index = 5, not_found = false;
+            }
+            if (not_found && partial_length >= 5 && text.substr(start_pointer, 5).compare("quot;") == 0)
+            {
+                index = 0, not_found = false;
+            }
+            if (not_found && partial_length >= 5 && text.substr(start_pointer, 5).compare("apos;") == 0)
+            {
+                index = 1, not_found = false;
+            }
+            if (not_found && partial_length >= 4 && text.substr(start_pointer, 4).compare("amp;") == 0)
+            {
+                index = 2, not_found = false;
+            }
+            if (not_found && partial_length >= 3 && text.substr(start_pointer, 3).compare("gt;") == 0)
+            {
+                index = 3, not_found = false;
+            }
+            if (not_found && partial_length >= 3 && text.substr(start_pointer, 3).compare("lt;") == 0)
+            {
+                index = 4, not_found = false;
+            }
+            return index;
+        }
+
+    public:
+        string entityParser(string text)
+        {
+            vector<char> entities{'"', '\'', '&', '>', '<', '/'};
+            vector<int> lengths{5, 5, 4, 3, 3, 6};
+            string ret;
+            const int count = text.length();
+            for (int i = 0; i < count; i++)
+            {
+                char ch = text[i];
+                if (ch == '&')
+                {
+                    int index = get_index(text, i + 1);
+                    if (index < 6)
+                    {
+                        ch = entities[index];
+                        i += lengths[index];
+                    }
+                }
+                ret.push_back(ch);
+            }
+            return ret;
+        }
+    };
+    ```
+
+    - two pointer method，时间效率$\color{red}{160 ms, 99.67\%}$
+
+    ```cpp
+    string entityParser(string text)
+    {
+        // 用字符串的长度记录特殊字符串对应的转义字符
+        vector<pair<string, char>> sp2char_map[6] = {{}, {}, {{"gt", '>'}, {"lt", '<'}}, {{"amp", '&'}}, {{"quot", '"'}, {"apos", '\''}}, {{"frasl", '/'}}};
+        // 用start和and记录每一对&和;的位置
+        int start = 0, current = 0, count = text.length();
+        for (auto i = 0; i < count; i++, current++)
+        {
+            text[current] = text[i]; // update current character
+            if (text[current] == '&')
+            {
+                start = current;
+            }
+            if (text[current] == ';')
+            {
+                auto size = current - start - 1;
+                if (size >= 2 && size <= 5)
+                {
+                    //所有可能的特殊字符序列长度为2,3,4,5
+                    for (auto &[enc, dec] : sp2char_map[size])
+                    {
+                        if (text.compare(start + 1, size, enc) == 0)
+                        {
+                            current = start;
+                            text[current] = dec;
+                            break;
+                        }
+                    }
+                }
+                start = current + 1;
+            }
+        }
+        text.resize(current);
+        return text;
+    }
     ```
 
 - [...](123)
