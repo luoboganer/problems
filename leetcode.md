@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-04-13 15:23:21
+ * @LastEditTime: 2020-04-13 17:21:16
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -12162,6 +12162,31 @@ paths with max score，时间复杂度$O(n^2)$
             return powers[k - 1][0];
         }
     };
+    ```
+
+- [1401. Circle and Rectangle Overlapping](https://leetcode.com/problems/circle-and-rectangle-overlapping/)
+
+    - 这是一道几何计算题目，时间复杂度$O(1)$，参考[reference](https://www.zhihu.com/question/24251545/answer/27184960)
+
+    ```cpp
+    bool checkOverlap(int radius, int x_center, int y_center, int x1, int y1, int x2, int y2)
+    {
+        // 转换坐标原点为矩形正中心O，此时矩形在坐标系正中心,矩形右上角坐标点必然在第一象限记为A，可以将圆中心坐标映射到对称的第一象限B
+        double x_center_rectangle = x1 + (x2 - x1) * 0.5, y_center_rectangle = y1 + (y2 - y1) * 0.5;
+        double x_center_new = abs(x_center - x_center_rectangle), y_center_new = abs(y_center - y_center_rectangle);
+        double x2_new = x2 - x_center_rectangle, y2_new = y2 - y_center_rectangle;
+        // 计算向量 AB
+        double x = x_center_new - x2_new, y = y_center_new - y2_new;
+        /**
+         *  计算矩形右上角A点到圆心B点的距离，分四种情况讨论
+         * 1. x>0 y>0 该距离小于等于圆半径，即为有交点（相切或者相交)
+         * 2. x<0 y>0 若x <= radius则相交或者相切
+         * 3. x>0 y<0 若y <= radius则相交或者相切
+         * 4. x<=0 y<=0 必然相交
+        */
+        double square_of_distance_AB = x * x + y * y, square_of_radius = radius * radius;
+        return (x <= 0 && y <= 0) || (x > 0 && y < 0 && x <= radius) || (x < 0 && y > 0 && y <= radius) || square_of_distance_AB <= square_of_radius;
+    }
     ```
 
 - [1410. HTML Entity Parser](https://leetcode.com/problems/html-entity-parser/)
