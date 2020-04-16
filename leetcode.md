@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-04-13 17:21:16
+ * @LastEditTime: 2020-04-16 12:50:16
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -12089,6 +12089,107 @@ paths with max score，时间复杂度$O(n^2)$
         }
         return ret;
     }
+    ```
+
+- [1381. Design a Stack With Increment Operation](https://leetcode.com/problems/design-a-stack-with-increment-operation/)
+
+    - 每次inc操作都给所有的数字加val值，时间复杂度$O(k)$
+
+    ```cpp
+    class CustomStack
+    {
+    private:
+        int top, capacity;
+        vector<int> st;
+
+    public:
+        CustomStack(int maxSize)
+        {
+            st = vector<int>(maxSize, 0);
+            top = -1;
+            capacity = maxSize;
+        }
+
+        void push(int x)
+        {
+            if (top != capacity - 1)
+            {
+                st[++top] = x;
+            }
+        }
+
+        int pop()
+        {
+            int val = -1;
+            if (top >= 0)
+            {
+                val = st[top--];
+            }
+            return val;
+        }
+
+        void increment(int k, int val)
+        {
+            for (auto i = 0; i < k && i <= top; i++)
+            {
+                st[i] += val;
+            }
+        }
+    };
+    ```
+
+    - lazy increment，空间换时间，用一个额外的inc数组来记录增量值，其中inc[i]标识下标从0到i的每个元素增量值，时间复杂度$O(1)$
+
+    ```cpp
+    class CustomStack
+    {
+    private:
+        int top, capacity;
+        vector<int> st, inc;
+
+    public:
+        CustomStack(int maxSize)
+        {
+            st = vector<int>(maxSize, 0);
+            inc = vector<int>(maxSize, 0);
+            top = -1;
+            capacity = maxSize;
+        }
+
+        void push(int x)
+        {
+            if (top != capacity - 1)
+            {
+                st[++top] = x;
+            }
+        }
+
+        int pop()
+        {
+            int val = -1;
+            if (top >= 0)
+            {
+                val = st[top];
+                val += inc[top];
+                if (top > 0)
+                {
+                    inc[top - 1] += inc[top];
+                }
+                inc[top] = 0; // 清除对栈顶之后元素的increment操作
+                top--;
+            }
+            return val;
+        }
+
+        void increment(int k, int val)
+        {
+            int index = min(k - 1, top);
+            if (index >= 0)
+            {
+                inc[index] += val;
+            }
+        }
+    };
     ```
 
 - [1387. Sort Integers by The Power Value](https://leetcode.com/problems/sort-integers-by-the-power-value/)
