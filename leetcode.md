@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-04-16 12:50:16
+ * @LastEditTime: 2020-04-18 16:56:39
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2065,6 +2065,69 @@
             }
         }
         return ans;
+    }
+    ```
+
+- [88. Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/)
+
+    - 借助额外的空间合并排序数组，归并排序的思想，时间复杂度$O(n)$
+
+    ```cpp
+    void merge(vector<int> &nums1, int m, vector<int> &nums2, int n)
+    {
+        int count = m + n;
+        vector<int> ret(count, 0);
+        int i = 0, j = 0, k = 0;
+        while (i < m && j < n)
+        {
+            if (nums1[i] < nums2[j])
+            {
+                ret[k] = nums1[i++];
+            }
+            else
+            {
+                ret[k] = nums2[j++];
+            }
+            k++;
+        }
+        while (i < m)
+        {
+            ret[k++] = nums1[i++];
+        }
+        while (j < n)
+        {
+            ret[k++] = nums2[j++];
+        }
+        nums1 = ret;
+    }
+    ```
+
+    - 在nums1的原地合并数组，时间复杂度$O(n)$，和空间复杂度为$O(1)$
+
+    ```cpp
+    void merge(vector<int> &nums1, int m, vector<int> &nums2, int n)
+    {
+        int count = m + n;
+        for (auto i = count - 1; i >= n; i--)
+        {
+            nums1[i] = nums1[i - n]; // 腾出nums1的前半部分空间
+        }
+        int i = n, j = 0, k = 0;
+        while (i < count && j < n)
+        {
+            if (nums1[i] < nums2[j])
+            {
+                nums1[k++] = nums1[i++];
+            }
+            else
+            {
+                nums1[k++] = nums2[j++];
+            }
+        }
+        while (j < n)
+        {
+            nums1[k++] = nums2[j++];
+        }
     }
     ```
 
