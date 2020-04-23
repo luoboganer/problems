@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-04-18 16:56:39
+ * @LastEditTime: 2020-04-23 16:31:01
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3283,6 +3283,37 @@
             }
         }
         return ans;
+    }
+    ```
+
+- [201. Bitwise AND of Numbers Range](https://leetcode.com/problems/bitwise-and-of-numbers-range/)
+
+    - 顺序遍历，时间复杂度$O(n)$，借助0与任何数按位与之后均为0剪枝（没有剪枝会TLE）
+
+    ```cpp
+    int rangeBitwiseAnd(int m, int n)
+    {
+        long long ret = 0xffffffff;
+        for (long long v = m; ret != 0 && v <= n; v++)
+        {
+            ret &= v;
+        }
+        return (int)ret;
+    }
+    ```
+
+    - 可以观察并验证[m,n]中所有数字按位与的结果是[m,n]区间内所有数字二进制表示的左侧相同的部分，因此从一个32bits全1的mash开始向左移动即可，时间复杂度$O(1)$
+
+    ```cpp
+    int rangeBitwiseAnd(int m, int n)
+    {
+        int width = 0;
+        while (m != n)
+        {
+            width++;
+            m >>= 1, n >>= 1;
+        }
+        return m << width;
     }
     ```
 
