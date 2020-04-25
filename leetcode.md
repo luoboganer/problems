@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-04-23 16:31:01
+ * @LastEditTime: 2020-04-25 13:07:54
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2704,6 +2704,135 @@
 - [143](https://leetcode.com/problems/reorder-list/)
 
     链表、树、图等指针操作千千万万要注意空指针甚至是输入根节点为空的情况。
+
+- [146. LRU Cache](https://leetcode.com/problems/lru-cache/)
+
+    - hashmap + double linked list，get与put操作时间复杂度均为$O(1)$
+
+    ```cpp
+    class LRUCache
+    {
+    private:
+        struct DoubleListNode
+        {
+            /* data */
+            int key, val;
+            DoubleListNode *prev, *next;
+            DoubleListNode(int _key, int _val) : key(_key), val(_val), prev(NULL), next(NULL) {}
+        };
+        unordered_map<int, DoubleListNode *> cache; // 存储key-node pointer对
+        int cache_capacity, current_capacity;
+        // 按照队列原则管理，head->next是最长时间未被使用的节点，每次刚刚cache到使用的节点/刚刚insert的节点移动至队尾tail->prev
+        DoubleListNode *head, *tail;
+        bool isEmptyCache()
+        {
+            return current_capacity == 0;
+        }
+        bool isFullCache()
+        {
+            return current_capacity == cache_capacity;
+        }
+        DoubleListNode *removeFromHead()
+        {
+            /*
+            1、 head->next是最长时间未被使用的节点，capacity满时需要删除最长时间未被使用的节点head->next来说释放空间
+            2、 成功删除头结点返回被删除的节点指针，否则返回nullptr
+            */
+            DoubleListNode *ret = nullptr;
+            if (!isEmptyCache())
+            {
+                current_capacity--;
+                ret = head->next;
+                head->next = head->next->next;
+                head->next->prev = head;
+            }
+            return ret;
+        }
+        DoubleListNode *addToTail(DoubleListNode *current_node)
+        {
+            /*
+            1、 每次刚刚cache到使用的节点/刚刚insert的节点移动至队尾tail->prev，capacity满时需要删除
+            2、 如果需要释放空间删除了某个节点，则返回被删除节点指针，否则返回nullptr
+            */
+            DoubleListNode *removed_node = nullptr;
+            if (isFullCache())
+            {
+                removed_node = removeFromHead(); // cache满时抛弃最长时间未被使用节点，释放空间
+            }
+            DoubleListNode *temp = tail->prev;
+            temp->next = current_node, current_node->prev = temp;
+            current_node->next = tail, tail->prev = current_node;
+            current_capacity++;
+            return removed_node;
+        }
+        bool removeFromNode(DoubleListNode *current_node)
+        {
+            bool ret = false;
+            if (current_node != nullptr && !isEmptyCache())
+            {
+                DoubleListNode *a = current_node->prev, *b = current_node->next;
+                a->next = b, b->prev = a;
+                current_capacity--;
+                ret = true;
+            }
+            return ret;
+        }
+
+    public:
+        LRUCache(int capacity)
+        {
+            cache_capacity = capacity, current_capacity = 0;
+            head = new DoubleListNode(-1, -1), tail = new DoubleListNode(-1, -1);
+            head->next = tail, tail->prev = head; // 构建双向链表
+        }
+
+        int get(int key)
+        {
+            int ret = -1;
+            auto it = cache.find(key);
+            if (it != cache.end())
+            {
+                // cache 命中
+                removeFromNode(it->second);
+                addToTail(it->second);
+                ret = it->second->val;
+            }
+            return ret;
+        }
+
+        void put(int key, int value)
+        {
+            auto it = cache.find(key);
+            DoubleListNode *current_node = nullptr;
+            if (it != cache.end())
+            {
+                // key已经存在，重新set value
+                current_node = it->second;
+                current_node->val = value;
+                // 然后将该节点放到末尾
+                removeFromNode(current_node);
+            }
+            else
+            {
+                // 插入该key-value对
+                current_node = new DoubleListNode(key, value);
+                cache[key] = current_node;
+            }
+            auto *removed_node = addToTail(current_node);
+            if (removed_node)
+            {
+                cache.erase(removed_node->key);
+            }
+        }
+    };
+
+    /**
+    * Your LRUCache object will be instantiated and called as such:
+    * LRUCache* obj = new LRUCache(capacity);
+    * int param_1 = obj->get(key);
+    * obj->put(key,value);
+    */
+    ```
 
 - [147. Insertion Sort List](https://leetcode.com/problems/insertion-sort-list/)
 
