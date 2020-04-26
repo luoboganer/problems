@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-04-25 13:07:54
+ * @LastEditTime: 2020-04-26 13:00:27
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -12515,7 +12515,7 @@ paths with max score，时间复杂度$O(n^2)$
 
 - [1410. HTML Entity Parser](https://leetcode.com/problems/html-entity-parser/)
 
-    - 暴利比较是否字符串相同，LeetCode评测机$\color{red}{TLE}$
+    - 暴力比较是否字符串相同，LeetCode评测机$\color{red}{TLE}$
 
     ```cpp
     class Solution
@@ -12617,6 +12617,70 @@ paths with max score，时间复杂度$O(n^2)$
         }
         text.resize(current);
         return text;
+    }
+    ```
+
+- [1424. Diagonal Traverse II](https://leetcode.com/problems/diagonal-traverse-ii/)
+
+    - 从左下角到右上角遍历所有可能的坐标，时间复杂度$O(rows*cols)$，提交结果答案正确但是$\color{red}{TLE}$
+
+    ```cpp
+    vector<int> findDiagonalOrder(vector<vector<int>> &nums)
+    {
+        int rows = nums.size(), total = 0, k = 0, max_col = 0;
+        vector<int> cols(rows, 0), prefix_max_cols(rows, 0);
+        for (auto i = 0; i < rows; i++)
+        {
+            cols[i] = nums[i].size();
+            max_col = max(max_col, cols[i]), total += cols[i];
+            prefix_max_cols[i] = max_col;
+        }
+        vector<int> ret(total, 0); // 保存结果
+        int max_i_j_sum = rows + max_col - 2;
+        for (auto i_j_sum = 0; i_j_sum <= max_i_j_sum && k < total; i_j_sum++)
+        {
+            /*
+                1. k<total 元素总数目约数剪枝
+            */
+            int i = min(i_j_sum, rows - 1), j = i_j_sum - i;
+            while (i >= 0 && j < prefix_max_cols[i] && k < total)
+            {
+                if (j < cols[i])
+                {
+                    ret[k++] = nums[i][j];
+                }
+                i--, j++; // 从左下角向右上角走
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 采用桶排序的方式将下标$i+j$相同的对角线元素全部放入同一个桶里面，时间复杂度$O(n)$，其中n为总的元素个数
+
+    ```cpp
+    vector<int> findDiagonalOrder(vector<vector<int>> &nums)
+    {
+        int rows = nums.size(), max_key = 0;
+        unordered_map<int, vector<int>> buckets;
+        vector<int> ret;
+        for (auto i = 0; i < rows; i++)
+        {
+            auto cols = nums[i].size();
+            for (auto j = 0; j < cols; j++)
+            {
+                max_key = max(max_key, i + j);
+                buckets[i + j].push_back(nums[i][j]);
+            }
+        }
+        for (auto i = 0; i <= max_key; i++)
+        {
+            for (auto v = buckets[i].rbegin(); v != buckets[i].rend(); v++)
+            {
+                ret.push_back(*v);
+            }
+        }
+        return ret;
     }
     ```
 
