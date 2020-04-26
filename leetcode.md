@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-04-26 13:00:27
+ * @LastEditTime: 2020-04-26 19:59:21
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -12617,6 +12617,30 @@ paths with max score，时间复杂度$O(n^2)$
         }
         text.resize(current);
         return text;
+    }
+    ```
+
+- [1415. The k-th Lexicographical String of All Happy Strings of Length n](https://leetcode.com/problems/the-k-th-lexicographical-string-of-all-happy-strings-of-length-n/)
+
+    - 用组合数学的方法直接计算第k个happy string，时间复杂度$O(n)$
+
+    ```cpp
+    string getHappyString(int n, int k)
+    {
+        vector<int> powersOf2{1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
+        string letters_all = "abc", letters_next = "bcacab", ret;
+        if (k <= 3 * powersOf2[n - 1])
+        {
+            char fisrt_letter = letters_all[(--k) / powersOf2[n - 1]];
+            ret.push_back(fisrt_letter), k %= powersOf2[n - 1];
+            for (auto i = 1; i < n; i++)
+            {
+                int next_index = k < powersOf2[n - 1 - i] ? 0 : 1;
+                ret.push_back(letters_next[(int)(ret.back() - 'a') * 2 + next_index]);
+                k %= powersOf2[n - 1 - i];
+            }
+        }
+        return ret;
     }
     ```
 
