@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-04-26 19:59:21
+ * @LastEditTime: 2020-04-27 20:59:29
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3994,6 +3994,45 @@
             }
         }
         return ret;
+    }
+    ```
+
+- [221. Maximal Square](https://leetcode.com/problems/maximal-square/)
+
+    动态规划，时间复杂度$O(m*n)$
+
+    ```cpp
+    int maximalSquare(vector<vector<char>> &matrix)
+    {
+        /*
+            动态规划，dp[i][j]标识到当前位置所能组成的最大正方形的边长
+        */
+        int area = 0, max_side_length = 0;
+        if (matrix.size() > 0 && matrix[0].size() > 0)
+        {
+            int rows = matrix.size(), cols = matrix[0].size();
+            vector<vector<int>> dp(rows, vector<int>(cols, 0));
+            for (auto i = 0; i < rows; i++)
+            {
+                for (auto j = 0; j < cols; j++)
+                {
+                    if (i == 0 || j == 0)
+                    {
+                        dp[i][j] = (int)(matrix[i][j] - '0');
+                    }
+                    else
+                    {
+                        if (matrix[i][j] == '1')
+                        {
+                            dp[i][j] = min(min(dp[i - 1][j], dp[i][j - 1]), dp[i - 1][j - 1]) + 1;
+                        }
+                    }
+                    max_side_length = max(dp[i][j], max_side_length);
+                }
+            }
+            area = max_side_length * max_side_length;
+        }
+        return area;
     }
     ```
 
