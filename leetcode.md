@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-04-27 20:59:29
+ * @LastEditTime: 2020-04-29 20:07:42
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2579,6 +2579,38 @@
         }
         return ans;
     }
+    ```
+
+- [124. Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/)
+
+    递归，时间复杂度$O(n)$，其中n是给定二叉树的所有节点数
+
+    ```cpp
+    class Solution
+    {
+    private:
+        long long ret;
+        int PathSum(TreeNode *root)
+        {
+            int max_path_sum = 0;
+            if (root)
+            {
+                int left = max(0, PathSum(root->left));
+                int right = max(0, PathSum(root->right));
+                ret = (int)max(ret, (long long)(left + right + root->val));
+                max_path_sum = max(left, right) + root->val;
+            }
+            return max_path_sum;
+        }
+
+    public:
+        int maxPathSum(TreeNode *root)
+        {
+            ret = numeric_limits<int>::min();
+            PathSum(root);
+            return (int)ret;
+        }
+    };
     ```
 
 - [130. Surrounded Regions](https://leetcode.com/problems/surrounded-regions/)
