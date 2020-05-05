@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-04-29 20:07:42
+ * @LastEditTime: 2020-05-06 00:06:08
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2589,7 +2589,7 @@
     class Solution
     {
     private:
-        long long ret;
+        int ret;
         int PathSum(TreeNode *root)
         {
             int max_path_sum = 0;
@@ -2597,7 +2597,7 @@
             {
                 int left = max(0, PathSum(root->left));
                 int right = max(0, PathSum(root->right));
-                ret = (int)max(ret, (long long)(left + right + root->val));
+                ret = max(ret, left + right + root->val);
                 max_path_sum = max(left, right) + root->val;
             }
             return max_path_sum;
@@ -9497,6 +9497,53 @@
 			return (i==count)&&increasing&&decreasing;
 		}
     }
+    ```
+
+- [945. Minimum Increment to Make Array Unique](https://leetcode.com/problems/minimum-increment-to-make-array-unique/)
+
+    - 排序，时间复杂度$O(nlog(n))$
+
+    ```cpp
+    int minIncrementForUnique(vector<int> &A)
+    {
+        int count = A.size(), moves = 0;
+        if (count > 0)
+        {
+            sort(A.begin(), A.end());
+            int cur_min_value = *A.begin();
+            for (auto i = 1; i < count; i++)
+            {
+                moves += A[i] <= cur_min_value ? cur_min_value - A[i] + 1 : 0; // self increment by step=1
+                cur_min_value = max(cur_min_value + 1, A[i]);
+            }
+        }
+        return moves;
+    }
+    ```
+
+    - 并查集UnionFind，时间复杂度$O(n)$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        unordered_map<int, int> count; // 值 - 所属的连通分量
+        int find(int x)
+        {
+            return count[x] = count.count(x) ? find(count[x] + 1) : x;
+        }
+
+    public:
+        int minIncrementForUnique(vector<int> &A)
+        {
+            int moves = 0;
+            for (auto v : A)
+            {
+                moves += find(v) - v;
+            }
+            return moves;
+        }
+    };
     ```
 
 - [950](https://leetcode.com/problems/reveal-cards-in-increasing-order/)
