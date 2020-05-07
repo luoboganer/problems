@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-06 00:06:08
+ * @LastEditTime: 2020-05-07 22:48:38
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -8178,6 +8178,46 @@
             }
         }
         return ans;
+    }
+    ```
+
+- [775. Global and Local Inversions](https://leetcode.com/problems/global-and-local-inversions/)
+
+    注意这是一个返回bool值得判定题目，并不需要真的计算出global inversions和local inversions
+
+    - 理论上有local inversion一定是global inversion，但是global inversion不一定是local inversion，所以只需要保证所有global inversion全部是local inversion即可返回true，时间复杂度$O(n)$
+
+    ```cpp
+    bool isIdealPermutation(vector<int> &A)
+    {
+        const int count = A.size() - 2;
+        int cur_max = numeric_limits<int>::min();
+        for (auto i = 0; i < count; i++)
+        {
+            cur_max = max(cur_max, A[i]);
+            if (cur_max > A[i + 2])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    ```
+
+    - 数学上可以证明global inversions和local inversions相同的条件是$abs(A[i] - i) \le 1$，时间复杂度$O(n)$
+
+    ```cpp
+    bool isIdealPermutation(vector<int> &A)
+    {
+        const int count = A.size();
+        for (auto i = 0; i < count; i++)
+        {
+            if (abs(A[i] - i) > 1)
+            {
+                return false;
+            }
+        }
+        return true;
     }
     ```
 
