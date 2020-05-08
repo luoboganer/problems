@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-07 22:48:38
+ * @LastEditTime: 2020-05-08 18:16:59
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -7058,6 +7058,53 @@
             }
         }
         return ret;
+    }
+    ```
+
+- [581. Shortest Unsorted Continuous Subarray](https://leetcode.com/problems/shortest-unsorted-continuous-subarray/)
+
+    - 将nums排序后比较与原数组不同的部分长度即可，时间复杂度$O(nlog(n))$
+
+    ```cpp
+    int findUnsortedSubarray(vector<int> &nums)
+    {
+        const int count = nums.size();
+        vector<int> sorted_nums = nums;
+        sort(sorted_nums.begin(), sorted_nums.end());
+        int left = 0, right = count - 1;
+        while (left <= right && sorted_nums[left] == nums[left])
+        {
+            left++;
+        }
+        while (left <= right && sorted_nums[right] == nums[right])
+        {
+            right--;
+        }
+        return right - left + 1;
+    }
+    ```
+
+    - 寻找左侧已排序的部分长度和右侧已排序部分长度，剩余的中间长度即为最长未排序部分，时间复杂度$O(n)$
+
+    ```cpp
+    int findUnsortedSubarray(vector<int> &nums)
+    {
+        const int count = nums.size();
+        vector<int> left_max = nums, right_min = nums;
+        for (auto i = 1; i < count; i++)
+        {
+            left_max[i] = max(left_max[i - 1], left_max[i]), right_min[count - i - 1] = min(right_min[count - i], right_min[count - i - 1]);
+        }
+        int left = 0, right = count - 1;
+        while (left <= right && right_min[left] == nums[left])
+        {
+            left++;
+        }
+        while (left <= right && left_max[right] == nums[right])
+        {
+            right--;
+        }
+        return right - left + 1;
     }
     ```
 
