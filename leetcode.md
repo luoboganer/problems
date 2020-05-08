@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-08 18:16:59
+ * @LastEditTime: 2020-05-08 18:57:04
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -12691,6 +12691,54 @@ paths with max score，时间复杂度$O(n^2)$
             return powers[k - 1][0];
         }
     };
+    ```
+
+- [1395. Count Number of Teams](https://leetcode.com/problems/count-number-of-teams/)
+
+    - 给定i,j,k三个下标暴力遍历，时间复杂度$O(n^3)$
+
+    ```cpp
+    int numTeams(vector<int> &rating)
+    {
+        int ret = 0, count = rating.size();
+        for (auto i = 0; i < count; i++)
+        {
+            for (auto j = i + 1; j < count; j++)
+            {
+                for (auto k = j + 1; k < count; k++)
+                {
+                    if ((rating[i] < rating[j] && rating[j] < rating[k]) || (rating[i] > rating[j] && rating[j] > rating[k]))
+                    {
+                        ret++;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 二重遍历记录每个数v两侧大于v的数个数和右侧小于v的数个数，然后计算即可，时间复杂度$O(n^2)$
+
+    ```cpp
+    int numTeams(vector<int> &rating)
+    {
+        int ret = 0, count = rating.size();
+        for (auto i = 1; i < count - 1; i++)
+        {
+            int leftLess = 0, rightLess = 0, leftGreater = 0, rightGreater = 0;
+            for (auto j = 0; j < i; j++)
+            {
+                rating[j] < rating[i] ? leftLess++ : leftGreater++;
+            }
+            for (auto j = i + 1; j < count; j++)
+            {
+                rating[i] < rating[j] ? rightGreater++ : rightLess++;
+            }
+            ret += leftLess * rightGreater + leftGreater * rightLess;
+        }
+        return ret;
+    }
     ```
 
 - [1401. Circle and Rectangle Overlapping](https://leetcode.com/problems/circle-and-rectangle-overlapping/)
