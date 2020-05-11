@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-08 18:57:04
+ * @LastEditTime: 2020-05-11 16:30:11
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -12870,6 +12870,87 @@ paths with max score，时间复杂度$O(n^2)$
         }
         text.resize(current);
         return text;
+    }
+    ```
+
+- [1414. Find the Minimum Number of Fibonacci Numbers Whose Sum Is K](https://leetcode.com/problems/find-the-minimum-number-of-fibonacci-numbers-whose-sum-is-k/)
+
+    - 动态规划，DP，$O(k^2)$，结果正确但是$\color{red}{TLE}$
+
+    ```cpp
+    int findMinFibonacciNumbers(int k)
+    {
+        vector<int> fibonacci{1, 2};
+        int last = 1;
+        while (fibonacci[last] < k)
+        {
+            fibonacci.push_back(fibonacci[last - 1] + fibonacci[last]);
+            last++;
+        }
+        vector<int> dp(k + 1, 0);
+        for (auto i = 0; i <= k; i++)
+        {
+            dp[i] = i; // 全部用1
+        }
+        for (auto &&v : fibonacci)
+        {
+            for (auto i = v; i <= k; i++)
+            {
+                dp[i] = min(dp[i - v] + 1, dp[i]);
+            }
+        }
+        return dp.back();
+    }
+    ```
+
+    - 贪心法则，greedy，$f(k)=f(k-x)+1$，递归式写法，时间复杂度$O((log(k))^2)$
+
+    ```cpp
+    int findMinFibonacciNumbers(int k)
+    {
+        int ret;
+        if (k < 2)
+        {
+            ret = k;
+        }
+        else
+        {
+            int a = 1, b = 1;
+            while (b <= k)
+            {
+                a += b;
+                swap(a, b);
+            }
+            ret = 1 + findMinFibonacciNumbers(k - a);
+        }
+        return ret;
+    }
+    ```
+
+    - 贪心法则，greedy，$f(k)=f(k-x)+1$，迭代式写法，时间复杂度$O(log(k))$
+
+    ```cpp
+    int findMinFibonacciNumbers(int k)
+    {
+        int ret = 0, a = 1, b = 1, temp;
+        while (b <= k)
+        {
+            temp = a + b;
+            a = b;
+            b = temp;
+        }
+        while (a > 0)
+        {
+            if (a <= k)
+            {
+                k -= a;
+                ret++;
+            }
+            temp = b - a;
+            b = a;
+            a = temp;
+        }
+        return ret;
     }
     ```
 
