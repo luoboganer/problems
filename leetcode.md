@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-11 16:30:11
+ * @LastEditTime: 2020-05-11 17:32:19
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -4483,6 +4483,96 @@
         }
         return ret;
     }
+    ```
+
+- [235. Lowest Common Ancestor of a Binary Search Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)
+
+    - 利用BST的性质，root左子树的值均小于root->val，root右子树的值均大于root->val，可快速定位p和q的LCA最低公共祖先，时间复杂度$O(n)$
+
+        - 递归写法
+
+        ```cpp
+        int findMinFibonacciNumbers(int k)
+        {
+            vector<int> fibonacci{1, 2};
+            int last = 1;
+            while (fibonacci[last] < k)
+            {
+                fibonacci.push_back(fibonacci[last - 1] + fibonacci[last]);
+                last++;
+            }
+            vector<int> dp(k + 1, 0);
+            for (auto i = 0; i <= k; i++)
+            {
+                dp[i] = i; // 全部用1
+            }
+            for (auto &&v : fibonacci)
+            {
+                for (auto i = v; i <= k; i++)
+                {
+                    dp[i] = min(dp[i - v] + 1, dp[i]);
+                }
+            }
+            return dp.back();
+        }
+        ```
+
+        - 迭代式写法
+
+        ```cpp
+		TreeNode *lowestCommonAncestor(TreeNode *root, TreeNode *p, TreeNode *q)
+		{
+			TreeNode *ret = nullptr;
+			if (p->val > q->val)
+			{
+				swap(p, q);
+			}
+			bool notfound = true;
+			while (notfound && root)
+			{
+				if (root->val == p->val || root->val == q->val || (q->val > root->val && p->val < root->val))
+				{
+					ret = root;
+					notfound = false;
+				}
+				root = p->val > root->val ? root->right : root->left;
+			}
+			return ret;
+		}
+        ```
+
+
+    - 按照一般的二叉树求LCA问题，通过DFS后序遍历分别求出从root到p和q的两条路径，两条路径的最后一个相同节点即为LCA节点，时间复杂度$O(n)$
+
+    ```cpp
+	class Solution
+	{
+	private:
+		TreeNode *ret = nullptr;
+		bool helper(TreeNode *root, TreeNode *p, TreeNode *q)
+		{
+			bool ret_root = false;
+			if (root)
+			{
+				int left = helper(root->left, p, q) ? 1 : 0;
+				int right = helper(root->right, p, q) ? 1 : 0;
+				int mid = (root == p || root == q) ? 1 : 0;
+				if (left + right + mid >= 2)
+				{
+					ret = root;
+				}
+				ret_root = mid + left + right > 0;
+			}
+			return ret_root;
+		}
+
+	public:
+		TreeNode *lowestCommonAncestor(TreeNode *root, TreeNode *p, TreeNode *q)
+		{
+			helper(root, p, q);
+			return ret;
+		}
+	};
     ```
 
 - [237](https://leetcode.com/problems/delete-node-in-a-linked-list/)
