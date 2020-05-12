@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-11 17:32:19
+ * @LastEditTime: 2020-05-12 11:14:42
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -12541,6 +12541,73 @@ paths with max score，时间复杂度$O(n^2)$
         return ans;
     }
     ```
+
+- [1361. Validate Binary Tree Nodes](https://leetcode.com/problems/validate-binary-tree-nodes/)
+
+	检查所有节点的入度，其中root有且仅有一个入度为0，其它节点入度必须为1，在此基础上保证root代表的二叉树包含了全部节点节即可，时间复杂度$O(n)$
+
+	```cpp
+	class Solution
+	{
+	private:
+		int countNodes(vector<int> &leftChild, vector<int> &rightChild, vector<int> &visited, int root)
+		{
+			int ret = 1;
+			visited[root] = 1;
+			if (leftChild[root] != -1 && !visited[leftChild[root]])
+			{
+				ret += countNodes(leftChild, rightChild, visited, leftChild[root]);
+			}
+			if (rightChild[root] != -1 && !visited[rightChild[root]])
+			{
+				ret += countNodes(leftChild, rightChild, visited, rightChild[root]);
+			}
+			return ret;
+		}
+
+	public:
+		bool validateBinaryTreeNodes(int n, vector<int> &leftChild, vector<int> &rightChild)
+		{
+			vector<int> in_degree(n, 0), visited(n, 0);
+			for (int i = 0; i < n; i++)
+			{
+				if (leftChild[i] != -1)
+				{
+					in_degree[leftChild[i]]++;
+					if (in_degree[leftChild[i]] > 1)
+					{
+						return false;
+					}
+				}
+				if (rightChild[i] != -1)
+				{
+					in_degree[rightChild[i]]++;
+					if (in_degree[rightChild[i]] > 1)
+					{
+						return false; // 二叉树中节点的入度为0(root)或者1(nonRoot)
+					}
+				}
+			}
+			int root = -1;
+			for (int i = 0; i < n; i++)
+			{
+				if (in_degree[i] == 0)
+				{
+					// 入度为0即为root
+					if (root == -1)
+					{
+						root = i;
+					}
+					else
+					{
+						return false; // root多于一个
+					}
+				}
+			}
+			// 统计root下面的节点数量，保证n个节点全部纳入root下面，避免漏掉某些点或者形成环
+			return root != -1 && n == countNodes(leftChild, rightChild, visited, root);
+		}
+	};
 
 - [1379. Find a Corresponding Node of a Binary Tree in a Clone of That Tree](https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/)
 
