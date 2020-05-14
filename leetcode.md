@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-14 15:06:29
+ * @LastEditTime: 2020-05-14 21:59:01
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -6882,6 +6882,65 @@
 - [521](https://leetcode.com/problems/longest-uncommon-subsequence-i/)
 
     注意理解最长非公共子串儿的正确含义，即只有两个字符串完全相同时才构成公共子串，否则最长非公共子串就是两个字符串中较长的一个。
+
+- [523. Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/)
+
+	- 计算数组nums的前缀和，然后双重遍历计算其超过两个数的连续和是否是k的倍数（包括k的0倍，其k本身可能为0），时间复杂度$O(n^2)$
+
+	```cpp
+    bool checkSubarraySum(vector<int> &nums, int k)
+    {
+        nums.insert(nums.begin(), 0);
+        int count = nums.size();
+        for (auto i = 1; i < count; i++)
+        {
+            nums[i] += nums[i - 1];
+        }
+        for (auto i = 0; i < count; i++)
+        {
+            for (auto j = i + 2; j < count; j++)
+            {
+                int temp = nums[j] - nums[i];
+                if (temp == k || (k != 0 && temp % k == 0))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+	```
+
+	- 计算nums前缀和，然后每个值取%k的结果，当某个值出现两次的时候，即$a\%k==b\%k$，则$b-a=n*k$，符合题意，用hashmap来存储出现过得数字，时间复杂度$O(n)$
+
+	```cpp
+    bool checkSubarraySum(vector<int> &nums, int k)
+    {
+        nums.insert(nums.begin(), 0);
+        int count = nums.size();
+        unordered_map<int, int> prefix_sum;
+        prefix_sum[0] = 0; // nums的第一个数是0
+        for (auto i = 1; i < count; i++)
+        {
+            // 防止除0错误
+            nums[i] = (k == 0) ? (nums[i] + nums[i - 1]) : ((nums[i] + nums[i - 1]) % k);
+            if (prefix_sum.find(nums[i]) != prefix_sum.end())
+            {
+                // 保证该值以及出现过且下标差大于1（连续子数组中至少包括两个数）
+                if (i - prefix_sum[nums[i]] > 1)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                // 第一次遇到值nums[i]出现时，记录其出现的index
+                prefix_sum[nums[i]] = i;
+            }
+        }
+        return false;
+    }
+	```
 
 - [525. Contiguous Array](https://leetcode.com/problems/contiguous-array/)
 
