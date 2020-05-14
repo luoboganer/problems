@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-12 11:14:42
+ * @LastEditTime: 2020-05-14 15:06:29
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -8184,6 +8184,101 @@
         return letters[low%letters.size()];
     }
     ```
+
+- [745. Prefix and Suffix Search](https://leetcode.com/problems/prefix-and-suffix-search/)
+
+	对于给定的words构造前缀字典树（TrieTree），然后查询其中符合prefix和suffix限制的单词，可将每个单词word所有可能的后缀直接编码到word的前部插入TrieTree，用'{'和word分割，然后直接查询即可，时间复杂度$O(NK^2+QK)$，空间复杂度$O(NK^2)$，其中N是word的个数，K是word的最大长度，Q是查询的次数
+
+	```cpp
+	class WordFilter
+	{
+	private:
+		struct TrieNode
+		{
+			int is_leaf;
+			TrieNode *next[27];
+			TrieNode()
+			{
+				is_leaf = -1;
+				for (auto i = 0; i < 27; i++)
+				{
+					next[i] = nullptr;
+				}
+			}
+		};
+		TrieNode *root; // 按照前缀构造
+		void insert(TrieNode *trie_root, string word, int weight)
+		{
+			TrieNode *cur = trie_root;
+			for (auto &&ch : word)
+			{
+				int index = (int)(ch - 'a');
+				if (cur->next[index] == nullptr)
+				{
+					cur->next[index] = new TrieNode();
+				}
+				cur = cur->next[index];
+			}
+			cur->is_leaf = weight;
+		}
+		int find(TrieNode *cur, string prefix, int weight)
+		{
+			if (cur)
+			{
+				if (cur->is_leaf > weight)
+				{
+					weight = cur->is_leaf; // 当前单词即符合查询条件
+				}
+				for (auto i = 0; i < 27; i++)
+				{
+					if (cur->next[i])
+					{
+						weight = find(cur->next[i], prefix, weight);
+					}
+				}
+			}
+			return weight;
+		}
+
+	public:
+		WordFilter(vector<string> &words)
+		{
+			int count = words.size();
+			root = new TrieNode();
+			for (auto i = 0; i < count; i++)
+			{
+				int weight = i, length = words[i].length();
+				// 按照可能的后缀 + # + word 构造TrieTree
+				for (auto k = 0; k <= length; k++)
+				{
+					string cur_word = words[i].substr(length - k, k) + '{' + words[i];
+					insert(root, cur_word, weight);
+					// cout << cur_word << endl;
+				}
+			}
+		}
+
+		int f(string prefix, string suffix)
+		{
+			// 查找符合前缀的所有单词
+			TrieNode *cur = root;
+			prefix = suffix + '{' + prefix;
+			for (auto &&ch : prefix)
+			{
+				int index = (int)(ch - 'a');
+				if (cur->next[index] == nullptr)
+				{
+					return -1; // 没有符合该prefix的word
+				}
+				else
+				{
+					cur = cur->next[index];
+				}
+			}
+			return find(cur, prefix, -1);
+		}
+	};
+	```
 
 - [748. Shortest Completing Word](https://leetcode.com/problems/shortest-completing-word/)
 
