@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-15 15:41:55
+ * @LastEditTime: 2020-05-15 16:18:50
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -5934,6 +5934,71 @@
         }
     };
 	```
+
+- [388. Longest Absolute File Path](https://leetcode.com/problems/lexicographical-numbers/)
+
+    首先将字符串预处理为每个目录项的深度levels，字符长度lengths，是否是文件的isfile标记数组，然后使用栈来DFS具体的每个文件路径，计算其最大长度，时间复杂度$O(n)$，其中n为给定字符串input的长度
+
+    ```cpp
+    class Solution
+    {
+    private:
+        void pre_process_input(string input, vector<int> &levels, vector<int> &lengths, vector<int> &isfile)
+        {
+            input.push_back('\n'); // for last item
+            int cur_level = 0, cur_length = 0, file = 0;
+            char prev_char;
+            for (auto &&ch : input)
+            {
+                if (ch == '\n')
+                {
+                    // get a single item
+                    file == 1 ? cur_length : cur_length++; // 如果是目录有末尾的斜杠占一个字符位置
+                    levels.push_back(cur_level);
+                    lengths.push_back(cur_length);
+                    isfile.push_back(file);
+                    cur_level = 0, cur_length = 0, file = 0;
+                }
+                else if (ch == '\t')
+                {
+                    cur_level++;
+                }
+                else
+                {
+                    cur_length++;
+                    if (prev_char == '.')
+                    {
+                        file = 1;
+                    }
+                }
+                prev_char = ch;
+            }
+        }
+    public:
+        int lengthLongestPath(string input)
+        {
+            vector<int> levels, lengths, isfile;
+            pre_process_input(input, levels, lengths, isfile);
+            // cout << integerVectorToString(levels) << endl;
+            // cout << integerVectorToString(lengths) << endl;
+            // cout << integerVectorToString(isfile) << endl;
+            int ret = 0, cur_length = 0, count = levels.size();
+            stack<int> st;
+            for (auto i = 0; i < count; i++)
+            {
+                while (st.size() > levels[i])
+                {
+                    cur_length -= st.top();
+                    st.pop();
+                }
+                cur_length += lengths[i];
+                st.push(lengths[i]);
+                ret = isfile[i] ? max(ret, cur_length) : ret;
+            }
+            return ret;
+        }
+    };
+    ```
 
 - [394](https://leetcode.com/problems/decode-string/)
 
