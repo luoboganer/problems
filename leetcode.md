@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-14 21:59:01
+ * @LastEditTime: 2020-05-15 15:41:55
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -5880,6 +5880,60 @@
             }
     };
     ```
+
+- [386. Lexicographical Numbers](https://leetcode.com/problems/lexicographical-numbers/)
+
+	- 从1-n的数字转化为字符串，字符串按照字典序排序，然后转换为int值输出，时间复杂度$O(nlog(n))$
+
+	```cpp
+    vector<int> lexicalOrder(int n)
+    {
+        vector<string> strs;
+        for (int i = 1; i <= n; i++)
+        {
+            strs.push_back(to_string(i));
+        }
+        sort(strs.begin(), strs.end());
+        vector<int> ret;
+        for (auto i = 0; i < n; i++)
+        {
+            ret.push_back(stoi(strs[i]));
+        }
+        return ret;
+    }
+	```
+
+	- 递归构造按照字典序排序的数字，时间复杂度$O(n)$
+
+	```cpp
+    class Solution
+    {
+    private:
+        void helper(vector<int> &ret, int start, int boundary)
+        {
+            if (start <= boundary)
+            {
+                ret.push_back(start);
+                for (auto i = 0; i <= 9; i++)
+                {
+                    helper(ret, start * 10 + i, boundary);
+                }
+            }
+        }
+
+    public:
+        vector<int> lexicalOrder(int n)
+        {
+            vector<int> ret;
+            int count = min(9, n);
+            for (auto v = 1; v <= count; v++)
+            {
+                helper(ret, v, n);
+            }
+            return ret;
+        }
+    };
+	```
 
 - [394](https://leetcode.com/problems/decode-string/)
 
