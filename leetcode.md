@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-16 11:19:31
+ * @LastEditTime: 2020-05-17 00:41:57
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -13641,5 +13641,88 @@ paths with max score，时间复杂度$O(n^2)$
         return ret;
     }
     ```
+
+- [1449. Form Largest Integer With Digits That Add up to Target](https://leetcode.com/problems/form-largest-integer-with-digits-that-add-up-to-target/)
+
+    
+    1-9的每个数字需要消耗的weight是cost数组，在相同的cost下优先选择值更大的数字v，然后使用DP方法动态规划背包容量为target时的最大结果，这里注意不超过背包容量的最优解和恰好装满背包的最优解（需要从target=0开始使用，所有值初始化为inf，最优解为max时inf为max，最优解为min时inf为min，然后dp[0]=0），时间复杂度$O(target)$
+
+	```cpp
+    class Solution
+    {
+    private:
+        string max_string(string a, string b, char inf_ch)
+        {
+            // a是新构造的 dp[j-weight]+ch  b是原本的dp[j]
+            string ret;
+            int length_a = a.length(), length_b = b.length();
+            if (a.front() == inf_ch)
+            {
+                ret = b;
+            }
+            else if (length_a > length_b)
+            {
+                ret = a;
+            }
+            else if (length_a < length_b)
+            {
+                ret = b;
+            }
+            else
+            {
+                ret = a.compare(b) >= 0 ? a : b;
+            }
+            return ret;
+        }
+
+    public:
+        string largestNumber(vector<int> &cost, int target)
+        {
+            unordered_map<int, int> cost2digital;
+            for (auto i = 0; i < cost.size(); i++)
+            {
+                auto it = cost2digital.find(cost[i]);
+                if (it == cost2digital.end())
+                {
+                    cost2digital[cost[i]] = i + 1;
+                }
+                else
+                {
+                    cost2digital[cost[i]] = max(i + 1, cost2digital[cost[i]]);
+                }
+            }
+            vector<int> digital2cost(10, -1);
+            for (auto &&item : cost2digital)
+            {
+                digital2cost[item.second] = item.first;
+            }
+            // 设置inf_string 哨兵是为了背包恰好完全装满
+            char inf_ch = '0';
+            string inf_string{inf_ch};
+            vector<string> dp(target + 1, inf_string);
+            dp[0] = "";
+            for (int i = 9; i >= 0; --i)
+            {
+                if (digital2cost[i] != -1)
+                {
+                    char ch = (char)(i + '0');
+                    int weight = digital2cost[i];
+                    for (int j = weight; j <= target; j++)
+                    {
+                        string temp = dp[j - weight];
+                        temp.push_back(ch);
+                        dp[j] = max_string(temp, dp[j], inf_ch);
+                    }
+                }
+            }
+            string ret = dp.back();
+            if (ret.size() == 0)
+            {
+                ret.push_back('0');
+            }
+            return ret;
+        }
+    };
+	```
 
 - [...](123)
