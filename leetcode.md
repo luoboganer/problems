@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-15 16:18:50
+ * @LastEditTime: 2020-05-16 11:19:31
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -9775,6 +9775,176 @@
         return ans;
     }
     ```
+
+- [918. Maximum Sum Circular Subarray](https://leetcode.com/problems/maximum-sum-circular-subarray/)
+
+    通常在给定一个array的情况下，求子数组subarray和最大的方法为动态规划DP，以array[j]结尾的subarray和最大为$dp_{j+1} = array_j+max(0,dp_j),dp_0=array_0$
+
+	- [Approach 1] Next array
+
+	```cpp
+    int maxSubarraySumCircular(vector<int> &A)
+    {
+        // 从A[i]到A[A.length-1]之间没有circle可能构成的subarray最大和，DP
+        int ans = A[0], cur = A[0], length = A.size();
+        // cur dp[j+1]=max(dp[j],0)+A[j+1] , then ans= max(cur)
+        for (int i = 1; i < length; i++)
+        {
+            cur = A[i] + max(0, cur);
+            ans = max(ans, cur);
+        }
+        // leftsum[i] = A[0]+A[1]+...+A[i]
+        // rightsum[i] = A[i]+A[i+1]+...+A[A.length-1]
+        vector<int> leftsum = A, rightsum = A;
+        for (auto i = 1; i < length; i++)
+        {
+            leftsum[i] += leftsum[i - 1];
+            rightsum[length - i - 1] += rightsum[length - i];
+        }
+        vector<int> max_rightsum = rightsum;
+        for (auto i = length - 2; i >= 0; i--)
+        {
+            max_rightsum[i] = max(max_rightsum[i], max_rightsum[i + 1]);
+        }
+        for (auto i = 0; i < length - 2; i++)
+        {
+            ans = max(ans, leftsum[i] + max_rightsum[i + 2]);
+        }
+        return ans;
+    }
+	```
+
+	- [Approach 2] Prefix Sums + Monoqueue，双端队列的应用
+
+	```cpp
+    int maxSubarraySumCircular(vector<int> &A)
+    {
+        int length = A.size();
+        vector<int> leftsum(2 * length + 1, 0);
+        for (int i = 0; i < 2 * length; i++)
+        {
+            leftsum[i + 1] = leftsum[i] + A[i % length];
+        }
+        // for each j, largest leftsum[j] - leftsum[i]
+        // for each j, find a smallest leftsum[i] (i<j and j-i<=length)
+        int ans = A[0];
+        deque<int> qe;
+        qe.push_back(0); // 双端队列
+        for (int j = 1; j <= 2 * length; j++)
+        {
+            if (qe.front() < j - length)
+            {
+                qe.pop_front();
+            }
+            ans = max(ans, leftsum[j] - leftsum[qe.front()]);
+            while (!qe.empty() && leftsum[j] <= leftsum[qe.back()])
+            {
+                qe.pop_back();
+            }
+            qe.push_back(j);
+        }
+        return ans;
+    }
+	```
+
+	- [Approach 3] Kadane's (Sign Variant)
+
+	```cpp
+    class Solution
+    {
+    private:
+        long long dp_helper(vector<int> &A, int left, int right, int sign)
+        {
+            // dp[i+1] = max(dp[i],0)+A[i+1]
+            long long zero = 0, ret = numeric_limits<int>::min(), cur = numeric_limits<int>::min();
+            for (int i = left; i <= right; i++)
+            {
+                cur = max(cur, zero) + sign * A[i];
+                ret = max(ret, cur);
+            }
+            return ret;
+        }
+
+    public:
+        int maxSubarraySumCircular(vector<int> &A)
+        {
+            long long sum_A = 0;
+            for (auto &&v : A)
+            {
+                sum_A += v;
+            }
+            /*
+                max(A[0]+A[1]+..+A[i] + A[j]+A[j+1]+...+A[length-1])
+                = sum_A - min(A[i+1]+...+A[j-1])
+                = sum_A + kadane(-A)
+                ****
+                为了保证[0,i],[j,length-1]两个区间非空，kadane(-A)需要在[0,length-2]和[1,length-1]上执行两次
+            */
+            const int length = A.size();
+            long long ans_kadane = dp_helper(A, 0, length - 1, 1);
+            long long ans_negative_1 = sum_A + dp_helper(A, 0, length - 2, -1);
+            long long ans_negative_2 = sum_A + dp_helper(A, 1, length - 1, -1);
+            vector<long long> ans{ans_kadane, ans_negative_1, ans_negative_2};
+            return (int)*max_element(ans.begin(), ans.end());
+        }
+    };
+	```
+
+	- [Approach 4] Kadane's (Min Variant)
+
+	```cpp
+    class Solution
+    {
+    private:
+        long long dp_helper(vector<int> &A, int left, int right, bool max_min)
+        {
+            // max_min as true for max, dp[i+1] = max(dp[i],0)+A[i+1]
+            // max_min as false for min, dp[i+1] = min(dp[i],0)+A[i+1]
+            long long zero = 0, ret, cur;
+            if (max_min)
+            {
+                ret = numeric_limits<int>::min(), cur = numeric_limits<int>::min();
+                for (int i = left; i <= right; i++)
+                {
+                    cur = max(cur, zero) + A[i];
+                    ret = max(ret, cur);
+                }
+            }
+            else
+            {
+                ret = numeric_limits<int>::max(), cur = numeric_limits<int>::max();
+                for (int i = left; i <= right; i++)
+                {
+                    cur = min(cur, zero) + A[i];
+                    ret = min(ret, cur);
+                }
+            }
+            return ret;
+        }
+
+    public:
+        int maxSubarraySumCircular(vector<int> &A)
+        {
+            long long sum_A = 0;
+            for (auto &&v : A)
+            {
+                sum_A += v;
+            }
+            /*
+                max(A[0]+A[1]+..+A[i] + A[j]+A[j+1]+...+A[length-1])
+                = sum_A - min(A[i+1]+...+A[j-1])
+                ****
+                为了保证[0,i],[j,length-1]两个区间非空，min(A[i+1]+...+A[j-1])需要在[0,length-2]和[1,length-1]上执行两次
+            */
+            const int length = A.size();
+            long long ans_kadane = dp_helper(A, 0, length - 1, true);
+            long long ans_negative_1 = sum_A - dp_helper(A, 0, length - 2, false);
+            long long ans_negative_2 = sum_A - dp_helper(A, 1, length - 1, false);
+            vector<long long> ans{ans_kadane, ans_negative_1, ans_negative_2};
+            return (int)*max_element(ans.begin(), ans.end());
+        }
+    };
+	```
 
 - [929](https://leetcode.com/problems/unique-email-addresses/)
     两个考察点
