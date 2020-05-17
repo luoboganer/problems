@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-17 12:24:24
+ * @LastEditTime: 2020-05-17 12:32:41
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -13808,6 +13808,72 @@ paths with max score，时间复杂度$O(n^2)$
                 {
                     ret.push_back(i);
                 }
+            }
+            return ret;
+        }
+    };
+	```
+
+- [1453. Maximum Number of Darts Inside of a Circular Dartboard](https://leetcode.com/problems/maximum-number-of-darts-inside-of-a-circular-dartboard/)
+
+    
+    任意两个点和半径r可以确定一个圆，然后遍历其它点在该圆内的数量，时间复杂度$O(n^3)$
+
+	```cpp
+    class Solution
+    {
+    private:
+        double eps = 1e-8;
+        double distance_square(vector<int> &a, vector<int> &b)
+        {
+            return (double)((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]));
+        }
+        double distance_square(vector<int> &a, vector<double> &b)
+        {
+            return (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]);
+        }
+
+    public:
+        int numPoints(vector<vector<int>> &points, int r)
+        {
+            // n^3做法，每两个点确定一个圆，统计在该圆中点的数量
+            int count = points.size();
+            int ret = 1, d_square = 4 * r * r, r_square = r * r;
+            if (count > 1)
+            {
+                for (auto i = 0; i < count; i++)
+                {
+                    for (auto j = i + 1; j < count; j++)
+                    {
+                        // 遍历每两个点构成的所有的圆
+                        double center_r_square = distance_square(points[i], points[j]);
+                        if (center_r_square <= d_square)
+                        {
+                            // 给定圆的半径r可以覆盖这两个点，判断其它点在这两个点构成的圆内有多少个
+                            int number_points = 0;
+                            double mid_ij_x = (points[i][0] + points[j][0]) / 2.0;
+                            double mid_ij_y = (points[i][1] + points[j][1]) / 2.0;
+                            vector<double> mid{mid_ij_x, mid_ij_y};
+                            double angle = atan2((double)(points[i][0] - points[j][0]), (double)(points[j][1] - points[i][1]));
+                            double d = sqrt(r * r - distance_square(points[i], mid));
+                            double center_x = mid_ij_x + d * cos(angle);
+                            double center_y = mid_ij_y + d * sin(angle);
+                            vector<double> center{center_x, center_y};
+                            for (auto &&item : points)
+                            {
+                                if (distance_square(item, center) <= r_square + eps)
+                                {
+                                    number_points++;
+                                }
+                            }
+                            ret = max(ret, number_points);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                ret = max(count, 1);
             }
             return ret;
         }
