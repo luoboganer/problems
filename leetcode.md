@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-17 00:41:57
+ * @LastEditTime: 2020-05-17 12:24:24
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -13719,6 +13719,95 @@ paths with max score，时间复杂度$O(n^2)$
             if (ret.size() == 0)
             {
                 ret.push_back('0');
+            }
+            return ret;
+        }
+    };
+	```
+
+- [1452. People Whose List of Favorite Companies Is Not a Subset of Another List](https://leetcode.com/problems/people-whose-list-of-favorite-companies-is-not-a-subset-of-another-list/)
+
+    
+    早cpp中判断set a是否为set b的子集，将a和b排序后处理，时间复杂度$O(kn^2)$，其中$n=favoriteCompanies.length,k=max_i(favoriteCompanies[i])$
+
+	```cpp
+    class Solution
+    {
+    private:
+        int cmp(vector<string> &a, vector<string> &b)
+        {
+            int m = a.size(), n = b.size();
+            int i = 0, j = 0;
+            if (m > n)
+            {
+                return 1;
+            }
+            else if (m == n && m == 0)
+            {
+                return 0;
+            }
+            else
+            {
+                // m == n 且不为0 或者m<n
+                int i = 0, j = 0;
+                while (i < m && j < n)
+                {
+                    if (a[i].compare(b[j]) == 0)
+                    {
+                        i++, j++;
+                    }
+                    else
+                    {
+                        j++;
+                    }
+                }
+                int ret;
+                if (i == m)
+                {
+                    ret = (j == n) ? 0 : -1;
+                }
+                else
+                {
+                    ret = 1;
+                }
+                return ret;
+            }
+            return -2; // unknown
+        }
+
+    public:
+        vector<int> peopleIndexes(vector<vector<string>> &favoriteCompanies)
+        {
+            for (auto &&item : favoriteCompanies)
+            {
+                sort(item.begin(), item.end());
+            }
+            const int count = favoriteCompanies.size();
+            vector<vector<int>> records(count, vector<int>(count, 0));
+            // -2 未知 -1 i<j 0 i=j 1 i>j
+            for (auto i = 0; i < count; i++)
+            {
+                records[i][i] = 0;
+                for (auto j = 0; j < count; j++)
+                {
+                    if (i != j)
+                    {
+                        records[i][j] = cmp(favoriteCompanies[i], favoriteCompanies[j]);
+                    }
+                }
+            }
+            vector<int> ret;
+            for (auto i = 0; i < count; i++)
+            {
+                auto j = 0;
+                while (j < count)
+                {
+                    (i == j || records[i][j] == 1) ? j++ : j = count + 1; // j=count+1 means break
+                }
+                if (j == count)
+                {
+                    ret.push_back(i);
+                }
             }
             return ret;
         }
