@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-17 12:32:41
+ * @LastEditTime: 2020-05-19 18:19:15
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -9548,6 +9548,36 @@
         }
     };
     ```
+
+- [901. Online Stock Span](https://leetcode.com/problems/online-stock-span/)
+
+    
+    寻找prices数组中从右往左第一个大于当前price的价格下标，最坏情况下时间复杂度$O(n^2)$
+
+	```cpp
+    class StockSpanner
+    {
+    private:
+        // prices[i]是当前ith天的price，prev[i]是第一个大于prices[i]的price的下标
+        vector<int> prices, prev;
+
+    public:
+        StockSpanner() {}
+
+        int next(int price)
+        {
+            prices.push_back(price);
+            int i = prices.size() - 2; // 从当前值得前一个开始search
+            while (!prev.empty() && i >= 0 && prices[i] <= price)
+            {
+                i = prev[i];
+            }
+            prev.push_back(i);
+            int span = prices.size() - 1 - i;
+            return span;
+        }
+    };
+	```
 
 - [905](https://leetcode.com/problems/sort-array-by-parity/)
     cpp的两个标准库函数，用于将vector按照一定的条件划分，例如将一个int类型数组按照奇数偶数划分
