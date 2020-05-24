@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-19 18:19:15
+ * @LastEditTime: 2020-05-24 12:21:55
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -13756,7 +13756,6 @@ paths with max score，时间复杂度$O(n^2)$
 	```
 
 - [1452. People Whose List of Favorite Companies Is Not a Subset of Another List](https://leetcode.com/problems/people-whose-list-of-favorite-companies-is-not-a-subset-of-another-list/)
-
     
     早cpp中判断set a是否为set b的子集，将a和b排序后处理，时间复杂度$O(kn^2)$，其中$n=favoriteCompanies.length,k=max_i(favoriteCompanies[i])$
 
@@ -13845,7 +13844,6 @@ paths with max score，时间复杂度$O(n^2)$
 	```
 
 - [1453. Maximum Number of Darts Inside of a Circular Dartboard](https://leetcode.com/problems/maximum-number-of-darts-inside-of-a-circular-dartboard/)
-
     
     任意两个点和半径r可以确定一个圆，然后遍历其它点在该圆内的数量，时间复杂度$O(n^3)$
 
@@ -13908,6 +13906,27 @@ paths with max score，时间复杂度$O(n^2)$
             return ret;
         }
     };
+	```
+
+- [1458. Max Dot Product of Two Subsequences](https://leetcode.com/problems/max-dot-product-of-two-subsequences/)
+
+    最长公共子序列问题（LCS），DP，时间复杂度$O(n^2)$
+
+	```cpp
+	int maxDotProduct(vector<int> &nums1, vector<int> &nums2)
+	{
+		int m = nums1.size(), n = nums2.size();
+		vector<vector<int>> dp(m + 1, vector<int>(n + 1, numeric_limits<int>::min()));
+		for (int i = 0; i < m; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				vector<int> auxiliary = {max(0, dp[i][j]) + nums1[i] * nums2[j], dp[i + 1][j], dp[i][j + 1]};
+				dp[i + 1][j + 1] = *max_element(auxiliary.begin(), auxiliary.end());
+			}
+		}
+		return dp.back().back();
+	}
 	```
 
 - [...](123)
