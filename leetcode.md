@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-31 20:00:22
+ * @LastEditTime: 2020-05-31 20:14:29
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -9407,6 +9407,56 @@
         return cords;
     }
     ```
+
+- [886. Possible Bipartition](https://leetcode.com/problems/possible-bipartition/)
+    
+    二部图染色问题，时间复杂度$O(V+E)$，与[785](https://leetcode.com/problems/is-graph-bipartite/)解法相同
+
+	```cpp
+	bool possibleBipartition(int N, vector<vector<int>> &dislikes)
+	{
+		// 建立邻接矩阵
+		vector<vector<int>> graph(N + 1, vector<int>(N + 1, 0));
+		for (auto &&dislike : dislikes)
+		{
+			graph[dislike[0]][dislike[1]] = 1;
+			graph[dislike[1]][dislike[0]] = 1;
+			// dislike[0]和dislike[1]互相不喜欢，他们之间构成一条边将两个节点分开
+		}
+		// 二部图染色
+		vector<int> colors(N + 1, 0); // 0 unknow, 1 to A, -1 to B
+		for (auto i = 1; i <= N; i++)
+		{
+			if (colors[i] == 0)
+			{
+				colors[i] = 1; // 给node i染色
+				queue<int> qe{{i}};
+				while (!qe.empty())
+				{
+					int cur_node = qe.front();
+					qe.pop();
+					// 将当点节点cur_node不喜欢/有边相连的节点均染为相反颜色
+					for (auto j = 1; j <= N; j++)
+					{
+						if (graph[cur_node][j] == 1)
+						{
+							if (colors[j] == colors[cur_node])
+							{
+								return false;
+							}
+							if (colors[j] == 0)
+							{
+								colors[j] = -colors[cur_node];
+								qe.push(j);
+							}
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
+	```
 
 - [890. Find and Replace Pattern](https://leetcode.com/problems/find-and-replace-pattern/)
 
