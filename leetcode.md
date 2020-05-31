@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-24 12:21:55
+ * @LastEditTime: 2020-05-31 20:00:22
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -8699,49 +8699,84 @@
 
     验证通过邻接矩阵给定的无向图是否为二部图，使用两种颜色对图中所有节点染色即可，若染色成功则，任何两个相邻节点颜色不同，则为true，否则为false
 
+    - 递归写法
+
     ```cpp
-    bool valid_color(vector<vector<int>> &graph, vector<int> &color, int node, int cur_color)
+    class Solution
     {
-        bool ret = true;
-        if (!graph[node].empty())
+    private:
+        bool dfs_helper(vector<vector<int>> &g, vector<int> &colors, int cur_node, int cur_color)
         {
-            if (color[node] != 0)
+            if (!g[cur_node].empty())
             {
-                ret = (color[node] == cur_color);
-            }
-            else
-            {
-                color[node] = cur_color;
-                for (auto &&item : graph[node])
+                colors[cur_node] = cur_color;
+                // 与当前节点相连的节点均需染与cur_color不同的颜色
+                for (auto &&node : g[cur_node])
                 {
-                    ret = valid_color(graph, color, item, -cur_color);
-                    if (!ret)
+                    if (colors[node] == cur_color)
                     {
-                        break;
+                        return false; // 颜色冲突
+                    }
+                    if (colors[node] == 0 && !dfs_helper(g, colors, node, -cur_color))
+                    {
+                        return false; // 染色失败
                     }
                 }
             }
+            return true;
         }
-        return ret;
-    }
-    bool isBipartite(vector<vector<int>> &graph)
-    {
-        int const count = graph.size();
-        int ret = true;
-        if (count > 0)
+
+    public:
+        bool isBipartite(vector<vector<int>> &graph)
         {
-            vector<int> color(count, 0); // 0 not assigned, 1 to set A, -1 to set B
-            for (int i = 0; ret && i < count; i++)
+            const int count = graph.size(); //  number of nodes
+            vector<int> colors(count, 0);	// 0 unknown, 1 to A, -1 to B
+            for (auto i = 0; i < count; i++)
             {
-                if (color[i] == 0 && !valid_color(graph, color, i, 1))
+                if (colors[i] == 0 && !dfs_helper(graph, colors, i, 1))
                 {
-                    ret = false;
-                    break;
+                    return false;
                 }
             }
+            return true;
         }
-        return ret;
-    }
+    };
+    ```
+    - 非递归/迭代式写法
+
+    ```cpp
+	bool isBipartite(vector<vector<int>> &graph)
+	{
+		const int count = graph.size(); //  number of nodes
+		vector<int> colors(count, 0);	// 0 unknown, 1 to A, -1 to B
+		for (auto i = 0; i < count; i++)
+		{
+			if (colors[i] == 0)
+			{
+				// node i 需要开始染色
+				colors[i] = 1;
+				queue<int> qe{{i}};
+				while (!qe.empty())
+				{
+					int cur_node = qe.front();
+					qe.pop();
+					for (auto &&node : graph[cur_node])
+					{
+						if (colors[node] == colors[cur_node])
+						{
+							return false;
+						}
+						if (colors[node] == 0)
+						{
+							colors[node] = -colors[cur_node];
+							qe.push(node);
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
     ```
 
 - [788](https://leetcode.com/problems/rotated-digits/)
