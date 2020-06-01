@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-05-31 20:14:29
+ * @LastEditTime: 2020-06-01 18:21:50
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3477,6 +3477,145 @@
         return m << width;
     }
     ```
+
+- [207. Course Schedule](https://leetcode.com/problems/course-schedule/)
+
+    **拓扑排序问题-BFS/DFS**
+    
+    所有课程的前后依赖关系构成了directed graph/tree，递归/迭代式的检查所有入度为0（没有先修依赖）的课程，然后首先安排这些课程，然后将其子节点的入度减1，最后比较安排了的课程数和总的课程数是否相同即可
+
+    - BFS邻接矩阵写法，时间复杂度$O(V*E)$
+
+	```cpp
+	bool canFinish(int numCourses, vector<vector<int>> &prerequisites)
+	{
+		/*
+			1. 邻接矩阵会导致后期遍历的时间复杂度变为O(V*E)
+			2. 使用邻接链表会将后期遍历的时间复杂度降为O(V+E)
+		*/
+		// 建立邻接矩阵，统计每个node的入度
+		vector<vector<int>> graph(numCourses, vector<int>(numCourses, 0)); // 1 for edge
+		vector<int> indegrees(numCourses, 0);
+		for (auto &&edge : prerequisites)
+		{
+			graph[edge[0]][edge[1]] = 1; // a edge from start to end (directed graph/tree)
+			indegrees[edge[1]]++;
+		}
+		// 当前入度为0的节点即可安排，其父节点（prerequisite）被安排时该节点变为入度0
+		queue<int> qe;
+		for (auto node = 0; node < numCourses; node++)
+		{
+			if (indegrees[node] == 0)
+			{
+				qe.push(node);
+				indegrees[node] = -1; //  -1 标识该node/course已经安排
+			}
+		}
+		int count = 0;
+		while (!qe.empty())
+		{
+			int cur_node = qe.front();
+			qe.pop(), count++; // node代表的课程可以安排
+			for (auto node = 0; node < numCourses; node++)
+			{
+				/* cur_node的后续课程的入度均减1，因为cur_node已经安排 */
+				if (graph[cur_node][node] == 1)
+				{
+					indegrees[node]--;
+				}
+				if (indegrees[node] == 0)
+				{
+					qe.push(node);
+					indegrees[node] = -1;
+				}
+			}
+		}
+		// 当可安排的课程数量等于总的课程数量时安排完毕
+		return count == numCourses;
+	}
+	```
+
+	- BFS邻接链表写法，时间复杂度$O(V+E)$
+
+	```cpp
+	bool canFinish(int numCourses, vector<vector<int>> &prerequisites)
+	{
+		// 建立邻接矩阵，统计每个node的入度
+		vector<vector<int>> graph(numCourses); // 1 for edge
+		vector<int> indegrees(numCourses, 0), bfs;
+		for (auto &&edge : prerequisites)
+		{
+			graph[edge[0]].push_back(edge[1]); // a edge from start to end (directed graph/tree)
+			indegrees[edge[1]]++;
+		}
+		// 当前入度为0的节点即可安排，其父节点（prerequisite）被安排时该节点变为入度0
+		for (auto node = 0; node < numCourses; node++)
+		{
+			if (indegrees[node] == 0)
+			{
+				bfs.push_back(node);
+			}
+		}
+		for (auto i = 0; i < bfs.size(); i++)
+		{
+			for (auto &&j : graph[bfs[i]])
+			{
+				if (--indegrees[j] == 0)
+				{
+					bfs.push_back(j);
+				}
+			}
+		}
+		// 当可安排的课程数量等于总的课程数量时安排完毕
+		return bfs.size() == numCourses;
+	}
+	```
+
+	-  DFS，时间复杂度$O(V+E)$
+
+	```cpp
+    class Solution
+    {
+    private:
+        bool hasCycle(vector<vector<int>> &graph, vector<int> &visited, vector<int> &onPath, int cur_node)
+        {
+            if (!visited[cur_node])
+            {
+                visited[cur_node] = true, onPath[cur_node] = true;
+                for (auto &&node : graph[cur_node])
+                {
+                    if (onPath[node] || hasCycle(graph, visited, onPath, node))
+                    {
+                        return true;
+                    }
+                }
+            }
+            onPath[cur_node] = false; // 回溯思想，该数组是用来判断cur_node在DFS过程中所有从节点node出发的路径中是否重复出现（有环）
+            return false;
+        }
+
+    public:
+        bool canFinish(int numCourses, vector<vector<int>> &prerequisites)
+        {
+            // 建立邻接链表
+            vector<vector<int>> graph(numCourses); // 1 for edge
+            for (auto &&edge : prerequisites)
+            {
+                graph[edge[0]].push_back(edge[1]); // a edge from start to end (directed graph/tree)
+            }
+            // DFS检查是否图中存在环路
+            vector<int> visited(numCourses, 0), onPath(numCourses, 0);
+            for (auto i = 0; i < numCourses; i++)
+            {
+                if (!visited[i] && hasCycle(graph, visited, onPath, i))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    };
+	```
 
 - [208. Implement Trie (Prefix Tree)](https://leetcode.com/problems/implement-trie-prefix-tree/)
 
