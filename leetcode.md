@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-01 18:21:50
+ * @LastEditTime: 2020-06-02 12:22:09
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3479,6 +3479,12 @@
     ```
 
 - [207. Course Schedule](https://leetcode.com/problems/course-schedule/)
+
+    **相关题目**
+
+    - [210. Course Schedule II](https://leetcode.com/problems/course-schedule-ii/)
+    - [630. Course Schedule III](https://leetcode.com/problems/course-schedule-iii/)
+    - [1462. Course Schedule IV](https://leetcode.com/problems/course-schedule-iv/)
 
     **拓扑排序问题-BFS/DFS**
     
