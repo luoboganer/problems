@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-02 12:22:09
+ * @LastEditTime: 2020-06-02 13:03:47
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -14157,6 +14157,75 @@ paths with max score，时间复杂度$O(n^2)$
 		}
 		return dp.back().back();
 	}
+	```
+
+- [1462. Course Schedule IV](https://leetcode.com/problems/course-schedule-iv/)
+
+    **相关题目**
+
+    - [207. Course Schedule](https://leetcode.com/problems/course-schedule/)
+    - [210. Course Schedule II](https://leetcode.com/problems/course-schedule-ii/)
+    - [630. Course Schedule III](https://leetcode.com/problems/course-schedule-iii/)
+
+    所有课程的前后依赖关系构成了directed graph/tree，DFS检查每一个查询对a/b在这个有向图中b是否是a的子节点，在check(a,b)的过程中memorization中间结果达到缩短后续查询对距离的剪枝效果，时间复杂度$O(V*E)$
+
+	```cpp
+    class Solution
+    {
+    private:
+        int dfs_helper(vector<vector<int>> &graph, int a, int b, int n)
+        {
+            if (graph[a][b] == -1)
+            {
+                // unknown, need to check
+                if (graph[b][a] == 1)
+                {
+                    // b是a的前继，a一定不是b的前继
+                    graph[a][b] = 0;
+                }
+                else
+                {
+                    // graph[b][a] == -1 ，b是否为a的前继未知，a是否为b的前继也未知
+                    // graph[b][a] == 0 ，b不是a的前继，a是否为b的前继不一定
+                    for (auto i = 0; i < n; i++)
+                    {
+                        if (graph[a][i] == 1 && dfs_helper(graph, i, b, n) == 1)
+                        {
+                            graph[a][b] = 1;
+                            break;
+                        }
+                    }
+                    if (graph[a][b] != 1)
+                    {
+                        graph[a][b] = 0;
+                    }
+                }
+            }
+            return graph[a][b]; // 此时返回值只有0/1两种状态，不再是未知-1
+        }
+
+    public:
+        vector<bool> checkIfPrerequisite(int n, vector<vector<int>> &prerequisites, vector<vector<int>> &queries)
+        {
+            // 建立邻接矩阵
+            vector<vector<int>> graph(n, vector<int>(n, -1));
+            for (auto &&edge : prerequisites)
+            {
+                graph[edge[0]][edge[1]] = 1;
+                /*
+                    1. graph[a][b] = 1 for one directed edge from a to b
+                    2. graph[a][b] = 0 for no one directed edge from a to b
+                    3. graph[a][b] = -1 unknown
+                */
+            }
+            vector<bool> ret;
+            for (auto &&q : queries)
+            {
+                ret.push_back(dfs_helper(graph, q[0], q[1], n) == 1);
+            }
+            return ret;
+        }
+    };
 	```
 
 - [...](123)
