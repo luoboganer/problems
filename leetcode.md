@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-02 13:03:47
+ * @LastEditTime: 2020-06-02 19:28:46
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -8340,6 +8340,76 @@
         }
     };
     ```
+
+- [722. Remove Comments](https://leetcode.com/problems/remove-comments/)
+
+    删除c/c++风格的代码注释，分为行注释和块注释两种类型
+
+    ```cpp
+	vector<string> removeComments(vector<string> &source)
+	{
+		vector<string> ret;
+		string s;
+		for (auto &&line : source)
+		{
+			s += line;
+			s.push_back('\n'); // 标记换行
+		}
+		int i = 0, count = s.length();
+		string line;
+		while (i < count)
+		{
+			if (s[i] == '/')
+			{
+				if (i + 1 < count && s[i + 1] == '/')
+				{
+					// 行注释
+					while (i < count && s[i] != '\n')
+					{
+						i++; // i走到行注释之后的第一个字符
+					}
+				}
+				else if (i + 1 < count && s[i + 1] == '*')
+				{
+					// 块注释开始
+					i += 2;
+					while (i + 1 < count && !(s[i] == '*' && s[i + 1] == '/'))
+					{
+						i++;
+					}
+					i += 2; // i走到块注释之后的第一个字符
+				}
+				else
+				{
+					// 非注释项，单独出现了一个正常的 '/' 字符
+					line.push_back(s[i++]);
+				}
+			}
+			else if (s[i] == '\n')
+			{
+				if (!line.empty())
+				{
+					ret.push_back(line);
+					line.clear();
+				}
+				i++; // i走到下一行的第一个字符
+			}
+			else
+			{
+				line.push_back(s[i++]);
+			}
+		}
+		return ret;
+	}
+	```
+
+	- some test case
+
+	```cpp
+    ["/*Test program */", "int main()", "{ ", "  // variable declaration ", "int a, b, c;", "/* This is a test", "   multiline  ", "   comment for ", "   testing */", "a = b + c;", "}"]
+    ["a/*comment", "line", "more_comment*/b"]
+    ["void func(int k) {", "// this function does nothing /*", "   k = k*2/4;", "   k = k/2;*/", "}"]
+	```
 
 - [725. Split Linked List in Parts](https://leetcode.com/problems/split-linked-list-in-parts/)
 
