@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-02 19:28:46
+ * @LastEditTime: 2020-06-05 19:19:31
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -8353,7 +8353,7 @@
 		for (auto &&line : source)
 		{
 			s += line;
-			s.push_back('\n'); // 标记换行
+			s.push_back('\n'); // 标记换行  
 		}
 		int i = 0, count = s.length();
 		string line;
@@ -9202,6 +9202,58 @@
         return ret;
     }
     ```
+
+- [825. Friends Of Appropriate Ages](https://leetcode.com/problems/friends-of-appropriate-ages/)
+
+    - 二重循环暴力遍历，时间复杂度$O(n^2)$，leetcode评测机$\color{red}{TLE}$
+
+    ```cpp
+	int numFriendRequests(vector<int> &ages)
+	{
+		int ret = 0, count = ages.size();
+		for (auto i = 0; i < count; i++)
+		{
+			for (auto j = 0; j < count; j++)
+			{
+				if (i != j && !(ages[j] <= 0.5 * ages[i] + 7 || ages[j] > ages[i] || (ages[j] > 100 && ages[i] < 100)))
+				{
+					ret++;
+				}
+			}
+		}
+		return ret;
+	}
+	```
+
+	- 不考虑遍历每一个人ages，而是遍历每一个元组(age,count)，对于每一个ageA和ageB,在符合条件的情况可以发送的请求数为$countA*countB$，在每一个age内部可以发送的请求数为$countA*(countA-1)$，时间复杂度为$O(A^2+N)$，其中A为可能的年龄数，N为全部的人数
+
+	```cpp
+	int numFriendRequests(vector<int> &ages)
+	{
+		int ret = 0, max_age = 120;
+		vector<int> age2count(max_age + 1, 0);
+		for (auto &&age : ages)
+		{
+			age2count[age]++;
+		}
+		for (auto i = 0; i <= max_age; i++)
+		{
+			for (auto j = 0; j <= i; j++)
+			{
+				if (!(j <= 0.5 * i + 7 || (j > 100 && i < 100)))
+				{
+					ret += age2count[i] * age2count[j];
+					if (i == j)
+					{
+						// 去除相同年龄内部重复计算的部分
+						ret -= age2count[i];
+					}
+				}
+			}
+		}
+		return ret;
+	}
+	```
 
 - [849](https://leetcode.com/problems/maximize-distance-to-closest-person/)
 
