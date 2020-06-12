@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-05 19:19:31
+ * @LastEditTime: 2020-06-13 00:03:11
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -5990,6 +5990,149 @@
         return dp.back(); // dp[target]
     }
     ```
+
+- [380. Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1/)
+
+    - ListNode + HashMap
+
+    ```cpp
+	class RandomizedSet
+	{
+	private:
+		ListNode *head, *last;
+		unordered_map<int, ListNode *> prev;
+		int size;
+
+	public:
+		/** Initialize your data structure here. */
+		RandomizedSet()
+		{
+			head = new ListNode(0);
+			last = head;
+			prev.clear();
+			size = 0;
+		}
+
+		/** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+		bool insert(int val)
+		{
+			bool ret = false;
+			if (prev.find(val) == prev.end())
+			{
+				ret = true;
+				prev[val] = last;
+				last->next = new ListNode(val);
+				last = last->next;
+				size++;
+			}
+			return ret;
+		}
+
+		/** Removes a value from the set. Returns true if the set contained the specified element. */
+		bool remove(int val)
+		{
+			bool ret = false;
+			if (prev.find(val) != prev.end())
+			{
+				ret = true;
+				ListNode *cur = prev[val];
+				prev.erase(val);
+				if (cur->next->next == NULL)
+				{
+					last = cur;
+				}
+				else
+				{
+					prev[cur->next->next->val] = cur;
+				}
+				cur->next = cur->next->next;
+				size--;
+			}
+			return ret;
+		}
+
+		/** Get a random element from the set. */
+		int getRandom()
+		{
+			int n = rand() % size;
+			ListNode *cur = head->next;
+			while (n > 0)
+			{
+				cur = cur->next;
+				n--;
+			}
+			return cur->val;
+		}
+	};
+	```
+
+	- hashmap+vector
+
+	```cpp
+	class RandomizedSet
+	{
+	private:
+		unordered_map<int, int> key_index;
+		vector<int> values;
+
+	public:
+		/** Initialize your data structure here. */
+		RandomizedSet()
+		{
+			key_index.clear();
+			values.clear();
+		}
+
+		/** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+		bool insert(int val)
+		{
+			bool ret = false;
+			if (key_index.find(val) == key_index.end())
+			{
+				ret = true;
+				key_index[val] = values.size();
+				values.push_back(val);
+			}
+			return ret;
+		}
+
+		/** Removes a value from the set. Returns true if the set contained the specified element. */
+		bool remove(int val)
+		{
+			bool ret = false;
+			if (key_index.find(val) != key_index.end())
+			{
+				ret = true;
+				// 先交换（交换当前位置和values最后一个值，然后删除最后一个值）
+				int loc = key_index[val];
+				values[loc] = values.back();
+				key_index[values[loc]] = loc;
+				// 再删除
+				values.pop_back();
+				key_index.erase(val);
+			}
+			return ret;
+		}
+
+		/** Get a random element from the set. */
+		int getRandom()
+		{
+			int n = rand() % values.size();
+			return values[n];
+		}
+	};
+	```
+
+	- some test case
+
+	```cpp
+	["RandomizedSet","insert","remove","insert","getRandom","remove","insert","getRandom"]
+	[[],[1],[2],[2],[],[1],[2],[]]
+	["RandomizedSet","insert","insert","remove","insert","remove","getRandom"]
+	[[],[0],[1],[0],[2],[1],[]]
+	["RandomizedSet","remove","remove","insert","getRandom","remove","insert"]
+	[[],[0],[0],[0],[],[0],[0]]
+	```
 
 - [384](https://leetcode.com/problems/shuffle-an-array/)
 
