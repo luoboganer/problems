@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-13 00:03:11
+ * @LastEditTime: 2020-06-14 00:56:20
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -5919,6 +5919,54 @@
     {=n^{2}+n-n} \\
     {=n^{2}}\end{array}
     $$
+
+- [368. Largest Divisible Subset](https://leetcode.com/problems/largest-divisible-subset/)
+
+    - 经典DP，dp[i]表示区间[i,count-1]内最大可整除子集的长度，再用一个parent数组记录最长可整除子集的路径，时间复杂度$O(n^2)$
+
+    ```cpp
+	vector<int> largestDivisibleSubset(vector<int> &nums)
+	{
+		int mx = 0, mx_idx = -1, count = nums.size();
+		vector<int> dp(count, 0), parent(count, 0), ret;
+		/**
+		 * mx 表示当前最大可整除子集的长度
+		 * mx_idx表示当前最大可整除子集的起始第一个数的坐标
+		 * dp[i]表示区间[i,count-1]内最大可整除子集的长度
+		 * parent[i]表示包含nums[i]的最大可整除子集的nums[i]的后一个数的下标index
+		*/
+		sort(nums.begin(), nums.end());
+		for (auto i = count - 1; i >= 0; i--)
+		{
+			for (auto j = i; j < count; j++)
+			{
+				if (nums[j] % nums[i] == 0 && dp[i] < dp[j] + 1)
+				{
+					dp[i] = dp[j] + 1;
+					parent[i] = j;
+					if (mx < dp[i])
+					{
+						mx = dp[i], mx_idx = i;
+					}
+				}
+			}
+		}
+		for (auto i = 0; i < mx; i++)
+		{
+			ret.push_back(nums[mx_idx]);
+			mx_idx = parent[mx_idx];
+		}
+		return ret;
+	}
+	```
+	
+	- some test case
+
+	```cpp
+	[1,2,3]
+	[1,2,4,8]
+	[3,4,16,8]
+	```
 
 - [371](https://leetcode.com/problems/sum-of-two-integers/)
 
