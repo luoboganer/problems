@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-14 00:56:20
+ * @LastEditTime: 2020-06-15 00:41:48
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -9184,6 +9184,32 @@
 		return true;
 	}
     ```
+
+- [787. Cheapest Flights Within K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops/)
+
+    - 求图中从src到dst的最小花费，Bellman-Ford(DP)，时间复杂度$O(E*K)$，其中E是边数，n是节点数
+
+    ```cpp
+	int findCheapestPrice(int n, vector<vector<int>> &flights, int src, int dst, int K)
+	{
+		const int inf = numeric_limits<int>::max();
+		const long long auxiliary = 0;
+		/**
+		 * dp[i][j]表示最多飞i次航班到达j位置时的最少价格，
+		*/
+		vector<vector<int>> dp(K + 2, vector<int>(n, inf));
+		dp[0][src] = 0; // 一开始就在src位置
+		for (auto i = 1; i <= K + 1; i++)
+		{
+			dp[i][src] = 0;
+			for (auto &&x : flights)
+			{
+				dp[i][x[1]] = static_cast<int>(min(auxiliary + dp[i - 1][x[0]] + x[2], auxiliary + dp[i][x[1]]));
+			}
+		}
+		return dp.back()[dst] == inf ? -1 : dp.back()[dst];
+	}
+	```
 
 - [788](https://leetcode.com/problems/rotated-digits/)
 
