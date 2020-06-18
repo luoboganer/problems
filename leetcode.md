@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-15 00:41:48
+ * @LastEditTime: 2020-06-18 15:29:37
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2567,7 +2567,7 @@
 
     - Solution方法
 
-    其实就是(c-b)+(b-a)=c-a的基本原理
+    其实就是(c-b)+(b-a)=c-a的基本原理，greedy algorithm，时间复杂度$O(n)$
 
     ```cpp
     int maxProfit(vector<int> &prices)
@@ -2580,6 +2580,80 @@
         return ans;
     }
     ```
+
+    - dynamic plan，时间复杂度$O(n)$
+
+    ```cpp
+	int maxProfit(vector<int> &prices)
+	{
+		/**
+		 * dynamic plan algorithm
+		*/
+		int n = prices.size(), inf = numeric_limits<int>::max();
+		vector<vector<int>> dp(n + 1, vector<int>(2));
+		dp[0][0] = -inf;
+		dp[0][1] = 0;
+		for (auto i = 0; i < n; i++)
+		{
+			dp[i + 1][0] = max(dp[i][0], dp[i][1] - prices[i]);
+			dp[i + 1][1] = max(dp[i][1], dp[i][0] + prices[i]);
+		}
+		return dp[n][1];
+	}
+    ```
+
+- [123. Best Time to Buy and Sell Stock III](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/)
+
+    - 动态规划，时间复杂度$O(n)$
+
+    ```cpp
+	int maxProfit(vector<int> &prices)
+	{
+		/**
+		 * dynamic plan algorithm
+		*/
+		int n = prices.size(), inf = numeric_limits<int>::max();
+		vector<vector<int>> dp(n + 1, vector<int>(4));
+		dp[0][0] = dp[0][2] = -inf; // 初始为买入状态，收益为负无穷
+		dp[0][1] = dp[0][3] = 0;	// 初始为出售（不再持有）状态，收益为0
+		for (auto i = 0; i < n; i++)
+		{
+			dp[i + 1][0] = max(dp[i][0], -prices[i]);
+			dp[i + 1][1] = max(dp[i][1], dp[i][0] + prices[i]);
+			dp[i + 1][2] = max(dp[i][2], dp[i][1] - prices[i]);
+			dp[i + 1][3] = max(dp[i][3], dp[i][2] + prices[i]);
+		}
+		return max(dp[n][1], dp[n][3]); // 只有最终为售出状态才有可能收益最大
+	}
+	```
+	
+	- 空间复杂度为$O(1)$优化
+
+	```cpp
+	int maxProfit(vector<int> &prices)
+	{
+		/**
+		 * dynamic plan algorithm
+		 *********************************
+		 * 空间复杂度从O(n)优化到O(1)
+		 * 
+		 * 初始化条件：
+		 * 		初始状态为get时收益为负无穷，初始状态为清仓售空时收益为0
+		 * 返回值：
+		 * 		只有最终状态为售出时才有可能获得最大收益
+		*/
+		int n = prices.size(), inf = numeric_limits<int>::max();
+		int get1 = -inf, out1 = 0, get2 = -inf, out2 = 0;
+		for (auto &&v : prices)
+		{
+			get1 = max(get1, -v);
+			out1 = max(out1, get1 + v);
+			get2 = max(get2, out1 - v);
+			out2 = max(out2, get2 + v);
+		}
+		return max(out1, out2);
+	}
+	```
 
 - [124. Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/)
 
