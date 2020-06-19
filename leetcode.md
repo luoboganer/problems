@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-19 11:42:31
+ * @LastEditTime: 2020-06-19 12:25:27
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3469,6 +3469,48 @@
         return ans;
     }
     ```
+
+- [188. Best Time to Buy and Sell Stock IV](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/)
+
+    - 动态规划，时间复杂度$O(n*k)$，空间复杂度$O(k)$
+
+	```cpp
+	int maxProfit(int k, vector<int> &prices)
+	{
+		/**
+		 * dynamic plan algorithm
+		 *********************************
+		 * 空间复杂度从O(n)优化到O(1)
+		 * 
+		 * 初始化条件：
+		 * 		初始状态为get时收益为负无穷，初始状态为清仓售空时收益为0
+		 * 返回值：
+		 * 		只有最终状态为售出时才有可能获得最大收益
+		*/
+		int ret = 0, n = prices.size(), inf = numeric_limits<int>::max();
+		if (k * 2 < n)
+		{
+			vector<int> get(k + 1, -inf), out(k + 1, 0);
+			for (auto &&v : prices)
+			{
+				for (auto i = k; i >= 1; i--)
+				{
+					out[i] = max(out[i], get[i] + v);
+					get[i] = max(get[i], out[i - 1] - v);
+				}
+			}
+			ret = *max_element(out.begin(), out.end());
+		}
+		else
+		{
+			for (auto i = 1; i < n; i++)
+			{
+				ret += max(0, prices[i] - prices[i - 1]);
+			}
+		}
+		return ret;
+	}
+	```
 
 - [200](https://leetcode.com/problems/number-of-islands/submissions/)
 
