@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-19 12:25:27
+ * @LastEditTime: 2020-06-19 13:36:42
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3472,7 +3472,7 @@
 
 - [188. Best Time to Buy and Sell Stock IV](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/)
 
-    - 动态规划，时间复杂度$O(n*k)$，空间复杂度$O(k)$
+    - 动态规划，时间复杂度$O(n*k)$，空间复杂度$O(k)
 
 	```cpp
 	int maxProfit(int k, vector<int> &prices)
@@ -6174,6 +6174,77 @@
         return ans;
     }
     ```
+
+- [376. Wiggle Subsequence](https://leetcode.com/problems/wiggle-subsequence/)
+
+    - 动态规划，$dp[i]$表示包含nums[i]的序列nums[0-i]区间内的LWS子问题的最优解，时间复杂度$O(n^2)$，空间复杂度$O(n)$
+
+	```cpp
+	int wiggleMaxLength(vector<int> &nums)
+	{
+		int n = nums.size(), ret = 0;
+		if (n == 1)
+		{
+			ret = 1;
+		}
+		else if (n >= 2)
+		{
+			vector<int> dp(n + 1, 1);
+			ret = 1; // initialization
+			for (int i = 1; i < n; i++)
+			{
+				if (nums[i] == nums[i - 1])
+				{
+					continue;
+				}
+				int j = i;
+				if (nums[i] > nums[i - 1])
+				{
+					while (j > 0 && nums[j] >= nums[j - 1])
+					{
+						j--;
+					}
+				}
+				else if (nums[i] < nums[i - 1])
+				{
+					while (j > 0 && nums[j] <= nums[j - 1])
+					{
+						j--;
+					}
+				}
+				dp[i + 1] += dp[j + 1];
+				ret = max(ret, dp[i + 1]);
+			}
+		}
+		return ret;
+	}
+	```
+
+    - 动态规划，up表示以当前元素结尾且上升的最大长度，down表示以当前元素结尾且下降的最大长度，时间复杂度$O(n)$，空间复杂度$O(1)$
+
+	```cpp
+	int wiggleMaxLength(vector<int> &nums)
+	{
+		int n = nums.size(), ret = 0;
+		if (n > 0)
+		{
+			int up = 1, down = 1;
+			for (int i = 1; i < n; i++)
+			{
+				if (nums[i] > nums[i - 1])
+				{
+					up = down + 1;
+				}
+				else if (nums[i] < nums[i - 1])
+				{
+					down = up + 1;
+				}
+			}
+			ret = max(up, down);
+		}
+		return ret;
+	}
+	```
 
 - [377](https://leetcode.com/problems/combination-sum-iv/)
 
