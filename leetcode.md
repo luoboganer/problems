@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-20 19:04:49
+ * @LastEditTime: 2020-06-20 23:19:52
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -12485,6 +12485,29 @@
         return auxiliary_head->next;
     }
     ```
+
+- [1186. Maximum Subarray Sum with One Deletion](https://leetcode.com/problems/maximum-subarray-sum-with-one-deletion/)
+
+	动态规划，时间复杂度$O(n)$，空间复杂度$O(1)$
+
+	```cpp
+	int maximumSum(vector<int> &arr)
+	{
+		/**
+		 * withDelete 表示包含当前元素结尾且尚未删除任何一个元素的最大子数组和
+		 * withoutDelete 表示包含当前元素结尾且已经删除了一个元素的最大子数组和
+		*/
+		const int n = arr.size(), negative_inf = numeric_limits<int>::min();
+		long long ret = negative_inf, withoutDelete = negative_inf, withDelete = negative_inf;
+		for (int i = 0; i < n; i++)
+		{
+			withDelete = max(withoutDelete, withDelete + arr[i]);
+			withoutDelete = max((long long)(arr[i]), withoutDelete + arr[i]);
+			ret = max(ret, max(withoutDelete, withDelete));
+		}
+		return (int)(ret);
+	}
+	```
 
 - [1209. Remove All Adjacent Duplicates in String II](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/)
 
