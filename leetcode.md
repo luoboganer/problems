@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-19 13:36:42
+ * @LastEditTime: 2020-06-20 19:04:49
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -11854,6 +11854,101 @@
         return dp.back();
     }
     ```
+
+- [1044. Longest Duplicate Substring](https://leetcode.com/problems/longest-duplicate-substring/)
+
+    - binary search + rabin karp (rolling hash)，时间复杂度$O(nlog(n))$，空间复杂度$O(n)$
+        - binary search，如果有长度为n的子串duplicated，那么一定有长度为k($1<k<n$)的子串duplicated，因此可以二分搜索这个可能的长度
+        - rabin karp，通过rolling hash的办法快速比较滑动窗口内的字符串是否相同
+
+	```cpp
+	class Solution
+	{
+	private:
+		bool compare_equal(vector<int> &nums, int p1, int p2, int length)
+		{
+			for (auto i = 0; i < length; i++)
+			{
+				if (nums[i + p1] != nums[i + p2])
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+	public:
+		string longestDupSubstring(string S)
+		{
+			const int n = S.length(), mod = 1e9 + 7;
+			long long base = 26;
+			vector<long long> powers(n, 1);
+			// 提前计算好可能用到的base的幂
+			for (auto i = 1; i < n; i++)
+			{
+				powers[i] = (powers[i - 1] * base) % mod;
+			}
+			vector<int> nums(n);
+			for (int i = 0; i < n; i++)
+			{
+				nums[i] = (int)(S[i] - 'a');
+			}
+			vector<int> result{-1, 0};
+			int min_length = 1, max_length = n;
+			while (min_length < max_length)
+			{
+				int length = min_length + (max_length - min_length) / 2;
+				bool flag = false;
+				// 验证是否有长度为length的重复子串
+				unordered_map<int, vector<int>> map;
+				long long current = 0;
+				for (auto i = 0; i < length; i++)
+				{
+					current = (current * base + nums[i]) % mod;
+				}
+				map[current] = vector<int>{0};
+				/**
+				* 这里是长度为length的以i为结尾下标的字符串s[i-length+1,i]是否存在重复，一旦发现重复则无需继续遍历i
+				* !flag的作用是在flag为true是退出循环，达到剪枝的目的
+				*/
+				for (auto i = length; !flag && i < n; i++)
+				{
+					int cur_start_index = i - length + 1;
+					current = ((current - nums[i - length] * powers[length - 1]) % mod + mod) % mod;
+					current = (current * base + nums[i]) % mod;
+					auto it = map.find(current);
+					if (it == map.end())
+					{
+						map[current] = vector<int>{i - length + 1};
+						// i - length + 1 是当前rolling hash值为current的长度为length的子串的起点下标index
+					}
+					else
+					{
+						// 发现了hash值的重复
+						for (auto &&start : map[current])
+						{
+							if (compare_equal(nums, cur_start_index, start, length) == true)
+							{
+								// 发现了重复字符串
+								if (length > result[1])
+								{
+									// 重复字符串的长度比当前值高
+									result[0] = cur_start_index;
+									result[1] = length;
+								}
+								flag = true;
+								break; // 剪枝，已经发现了长度为length的重复字符串，后面hash值相同长度相同的子串也就没必要再去检测
+							}
+						}
+						map[current].push_back(cur_start_index);
+					}
+				}
+				flag ? min_length = length + 1 : max_length = length;
+			}
+			return result[0] == -1 ? "" : S.substr(result[0], result[1]);
+		}
+	};
+	```
 
 - [1049](https://leetcode.com/problems/last-stone-weight-ii/)
 
