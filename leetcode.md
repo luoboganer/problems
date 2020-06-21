@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-20 23:19:52
+ * @LastEditTime: 2020-06-21 15:34:12
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -290,9 +290,83 @@
     }
     ```
 
+- [10. Regular Expression Matching](https://leetcode.com/problems/regular-expression-matching/)
+
+	- 递归回溯
+
+	```cpp
+	bool isMatch(string s, string p)
+	{
+		bool ret;
+		if (p.empty())
+		{
+			ret = s.empty();
+		}
+		else
+		{
+			// 首先查看第一个元素是否匹配
+			bool first_match = (!s.empty()) && (s[0] == p[0] || p[0] == '.');
+			if (p.size() >= 2 && p[1] == '*')
+			{
+				ret = (first_match && isMatch(s.substr(1), p)) || isMatch(s, p.substr(2));
+			}
+			else
+			{
+				ret = first_match && isMatch(s.substr(1), p.substr(1));
+			}
+		}
+		return ret;
+	}
+	```
+
+	- 动态规划，时间复杂度$O(s.length*p.length)$
+
+	```cpp
+	bool isMatch(string s, string p)
+	{
+		int s_length = s.length(), p_length = p.length();
+		vector<vector<int>> dp(s_length + 1, vector<int>(p_length + 1, 0)); // default dp[i][j]=false
+		dp[0][0] = true;													// s和p均为空的时候matched
+		for (auto j = 2; j <= p_length; j++)
+		{
+			dp[0][j] = p[j - 1] == '*' && dp[0][j - 2];
+		}
+		for (auto i = 0; i < s_length; i++)
+		{
+			for (auto j = 0; j < p_length; j++)
+			{
+				if (p[j] == '*')
+				{
+					dp[i + 1][j + 1] = dp[i + 1][j - 1] || (dp[i][j + 1] && (s[i] == p[j - 1] || p[j - 1] == '.'));
+				}
+				else
+				{
+					dp[i + 1][j + 1] = dp[i][j] && (s[i] == p[j] || p[j] == '.');
+				}
+			}
+		}
+		return dp.back().back();
+	}
+	```
+
+	- some test cases
+
+	```cpp
+	"aa"
+	"a"
+	"aa"
+	"a*"
+	"ab"
+	".*"
+	"aab"
+	"c*a*b"
+	"mississippi"
+	"mis*is*p*."
+	```
+
 - [11](https://leetcode.com/problems/container-with-most-water/)
 
-    在一组通过数组给定高度的立柱中选择两根立柱，时期中间的空间可以装水最多，即在具有高度$\{a_0,a_1,...,a_n\}$的这些柱子中选择两根$a_i,a_j$使得$min(a_i,a_j)*(j-i)$最大。
+    在一组通过数组给定高度的立柱中选择两根立柱，使得中间的空间可以装水最多，即在具有高度$\{a_0,a_1,...,a_n\}$的这些柱子中选择两根$a_i,a_j$使得$min(a_i,a_j)*(j-i)$最大。
 
     ```cpp
     int maxArea(vector<int>& height) {
@@ -312,7 +386,7 @@
 
 - [13](https://leetcode.com/problems/roman-to-integer/)
 
-    罗马数字转阿拉伯数字，主要是思想是对罗马数字字符序列从右到作扫描，注意IXC的位置和表示的数字有关即可。
+    罗马数字转阿拉伯数字，主要是思想是对罗马数字字符序列从右到左扫描，注意IXC的位置和表示的数字有关即可。
 
 - [22](https://leetcode.com/problems/generate-parentheses/)
 
