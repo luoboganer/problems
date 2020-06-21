@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-21 15:34:12
+ * @LastEditTime: 2020-06-21 16:04:22
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3462,6 +3462,40 @@
         }
     };
     ```
+
+- [174. Dungeon Game](https://leetcode.com/problems/dungeon-game/)
+
+	动态规划，时间复杂度$O(m*n)$
+
+	```cpp
+	int calculateMinimumHP(vector<vector<int>> &dungeon)
+	{
+		int ret = 0;
+		if (dungeon.size() > 0 && dungeon[0].size() > 0)
+		{
+			int rows = dungeon.size(), cols = dungeon[0].size();
+			// K到达P的生命值必须为正数，又要血量最少，则为1
+			dungeon[rows - 1][cols - 1] = max(1, 1 - dungeon[rows - 1][cols - 1]);
+			for (auto i = rows - 2; i >= 0; i--)
+			{
+				dungeon[i][cols - 1] = max(1, dungeon[i + 1][cols - 1] - dungeon[i][cols - 1]);
+			}
+			for (auto j = cols - 2; j >= 0; j--)
+			{
+				dungeon[rows - 1][j] = max(1, dungeon[rows - 1][j + 1] - dungeon[rows - 1][j]);
+			}
+			for (auto i = rows - 2; i >= 0; i--)
+			{
+				for (auto j = cols - 2; j >= 0; j--)
+				{
+					dungeon[i][j] = max(1, min(dungeon[i][j + 1], dungeon[i + 1][j]) - dungeon[i][j]);
+				}
+			}
+			return dungeon[0][0];
+		}
+		return ret;
+	}
+	```
 
 - [179. Largest Number](https://leetcode.com/problems/largest-number/)
 
