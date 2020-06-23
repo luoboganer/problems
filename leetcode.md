@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-21 16:04:22
+ * @LastEditTime: 2020-06-23 15:07:13
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -8662,6 +8662,66 @@
         return ans;
     }
     ```
+
+- [679. 24 Game](https://leetcode.com/problems/24-game/)
+
+	DFS深度优先搜索 + 回溯
+
+	```cpp
+	class Solution
+	{
+	private:
+		vector<double> compute(double a, double b)
+		{
+			// a和b两个数之间采用加减乘除有六种可能的结果
+			return {a + b, a - b, b - a, a * b, a / b, b / a};
+		}
+		bool dfs_backtrack(vector<double> &nums)
+		{
+			const int n = nums.size();
+			if (n == 1 && abs(nums[0] - 24) < 1e-9)
+			{
+				return true;
+				// 递归回溯的结束条件		}
+			}
+			// 选择两个数进行计算，得到结果后与剩余的数接着进行递归计算
+			for (auto i = 0; i < n; i++)
+			{
+				for (auto j = i + 1; j < n; j++)
+				{
+					vector<double> result = compute(nums[i], nums[j]);
+					vector<double> cur_nums(n - 1);
+					for (auto r = 0, k = 0; r < n; r++)
+					{
+						if (r != i && r != j)
+						{
+							cur_nums[k++] = nums[r];
+						}
+					}
+					for (auto &&v : result)
+					{
+						cur_nums[n - 2] = v;
+						if(dfs_backtrack(cur_nums)){
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
+
+	public:
+		bool judgePoint24(vector<int> &nums)
+		{
+			vector<double> nums_double(nums.size());
+			for (int i = 0; i < nums.size(); i++)
+			{
+				nums_double[i] = 1.0 * nums[i];
+			}
+			return dfs_backtrack(nums_double);
+		}
+	};
+	```
 
 - [687. Longest Univalue Path](https://leetcode.com/problems/longest-univalue-path/)
 
