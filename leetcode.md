@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-24 22:38:06
+ * @LastEditTime: 2020-06-24 23:04:10
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -819,7 +819,7 @@
     ```cpp
     int firstMissingPositive(vector<int> &nums)
     {
-        const int count = nums.size();
+        const int count = nums.size(); 
         for (int i = 0; i < count; i++)
         {
             if(i+1!=nums[i]){
@@ -2788,6 +2788,36 @@
         }
     };
     ```
+
+- [128. Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/)
+
+	在集合中查找一个数v的下一个连续值v+1是否存在，时间复杂度$O(n)$
+
+	```cpp
+	int longestConsecutive(vector<int> &nums)
+	{
+		unordered_set<int> nums_set;
+		for (auto &&v : nums)
+		{
+			nums_set.insert(v);
+		}
+		int ret = 0, cur_length = 0;
+		for (auto &v : nums_set)
+		{
+			if (nums_set.find(v - 1) == nums_set.end())
+			{
+				// 当 v-1在集合中的时候v必然被统计过了
+				cur_length = 1;
+				while (nums_set.find(v + cur_length) != nums_set.end())
+				{
+					cur_length++;
+				}
+				ret = max(ret, cur_length);
+			}
+		}
+		return ret;
+	}
+	```
 
 - [130. Surrounded Regions](https://leetcode.com/problems/surrounded-regions/)
 
