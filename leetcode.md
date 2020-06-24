@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-23 15:07:13
+ * @LastEditTime: 2020-06-24 22:38:06
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -851,6 +851,34 @@
     []
     [1]
     ```
+
+- [42. Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/)
+
+	维护一个单调递减栈，栈中存储的是单调递减的下标index，时间复杂度$O(n)$
+
+	```cpp
+	int trap(vector<int> &height)
+	{
+		const int n = height.size();
+		stack<int> st;
+		int curIndex = 0, ret = 0;
+		while (curIndex < n)
+		{
+			// 维护一个单调递降栈，栈中存储单调递降的index
+			while (!st.empty() && height[curIndex] > height[st.top()])
+			{
+				int top = st.top();
+				st.pop();
+				if (!st.empty())
+				{
+					ret += (min(height[curIndex], height[st.top()]) - height[top]) * (curIndex - st.top() - 1);
+				}
+			}
+			st.push(curIndex);
+		}
+		return ret;
+	}
+	```
 
 - [45](https://leetcode.com/problems/jump-game-ii/)
 
