@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-25 00:03:25
+ * @LastEditTime: 2020-06-25 02:01:08
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -5368,6 +5368,79 @@
         return lo;
     }
     ```
+
+- [279. Perfect Squares](https://leetcode.com/problems/perfect-squares/)
+
+	- BFS搜索
+
+	```cpp
+	int numSquares(int n)
+	{
+		int ret = 0;
+		unordered_set<int> bfs;
+		bfs.insert(n);
+		while (true)
+		{
+			unordered_set<int> cur;
+			for (auto &&v : bfs)
+			{
+				if (v == 0)
+				{
+					return ret;
+				}
+				else
+				{
+					int q = 1;
+					while (q * q <= v)
+					{
+						cur.insert(v - q * q);
+						q++;
+					}
+				}
+			}
+			bfs = cur, ret++;
+		}
+		return ret;
+	}
+	```
+
+	- 动态规划，时间复杂度$O(n*\sqrt{n})$
+
+	```cpp
+	int numSquares(int n)
+	{
+		vector<int> dp(n + 1, n);
+		dp[0] = 0;
+		for (int v = 1; v <= n; v++)
+		{
+			int max_q = floor(sqrt(v));
+			for (int q = 1; q <= max_q; q++)
+			{
+				dp[v] = min(dp[v], 1 + dp[v - q * q]);
+			}
+		}
+		return dp.back();
+	}
+	```
+
+	- 使用static关键字，使得动态规划的结果在多个case之间复用
+
+	```cpp
+	int numSquares(int n)
+	{
+		static vector<int> dp{0};
+		for (int v = dp.size(); v <= n; v++)
+		{
+			int cnt = numeric_limits<int>::max();
+			for (int q = 1; q * q <= v; q++)
+			{
+				cnt = min(cnt, 1 + dp[v - q * q]);
+			}
+			dp.push_back(cnt);
+		}
+		return dp[n];
+	}
+	```
 
 - [283](https://leetcode.com/problems/move-zeroes/)
 
