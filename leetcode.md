@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-24 23:04:10
+ * @LastEditTime: 2020-06-25 00:03:25
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3635,6 +3635,83 @@
         return ans;
     }
     ```
+
+- [187. Repeated DNA Sequences](https://leetcode.com/problems/repeated-dna-sequences/)
+
+	在给定字符串中查找固定长度的重复出现的字符串，rolling hash，时间复杂度$O(n)$
+
+	```cpp
+	class Solution
+	{
+	private:
+		bool compare(vector<int> &nums, int a, int b, int fixed_length)
+		{
+			for (auto i = 0; i < fixed_length; i++)
+			{
+				if (nums[a + i] != nums[b + i])
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+	public:
+		vector<string> findRepeatedDnaSequences(string s)
+		{
+			vector<string> ret;
+			if (s.length() > 10)
+			{
+				unordered_set<int> founds;
+				unordered_map<int, vector<int>> map; // rolling hash value -> start index of substring with length 10
+				long long hash_value = 0, base = 26, mod = 1e9 + 7;
+				int n = s.length(), fixed_length = 10;
+				vector<int> nums(n);
+				vector<long long> powers(fixed_length, 1);
+				for (int i = 1; i < fixed_length; i++)
+				{
+					powers[i] = (base * powers[i - 1]) % mod;
+				}
+				for (auto i = 0; i < n; i++)
+				{
+					nums[i] = static_cast<int>(s.at(i) - 'A');
+				}
+				for (auto i = 0; i < fixed_length; i++)
+				{
+					hash_value = (hash_value * base + nums[i]) % mod;
+				}
+				map[hash_value] = vector<int>{0};
+				for (auto i = fixed_length; i < n; i++)
+				{
+					int current_start = i - fixed_length + 1;
+					hash_value = ((hash_value - nums[i - fixed_length] * powers[fixed_length - 1]) % mod + mod) % mod;
+					hash_value = (hash_value * base + nums[i]) % mod;
+					if (map.find(hash_value) != map.end())
+					{
+						for (auto &&start_index : map[hash_value])
+						{
+							if (compare(nums, start_index, current_start, fixed_length))
+							{
+								founds.insert(start_index);
+								break;
+							}
+						}
+						map[hash_value].push_back(current_start);
+					}
+					else
+					{
+						map[hash_value] = vector<int>{current_start};
+					}
+				}
+				for (auto &&item : founds)
+				{
+					ret.push_back(s.substr(item, fixed_length));
+				}
+			}
+			return ret;
+		}
+	};
+	```
 
 - [188. Best Time to Buy and Sell Stock IV](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/)
 
