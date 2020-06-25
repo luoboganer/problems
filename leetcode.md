@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-25 16:17:43
+ * @LastEditTime: 2020-06-26 01:15:52
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -6036,6 +6036,81 @@
 - [316. Remove Duplicate Letters](https://leetcode.com/problems/remove-duplicate-letters/)
 
     与[1081. Smallest Subsequence of Distinct Characters](https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/)完全相同
+
+- [318. Maximum Product of Word Lengths](https://leetcode.com/problems/maximum-product-of-word-lengths/)
+
+	- **960ms** 使用数组来统计/标记每个单词中每个字符（a-z共有26个字符）是否出现，然后双重循环遍历所有单词，在没有重复且长度积大于ret的情况下更新ret，时间复杂度$O(n^2*max(words[i].length))$
+
+	```cpp
+	class Solution
+	{
+	private:
+		bool nonRepeated(string s, vector<int> &count)
+		{
+			for (auto &&ch : s)
+			{
+				if (count[static_cast<int>(ch - 'a')] != 0)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+	public:
+		int maxProduct(vector<string> &words)
+		{
+			int const length = 26, n = words.size();
+			vector<vector<int>> letters(n, vector<int>(26, 0));
+			for (auto i = 0; i < n; i++)
+			{
+				for (auto &&ch : words[i])
+				{
+					letters[i][static_cast<int>(ch - 'a')]++;
+				}
+			}
+			int ret = 0;
+			for (auto i = 0; i < n; i++)
+			{
+				for (auto j = i + 1; j < n; j++)
+				{
+					int product = words[i].length() * words[j].length();
+					if (product > ret && nonRepeated(words[i], letters[j]))
+					{
+						ret = product;
+					}
+				}
+			}
+			return ret;
+		}
+	};
+	```
+
+    - **76ms** 使用bitmap来代替数组标记每个单词中某个字符是否出现过，全部26个字符使用一个int值即可（32bits） **bit manipulation**
+
+    ```cpp
+	int maxProduct(vector<string> &words)
+	{
+		int const length = 26, n = words.size();
+		int ret = 0;
+		vector<int> letters(n, 0);
+		for (auto i = 0; i < n; i++)
+		{
+			for (auto &&ch : words[i])
+			{
+				letters[i] = letters[i] | (1 << (static_cast<int>(ch - 'a')));
+			}
+			for (auto j = 0; j < i; j++)
+			{
+				if (!(letters[i] & letters[j]) && words[i].length() * words[j].length() > ret)
+				{
+					ret = words[i].length() * words[j].length();
+				}
+			}
+		}
+		return ret;
+	}
+    ```
 
 - [319. Bulb Switcher](https://leetcode.com/problems/bulb-switcher/)
 
