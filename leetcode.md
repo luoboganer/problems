@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-25 12:52:56
+ * @LastEditTime: 2020-06-25 13:53:32
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2883,6 +2883,93 @@
     进一步[260](https://leetcode.com/problems/single-number-iii/)中寻找两个落单的数，一遍异或操作可以得到这两个落单数的异或结果，然后其他数按照这个结果二进制表示中第一个非零位是否为1分为两组异或一遍即可。
     
     还有[137](https://leetcode.com/problems/single-number-ii/)中除了一个落单的数字、其他数字均出现了三次，可以统计int的32位表示中每一位为1的个数，然后这个统计结果为不能被3整除的那些bit位为1的二进制表示结果即为所求的落单的那个数。
+
+- [139. Word Break](https://leetcode.com/problems/word-break/)
+
+	- 对wordDict中的每个单词，遍历在s中是否可以找到，找到之后在以该单词截断s，递归检查s的剩余部分，leetcode评测机$\color{red}{TLE}$
+
+	```cpp
+	class Solution
+	{
+		int findSubstring(string s, string word)
+		{
+			int ret = -1, s_length = s.length(), word_length = word.length();
+			if (s_length >= word_length)
+			{
+				int count = s_length - word_length + 1;
+				for (int i = 0; i < count; i++)
+				{
+					bool found = true;
+					for (int j = 0; found && j < word_length; j++)
+					{
+						if (word[j] != s[i + j])
+						{
+							found = false;
+						}
+					}
+					if (found)
+					{
+						ret = i;
+						break;
+					}
+				}
+			}
+			return ret;
+		}
+
+	public:
+		bool wordBreak(string s, vector<string> &wordDict)
+		{
+			if (s.empty())
+			{
+				return true;
+			}
+			for (auto word : wordDict)
+			{
+				int start = findSubstring(s, word);
+				if (start != -1 && wordBreak(s.substr(0, start), wordDict) && wordBreak(s.substr(start + word.size()), wordDict))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+	};
+	```
+
+    - 动态规划，dp[i]表示s中前i个字符可以有wordDict中的单词形成，时间复杂度$O(n^2)$，其中$n=s.length$
+
+    ```cpp
+	bool wordBreak(string s, vector<string> &wordDict)
+	{
+		int n = s.length(), max_word_length = 0;
+		unordered_set<string> words;
+		for (auto &&word : wordDict)
+		{
+			words.insert(word);
+			max_word_length = max(max_word_length, (int)word.length());
+		}
+		vector<bool> dp(n + 1, false);
+		/**
+		 * 1. dp[i]表示字符串s.substr(0,i)是否可以有wordDict中的单词组成
+		 * 		Runtime: 24 ms, faster than 54.32% of C++ online submissions for Word Break.
+		 * 2. 优化点：在内层循环中j = max(0, i - max_word_length)，这样可以使得内层循环直接从wordDict中长度最长的单词处开始所有，减小内层循环的长度
+		 * 		Runtime: 4 ms, faster than 99.02% of C++ online submissions for Word Break.
+		*/
+		dp[0] = true;
+		for (auto i = 1; i <= n; i++)
+		{
+			for (auto j = max(0, i - max_word_length); !dp[i] && j < i; j++)
+			{
+				if (dp[j] && words.find(s.substr(j, i - j)) != words.end())
+				{
+					dp[i] = true;
+				}
+			}
+		}
+		return dp[n];
+	}
+    ```
 
 - [141](https://leetcode.com/problems/linked-list-cycle/)
 
