@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-25 02:01:08
+ * @LastEditTime: 2020-06-25 11:53:39
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -6152,7 +6152,33 @@
 
 - [343. Integer Break](https://leetcode.com/problems/integer-break/)
 
-    动态规划，状态转移方程为$f(n)=max_{1\le k \le n-1}(max\left\{\begin{matrix}k*f(n-k)\\ k*(n-k)\end{matrix}\right.)$，时间复杂度$O(n^2)$
+	- 数学方法，列出推导式求导数优化求值，时间复杂度$O(1)$
+
+	```cpp
+	int integerBreak(int n)
+	{
+		int ret = n - 1;
+		if (n > 3)
+		{
+			int q = n / 3, r = n % 3;
+			if (r == 0)
+			{
+				ret = pow(3, q);
+			}
+			else if (r == 1)
+			{
+				ret = pow(3, q - 1) * 4;
+			}
+			else if (r == 2)
+			{
+				ret = pow(3, q) * 2;
+			}
+		}
+		return ret;
+	}
+	```
+
+    - 动态规划，状态转移方程为$f(n)=max_{1\le k \le n-1}(max\left\{\begin{matrix}k*f(n-k)\\ k*(n-k)\end{matrix}\right.)$，时间复杂度$O(n^2)$
 
     ```cpp
     int integerBreak(int n)
@@ -6169,6 +6195,46 @@
         return dp.back();
     }
     ```
+
+	- 根据数学计算的结果，每一段的长度必然小于等于3，则动态规划可以优化到时间复杂度$O(n)$
+
+	```cpp
+	int integerBreak(int n)
+	{
+		int ret = n - 1;
+		if (n > 3)
+		{
+			vector<int> dp(n + 1, 0);
+			dp[1] = 1, dp[2] = 2, dp[3] = 3;
+			for (auto i = 4; i <= n; i++)
+			{
+				dp[i] = max(max(3 * dp[i - 3], 2 * dp[i - 2]), dp[i - 1]);
+			}
+			ret = dp.back();
+		}
+		return ret;
+	}
+	```
+
+	- 使用static关键字，使得动态规划的结果在多个case之间复用
+
+	```cpp
+	int integerBreak(int n)
+	{
+		int ret = n - 1;
+		if (n > 3)
+		{
+			static vector<int> dp{0, 1, 2, 3};
+			for (auto i = dp.size(); i <= n; i++)
+			{
+				int v = max(max(3 * dp[i - 3], 2 * dp[i - 2]), dp[i - 1]);
+				dp.push_back(v);
+			}
+			ret = dp[n];
+		}
+		return ret;
+	}
+	```
 
 - [347. Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/)
 
