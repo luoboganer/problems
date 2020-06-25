@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-25 11:53:39
+ * @LastEditTime: 2020-06-25 12:52:56
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -8006,6 +8006,96 @@
         return false;
     }
 	```
+
+- [524. Longest Word in Dictionary through Deleting](https://leetcode.com/problems/longest-word-in-dictionary-through-deleting/)
+
+	- 对字典d排序后一次比较s是否可以形成字典d中的某个字符串，时间复杂度$O(nlog(n)*x+n*x)$，其中$x=max(s.length,d_{i}.length)$
+
+	```cpp
+	class Solution
+	{
+		bool sFormedt(string s, string t)
+		{
+			if (s.length() < t.length())
+			{
+				return false;
+			}
+			int i = 0, j = 0;
+			while (i < s.length() && j < t.length())
+			{
+				if (s[i] == t[j])
+				{
+					i++, j++;
+				}
+				else
+				{
+					i++;
+				}
+			}
+			return j == t.length();
+		}
+
+	public:
+		string findLongestWord(string s, vector<string> &d)
+		{
+			sort(d.begin(), d.end(), [](const string &a, const string &b) { return a.length() > b.length() || (a.length() == b.length() && a.compare(b) < 0); });
+			for (auto &&t : d)
+			{
+				if (sFormedt(s, t))
+				{
+					return t;
+				}
+			}
+			return "";
+		}
+	};
+	```
+
+    - 不排序依次直接比较s是否可以形成字典d中的某个字符串，时间复杂度$O(n*x)$，其中$x=max(s.length,d_{i}.length)$
+
+    ```cpp
+	class Solution
+	{
+		bool sFormedt(string s, string t)
+		{
+			if (s.length() < t.length())
+			{
+				return false;
+			}
+			int i = 0, j = 0;
+			while (i < s.length() && j < t.length())
+			{
+				if (s[i] == t[j])
+				{
+					i++, j++;
+				}
+				else
+				{
+					i++;
+				}
+			}
+			return j == t.length();
+		}
+		bool compareGreater(const string &a, const string &b)
+		{
+			return a.length() > b.length() || (a.length() == b.length() && a.compare(b) < 0);
+		}
+
+	public:
+		string findLongestWord(string s, vector<string> &d)
+		{
+			string ret;
+			for (auto &&t : d)
+			{
+				if (sFormedt(s, t) && compareGreater(t, ret))
+				{
+					ret = t;
+				}
+			}
+			return ret;
+		}
+	};
+    ```
 
 - [525. Contiguous Array](https://leetcode.com/problems/contiguous-array/)
 
