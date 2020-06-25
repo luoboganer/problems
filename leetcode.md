@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-25 13:53:32
+ * @LastEditTime: 2020-06-25 16:17:43
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -11648,6 +11648,63 @@
         return ret;
     }
     ```
+
+- [955. Delete Columns to Make Sorted II](https://leetcode.com/problems/delete-columns-to-make-sorted-ii/)
+
+	贪心算法，遍历每一列是否会删除，如果不删除标记将会造成那些行符合字典序要求（标记的这些行将不参与之后列的判断），时间复杂度$O(rows*cols)$
+
+	```cpp
+	int minDeletionSize(vector<string> &A)
+	{
+		int ret = 0, rows = A.size(), cols = A[0].size();
+		vector<bool> sorted(rows - 1, false);
+		for (auto j = 0; j < cols; j++)
+		{
+			/* 检查每一列是否为字典序 */
+			bool deleted_col = false;
+			vector<int> sorted_rows;
+			for (auto i = 1; i < rows; i++)
+			{
+				if (sorted[i - 1] == false)
+				{
+					if (A[i - 1][j] < A[i][j])
+					{
+						sorted_rows.push_back(i - 1);
+					}
+					else if (A[i - 1][j] > A[i][j])
+					{
+						deleted_col = true;
+						break;
+					}
+				}
+			}
+			// 一列遍历完成以后，处理这一列的情况，是否删除，如果不删除将造成那些行成为字典序的
+			if (deleted_col)
+			{
+				ret++;
+			}
+			else
+			{
+				for (auto &&index : sorted_rows)
+				{
+					sorted[index] = true;
+				}
+			}
+		}
+		return ret;
+	}
+	```
+
+	- some test cases
+
+	```cpp
+	["ca","bb","ac"]
+	["xc","yb","za"]
+	["zyx","wvu","tsr"]
+	["xga","xfb","yfa"]
+	["abx","agz","bgc","bfc"]
+	["doeeqiy","yabhbqe","twckqte"]
+	```
 
 - [961](https://leetcode.com/problems/n-repeated-element-in-size-2n-array/)
     In a array A of size 2N, there are N+1 unique elements, and exactly one of these elements is repeated N time, find and return this element.
