@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-26 01:15:52
+ * @LastEditTime: 2020-06-26 17:25:34
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -9188,6 +9188,64 @@
         return ans;
     }
     ```
+
+- [676. Implement Magic Dictionary](https://leetcode.com/problems/implement-magic-dictionary/)
+
+	- 根据单词长度来基数哈希，时间复杂度$O(n*k)$，其中$k=max(word.length)$
+
+	```cpp
+	class MagicDictionary
+	{
+	private:
+		unordered_map<int, vector<string>> magicMap;
+
+	public:
+		/** Initialize your data structure here. */
+		MagicDictionary()
+		{
+			magicMap.clear();
+		}
+
+		/** Build a dictionary through a list of words */
+		void buildDict(vector<string> dict)
+		{
+			for (auto &&s : dict)
+			{
+				auto it = magicMap.find(s.length());
+				if (it != magicMap.end())
+				{
+					(*it).second.push_back(s);
+				}
+				else
+				{
+					magicMap[s.length()] = vector<string>{s};
+				}
+			}
+		}
+
+		/** Returns if there is any word in the trie that equals to the given word after modifying exactly one character */
+		bool search(string word)
+		{
+			int length = word.length();
+			for (auto &&item : magicMap[length])
+			{
+				int error = 0;
+				for (int i = 0; i < length; ++i)
+				{
+					if (word[i] != item[i])
+					{
+						error++;
+					}
+				}
+				if (error == 1)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+	};
+	```
 
 - [679. 24 Game](https://leetcode.com/problems/24-game/)
 
