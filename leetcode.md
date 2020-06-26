@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-26 17:25:34
+ * @LastEditTime: 2020-06-26 19:32:12
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -12169,6 +12169,68 @@
         dfs_helper(grid, visited, row, col, &ans, count_0);
         return ans;
     }
+    ```
+
+- [981. Time Based Key-Value Store](https://leetcode.com/problems/time-based-key-value-store/)
+
+	- 假定给定的set序列中timestamp是self-increasing的，则用hashmap来存储一个key2value-timestamp对，然后get的时候寻找给定timestamp在hashmap[key]中的上界即可，时间复杂度$O(mlog(n))$，其中m是get操作的数量，n是set操作的数量，即每次set是$O(1)$的，每次get是$O(log(n))$
+
+	```cpp
+	class TimeMap 
+	{
+	private:
+		unordered_map<string, vector<pair<int, string>>> key2value;
+
+	public:
+		/** Initialize your data structure here. */
+		TimeMap()
+		{
+			key2value.clear();
+		}
+
+		void set(string key, string value, int timestamp)
+		{
+			key2value[key].push_back(make_pair(timestamp, value));
+		}
+
+		string get(string key, int timestamp)
+		{
+			/**
+			* lower_bound 从begin到end-1寻找第一个大于等于val的地址，没有则返回end
+			* upper_bound 从begin到end-1寻找第一个大于val的地址，没有则返回end
+			*/
+			auto it = upper_bound(key2value[key].begin(), key2value[key].end(), pair<int, string>(timestamp, ""), [](const auto &a, const auto &b) -> bool { return a.first < b.first; });
+			return key2value[key].begin() == it ? "" : prev(it)->second;
+		}
+	};
+	```
+
+    - 假定给定的set序列中timestamp不能保证self-increasing，则使用ordered_map来保存可以的hash值
+
+    ```cpp
+	class TimeMap
+	{
+	private:
+		unordered_map<string, map<int, string>> key2value;
+
+	public:
+		/** Initialize your data structure here. */
+		TimeMap()
+		{
+			key2value.clear();
+		}
+
+		void set(string key, string value, int timestamp)
+		{
+			key2value[key].insert({timestamp, value});
+		}
+
+		string get(string key, int timestamp)
+		{
+			auto it = key2value[key].upper_bound(timestamp);
+			return (it == key2value[key].begin()) ? "" : prev(it)->second;
+		}
+	};
     ```
 
 - [984. String Without AAA or BBB](https://leetcode.com/problems/string-without-aaa-or-bbb/)
