@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-26 19:32:12
+ * @LastEditTime: 2020-06-28 19:13:05
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -6201,6 +6201,54 @@
         return n > 0 && 1162261467 % n == 0;
     }
     ```
+
+- [332. Reconstruct Itinerary](https://leetcode.com/problems/reconstruct-itinerary/)
+
+	DFS搜索，求给定有向图中的最短哈密路径
+
+	```cpp
+	class Solution
+	{
+	private:
+		bool dfs(string cur, vector<string> &ret, int n, unordered_map<string, map<string, int>> &m)
+		{
+			if (ret.size() == n)
+			{
+				return true; // n张ticket全部使用
+			}
+			for (auto node = m[cur].begin(); node != m[cur].end(); node++)
+			{
+				if (node->second > 0)
+				{
+					node->second--;
+					ret.push_back(node->first);
+					if (dfs(node->first, ret, n, m))
+					{
+						return true;
+					}
+					ret.pop_back();
+					node->second++; // 回溯
+				}
+			}
+			return false;
+		}
+
+	public:
+		vector<string> findItinerary(vector<vector<string>> &tickets)
+		{
+			unordered_map<string, map<string, int>> m;
+			for (auto &&ticket : tickets)
+			{
+				// 统计从a到b的tickets有多少，map里面可以实现字典序排序
+				m[ticket[0]][ticket[1]]++;
+			}
+			string cur = "JFK";
+			vector<string> ret{cur};
+			dfs(cur, ret, tickets.size() + 1, m);
+			return ret;
+		}
+	};
+	```
     
 - [337](https://leetcode.com/problems/house-robber-iii/)
 
