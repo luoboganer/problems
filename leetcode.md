@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-28 19:13:05
+ * @LastEditTime: 2020-06-29 12:16:44
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -563,6 +563,114 @@
         return (int)ans;
     }
     ```
+
+- [30. Substring with Concatenation of All Words](https://leetcode.com/problems/substring-with-concatenation-of-all-words/)
+
+	- 在s中暴力搜索所有长度符合要求的substring是否符合要求（恰好可以有words中所有单词concatenation构成），时间复杂度$O(n*words.size)$
+
+	```cpp
+	vector<int> findSubstring(string s, vector<string> &words)
+	{
+		vector<int> ret;
+		if (words.size() > 0 && s.length() >= words.size() * words[0].length())
+		{
+			unordered_map<string, int> count;
+			for (auto &&word : words)
+			{
+				count[word]++;
+			}
+			int n = s.length(), number_words = words.size(), length_word = words[0].length();
+			int length_substring = number_words * length_word;
+			int right_most_index = n - length_substring;
+			for (auto i = 0; i <= right_most_index; i++)
+			{
+				unordered_map<string, int> count_temp = count;
+				bool flag = true;
+				for (auto j = 0; j < length_substring; j += length_word)
+				{
+					string cur = s.substr(i + j, length_word);
+					auto it = count_temp.find(cur);
+					if ((it != count_temp.end()) && (it->second > 0))
+					{
+						it->second--;
+					}
+					else
+					{
+						// 保证words中的word在组成substring时够用
+						flag = false;
+						break;
+					}
+				}
+				if (flag)
+				{
+					for (auto &&item : count_temp)
+					{
+						if (item.second != 0)
+						{
+							// 保证words中word在组成substring时刚好全部用完
+							flag = false;
+							break;
+						}
+					}
+				}
+				if (flag)
+				{
+					ret.push_back(i);
+				}
+			}
+		}
+		return ret;
+	}
+	```
+
+	- sliding window (two pointer)，时间复杂度$O(n*words[0].length)$
+
+	```cpp
+	vector<int> findSubstring(string s, vector<string> &words)
+	{
+		vector<int> ret;
+		if (words.size() > 0 && s.length() >= words.size() * words[0].length())
+		{
+			unordered_map<string, int> count;
+			for (auto &&word : words)
+			{
+				count[word]++;
+			}
+			int n = s.length(), number_words = words.size(), length_word = words[0].length();
+			int length_substring = number_words * length_word;
+			for (auto k = 0; k < length_word; k++)
+			{
+				unordered_map<string, int> slide_window;
+				int cnt = 0; // 统计slide_window中有多少单词是给定的count里面的
+				for (auto i = k; i + length_word <= n; i += length_word)
+				{
+					if (i >= length_substring)
+					{
+						// slide windows的左断点向右滑动length_word长度，去掉一个单词
+						string left_end = s.substr(i - length_substring, length_word);
+						slide_window[left_end]--;
+						if (slide_window[left_end] < count[left_end])
+						{
+							cnt--;
+						}
+					}
+					// slide_window右端点向右滑动新加入一个单词
+					string cur = s.substr(i, length_word);
+					slide_window[cur]++;
+					if (slide_window[cur] <= count[cur])
+					{
+						cnt++;
+					}
+					if (cnt == number_words)
+					{
+						ret.push_back(i + length_word - length_substring);
+					}
+				}
+			}
+		}
+		return ret;
+	}
+	```
 
 - [32. Longest Valid Parentheses](https://leetcode.com/problems/longest-valid-parentheses/)
 
