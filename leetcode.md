@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-30 20:48:48
+ * @LastEditTime: 2020-06-30 21:25:17
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -990,7 +990,7 @@
 
 - [44. Wildcard Matching](https://leetcode.com/problems/wildcard-matching/)
 
-	动态规划，根据字符匹配的规则合理设定状态转移方程即可，时间复杂度$O(s.length*p.length)$
+	- 动态规划，根据字符匹配的规则合理设定状态转移方程即可，时间复杂度$O(s.length*p.length)$
 
 	```cpp
 	bool isMatch(string s, string p)
@@ -1016,6 +1016,48 @@
 			}
 		}
 		return dp[m][n];
+	}
+	```
+
+	- greedy algorithm，时间复杂度$O(max(s.length,p.length))$
+
+	```cpp
+	bool isMatch(string s, string p)
+	{
+		int m = s.length(), n = p.length();
+		int i = 0, j = 0, matched = 0, starIdx = -1;
+		while (i < m)
+		{
+			// * was found, only advancing pattern pointer
+			if (j < n && p[j] == '*')
+			{
+				starIdx = j++;
+				matched = i;
+			}
+			// advancing both pointer
+			else if (j < n && (p[j] == '?' || p[j] == s[i]))
+			{
+				i++, j++;
+			}
+			// last pattern pointer was *, advancing string pattern
+			else if (starIdx != -1)
+			{
+				// 当前字符不匹配时，将string中的s[i]匹配给pattern中发现的上一个*
+				i = ++matched;
+				j = starIdx + 1;
+			}
+			else
+			{
+				// 不匹配且没有通配符*
+				return false;
+			}
+		}
+		// 检查pattern中剩余的字符，这是s已经为空，则p剩余部分为空或者全为*
+		while (j < n && p[j] == '*')
+		{
+			j++;
+		}
+		return j == n;
 	}
 	```
 
