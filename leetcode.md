@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-29 12:16:44
+ * @LastEditTime: 2020-06-30 20:48:48
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -985,6 +985,37 @@
 			st.push(curIndex);
 		}
 		return ret;
+	}
+	```
+
+- [44. Wildcard Matching](https://leetcode.com/problems/wildcard-matching/)
+
+	动态规划，根据字符匹配的规则合理设定状态转移方程即可，时间复杂度$O(s.length*p.length)$
+
+	```cpp
+	bool isMatch(string s, string p)
+	{
+		int m = s.length(), n = p.length();
+		vector<vector<bool>> dp(m + 1, vector<bool>(n + 1, false));
+		dp[0][0] = true;
+		for (auto j = 0; j < n; j++)
+		{
+			/**
+			 * 1. s为空且模式串p不为空的情况
+			 * 2. p为空且s不为空的情况一定为False 
+			 * */
+			dp[0][j + 1] = dp[0][j] && p[j] == '*';
+		}
+		vector<bool> wild_match(dp[0]); // wild_match[j]表示p[0,j-1]和s[0,i]是否匹配
+		for (auto i = 0; i < m; i++)
+		{
+			for (auto j = 0; j < n; j++)
+			{
+				dp[i + 1][j + 1] = ((p[j] == '?' || p[j] == s[i]) && dp[i][j]) || (p[j] == '*' && wild_match[j]);
+				wild_match[j + 1] = wild_match[j + 1] || dp[i + 1][j + 1];
+			}
+		}
+		return dp[m][n];
 	}
 	```
 
