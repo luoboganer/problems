@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-06-30 21:25:17
+ * @LastEditTime: 2020-07-02 00:57:20
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -9673,6 +9673,126 @@
         }
         return ans;
     }
+    ```
+
+- [719. Find K-th Smallest Pair Distance](https://leetcode.com/problems/find-k-th-smallest-pair-distance/)
+
+	- 暴力算出所有可能的distance，排序然后取第k小的值，时间复杂度$O(n^2*log(n))$，leetcode评测机$\color{red}{TLE}$
+
+	```cpp
+	int smallestDistancePair(vector<int> &nums, int k)
+	{
+		vector<int> distances;
+		int n = nums.size();
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = i + 1; j < n; j++)
+			{
+				distances.push_back(abs(nums[j] - nums[i]));
+			}
+		}
+		sort(distances.begin(), distances.end());
+		return distances[k - 1];
+	}
+	```
+
+	- binary search + prefix，时间复杂度$O(n+w+nlog(n)+nlog(w))),w=max(nums)-min(nums)$
+
+	```cpp
+	int smallestDistancePair(vector<int> &nums, int k)
+	{
+		// O(nlog(n))
+		sort(nums.begin(), nums.end());
+		int n = nums.size();
+		int w = nums[n - 1];
+		/**
+		 * 可能的答案在[0,w]之间，可以进行二分搜索
+		 * prefix[v] 表示nums中 nums[i] <= v 的i的数量
+		 * multiplicity[j] 表示 i<j 且 nums[i]==nums[j] 的i的个数，即nums中nums[j]前面和nums[j]值相等的元素个数
+		 * 
+		*/
+		vector<int> prefix(w + 1, 0), multiplicity(n, 0);
+		// O(n)
+		for (auto i = 1; i < n; i++)
+		{
+			if (nums[i] == nums[i - 1])
+			{
+				multiplicity[i] = multiplicity[i - 1] + 1;
+			}
+		}
+		// O(n+w)
+		for (auto left = 0, v = 0; v <= w; v++)
+		{
+			while (left < n && nums[left] == v)
+			{
+				left++;
+			}
+			prefix[v] = left;
+		}
+		// O(nlog(w))
+		int left = 0, right = w;
+		while (left < right)
+		{
+			int mid = left + (right - left) / 2;
+			int guess_mid = 0;
+			for (int i = 0; i < n; i++)
+			{
+				// x=nums[i] ， 则统计在x的右侧且 0 <= x+v <= mid(guess) 的v的个数
+				guess_mid += prefix[min(w, nums[i] + mid)] - prefix[nums[i]] + multiplicity[i];
+			}
+			if (guess_mid >= k) // binary search
+			{
+				right = mid;
+			}
+			else
+			{
+				left = mid + 1;
+			}
+		}
+		return left;
+	}
+	```
+
+    - binary search + slide window (two pointer)，时间复杂度$O(nlog(n)+nlog(w))),w=max(nums)-min(nums)$
+
+    ```cpp
+	int smallestDistancePair(vector<int> &nums, int k)
+	{
+		// O(nlog(n))
+		sort(nums.begin(), nums.end());
+		int n = nums.size();
+		int w = nums[n - 1] - nums[0];
+		/**
+		 * 可能的答案在[0,w]之间，可以进行二分搜索
+		 * 使用滑动窗口来计算所有小于等于guess(mid)的距离对的数目
+		 * 
+		*/
+		// O(nlog(w))
+		int left = 0, right = w;
+		while (left < right)
+		{
+			int mid = left + (right - left) / 2;
+			int guess_mid = 0, slow = 0;
+			for (auto fast = 0; fast < n; fast++)
+			{
+				// 统计 nums[fast] - nums[slow] <= mid 的数目
+				while (nums[fast] - nums[slow] > mid)
+				{
+					slow++;
+				}
+				guess_mid += fast - slow;
+			}
+			if (guess_mid >= k) // binary search
+			{
+				right = mid;
+			}
+			else
+			{
+				left = mid + 1;
+			}
+		}
+		return left;
+	}
     ```
 
 - [720. Longest Word in Dictionary](https://leetcode.com/problems/longest-word-in-dictionary/)
