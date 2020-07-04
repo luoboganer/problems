@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-07-02 00:57:20
+ * @LastEditTime: 2020-07-05 01:31:18
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -13727,6 +13727,85 @@
 		}
 		return (int)(ret);
 	}
+	```
+
+- [1201. Ugly Number III](https://leetcode.com/problems/ugly-number-iii/)
+
+	- 从1开始递增的逐个列出所有$v(v\%a==0||v\%b==0||v\%c==0)$，时间复杂度$O(n)$，leetcode评测机$\color{red}{TLE}$
+
+	```cpp
+	int nthUglyNumber(int n, int a, int b, int c)
+	{
+		int ret = 1, a_coef = 1, b_coef = 1, c_coef = 1;
+		for (auto i = 0; i < n; ++i)
+		{
+			int v = min(min(a * a_coef, b * b_coef), c * c_coef);
+			if (v % a == 0)
+			{
+				a_coef++;
+			}
+			if (v % b == 0)
+			{
+				b_coef++;
+			}
+			if (v % c == 0)
+			{
+				c_coef++;
+			}
+			ret = v;
+		}
+		return ret;
+	}
+	```
+
+	- binary search，时间复杂度$O(log(n))$
+
+	```cpp
+	class Solution
+	{
+	private:
+		long long gcd(long long a, long long b)
+		{
+			if (a < b)
+			{
+				swap(a, b);
+			}
+			while (a % b != 0)
+			{
+				int r = a % b;
+				a = b;
+				b = r;
+			}
+			return b;
+		}
+
+		long long lcd(long long a, long long b)
+		{
+			return a * b / gcd(a, b);
+		}
+
+	public:
+		int nthUglyNumber(int n, int a, int b, int c)
+		{
+			long long lcd_ab = lcd(a, b), lcd_bc = lcd(b, c), lcd_ca = lcd(c, a);
+			long long lcd_abc = lcd(lcd_ab, c);
+			long long left = min(min(a, b), c), right = 2 * 1e9;
+			while (left < right)
+			{
+				long long v = left + (right - left) / 2;
+				long long count = v / a + v / b + v / c - v / lcd_ab - v / lcd_bc - v / lcd_ca + v / lcd_abc;
+				if (count < n)
+				{
+					left = v + 1;
+				}
+				else
+				{
+					right = v;
+				}
+			}
+			return static_cast<int>(left);
+		}
+	};
 	```
 
 - [1209. Remove All Adjacent Duplicates in String II](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/)
