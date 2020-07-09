@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-07-05 01:31:18
+ * @LastEditTime: 2020-07-09 20:44:04
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -2350,6 +2350,137 @@
         return ans;
     }
     ```
+
+- [84. Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/)
+
+	- 通过双指针i和j枚举所有可能矩形宽度$j-i+1$，在此宽度下计算可能的矩形面积，时间复杂度$O(n^2)$，leetcode评测机$\color{red}{TLE}$
+
+	```cpp
+	int largestRectangleArea(vector<int> &heights)
+	{
+		int ret = 0, n = heights.size();
+		for (auto i = 0; i < n; i++)
+		{
+			int min_height = heights[i];
+			for (auto j = i; j < n; j++)
+			{
+				min_height = min(min_height, heights[j]);
+				ret = max(ret, min_height * (j - i + 1));
+			}
+		}
+		return ret;
+	}
+	```
+
+	- 枚举所有可能的矩形高度$heights[i]$，然后找到i左侧第一个小于heights[i]的柱子left和右侧第一个小于heights[i]的柱子right，则该矩形面积为$heights[i]*(right-left-1)$，时间复杂度$O(n^2)$，leetcode评测机$\color{red}{TLE}$
+
+	```cpp
+	int largestRectangleArea(vector<int> &heights)
+	{
+		int ret = 0, n = heights.size();
+		for (auto i = 0; i < n; i++)
+		{
+			int min_height = heights[i];
+			for (auto j = i; j < n; j++)
+			{
+				int left = i, right = i;
+				while (left >= 0 && heights[left] >= heights[i])
+				{
+					left--;
+				}
+				while (right < n && heights[right] >= heights[i])
+				{
+					right++;
+				}
+				ret = max(ret, heights[i] * (right - left - 1));
+			}
+		}
+		return ret;
+	}
+	```
+
+    - 单调栈，时间复杂度$O(n)$
+
+    ```cpp
+	int largestRectangleArea(vector<int> &heights)
+	{
+		int ret = 0, n = heights.size();
+		stack<int> st;
+		vector<int> left(n, 0), right(n, n);
+		for (auto i = 0; i < n; i++)
+		{
+			while (!st.empty() && heights[st.top()] >= heights[i])
+			{
+				st.pop();
+			}
+			left[i] = st.empty() ? -1 : st.top();
+			st.push(i);
+		}
+		st = stack<int>();
+		for (auto i = n - 1; i >= 0; i--)
+		{
+			while (!st.empty() && heights[st.top()] >= heights[i])
+			{
+				st.pop();
+			}
+			right[i] = st.empty() ? n : st.top();
+			st.push(i);
+		}
+		for (int i = 0; i < n; i++)
+		{
+			ret = max(ret, heights[i] * (right[i] - left[i] - 1));
+		}
+		return ret;
+	}
+    ```
+
+	- 单调栈 + 常数优化
+
+	```cpp
+	int largestRectangleArea(vector<int> &heights)
+	{
+		int ret = 0, n = heights.size();
+		stack<int> st;
+		vector<int> left(n, 0), right(n, n);
+		for (auto i = 0; i < n; i++)
+		{
+			while (!st.empty() && heights[st.top()] >= heights[i])
+			{
+				right[st.top()]=i;
+				st.pop();
+			}
+			left[i] = st.empty() ? -1 : st.top();
+			st.push(i);
+		}
+		for (int i = 0; i < n; i++)
+		{
+			ret = max(ret, heights[i] * (right[i] - left[i] - 1));
+		}
+		return ret;
+	}
+	```
+
+	- 单调栈的一次遍历写法
+
+	```cpp
+	int largestRectangleArea(vector<int> &heights)
+	{
+		int ret = 0, n = heights.size();
+		heights.push_back(-1); // 哨兵点位
+		stack<int> st;
+		for (int i = 0; i <= n; i++)
+		{
+			while (!st.empty() && heights[st.top()] >= heights[i])
+			{
+				int h = heights[st.top()];
+				st.pop();
+				ret = max(ret, h * (st.empty() ? i : (i - st.top() - 1)));
+			}
+			st.push(i);
+		}
+		return ret;
+	}
+	```
 
 - [88. Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/)
 
