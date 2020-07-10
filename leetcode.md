@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-07-09 20:44:04
+ * @LastEditTime: 2020-07-10 22:23:34
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -12089,6 +12089,49 @@
 		return ans;
     }
     ```
+
+- [932. Beautiful Array](https://leetcode.com/problems/beautiful-array/)
+
+	- 分治法，时间复杂度$O(nlog(n))$
+
+	```cpp
+	class Solution
+	{
+	private:
+		unordered_map<int, vector<int>> ans;
+		vector<int> helper(int n)
+		{
+			if (ans.find(n) == ans.end())
+			{
+				vector<int> ret(n);
+				if (n == 1)
+				{
+					ret[0] = 1;
+				}
+				else
+				{
+					int k = 0;
+					for (auto &&x : helper((n + 1) / 2))
+					{
+						ret[k++] = 2 * x - 1;
+					}
+					for (auto &&x : helper(n / 2))
+					{
+						ret[k++] = 2 * x;
+					}
+				}
+				ans[n] = ret;
+			}
+			return ans[n];
+		}
+
+	public:
+		vector<int> beautifulArray(int N)
+		{
+			return helper(N);
+		}
+	};
+	```
 
 - [937. Reorder Data in Log Files](https://leetcode.com/problems/reorder-data-in-log-files/)
 
