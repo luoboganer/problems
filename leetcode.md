@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-07-10 22:23:34
+ * @LastEditTime: 2020-07-13 17:55:31
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -13602,6 +13602,33 @@
         return count;
     }
     ```
+
+- [1111. Maximum Nesting Depth of Two Valid Parentheses Strings](https://leetcode.com/problems/maximum-nesting-depth-of-two-valid-parentheses-strings/)
+
+	- 并列的两个vps不增加其中任何一个的depth，因此只需要将嵌套的vps尽可能分开到A和B即可，时间复杂度$O(n)$
+
+	```cpp
+	vector<int> maxDepthAfterSplit(string seq)
+	{
+		int n = seq.size();
+		vector<int> ret(n);
+		int left = 0, right = 0, k = 0;
+		for (auto &&ch : seq)
+		{
+			if (ch == '(')
+			{
+				ret[k++] = left;
+				left = 1 - left;
+			}
+			else
+			{
+				ret[k++] = right;
+				right = 1 - right;
+			}
+		}
+		return ret;
+	}
+	```
 
 - [1114](https://leetcode.com/problems/print-in-order/)
 
