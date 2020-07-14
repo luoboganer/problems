@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-07-13 17:55:31
+ * @LastEditTime: 2020-07-14 16:02:08
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -13602,6 +13602,66 @@
         return count;
     }
     ```
+
+- [1110. Delete Nodes And Return Forest](https://leetcode.com/problems/delete-nodes-and-return-forest/)
+
+	- 使用一个辅助节点auxiliary来标记每个节点的父节点，当父节点的子节点需要删除时，父节点指向需要删除子节点的指针为空NULL，然后递归处理每个子节点，因为每个节点最多访问一次，因此时间复杂度$O(n)$
+
+	```cpp
+	class Solution
+	{
+	private:
+		void dfs(TreeNode *parent, vector<TreeNode *> &ret, unordered_set<int> &nums, bool need_delete, bool parent_deleted)
+		{
+			if (parent)
+			{
+				if (parent_deleted && !need_delete)
+				{
+					// 父节点已经被删除，但是本身该节点不需要删除
+					ret.push_back(parent);
+				}
+				if (parent->left)
+				{
+					TreeNode *cur = parent->left;
+					bool deleted_left = false;
+					if (nums.find(cur->val) != nums.end())
+					{
+						parent->left = nullptr;
+						deleted_left = true;
+					}
+					dfs(cur, ret, nums, deleted_left, need_delete);
+				}
+				if (parent->right)
+				{
+
+					TreeNode *cur = parent->right;
+					bool deleted_right = false;
+					if (nums.find(cur->val) != nums.end())
+					{
+						parent->right = nullptr;
+						deleted_right = true;
+					}
+					dfs(cur, ret, nums, deleted_right, need_delete);
+				}
+			}
+		}
+
+	public:
+		vector<TreeNode *> delNodes(TreeNode *root, vector<int> &to_delete)
+		{
+			TreeNode *auxiliary = new TreeNode(-1);
+			auxiliary->left = root;
+			unordered_set<int> nums;
+			for (auto &&v : to_delete)
+			{
+				nums.insert(v);
+			}
+			vector<TreeNode *> ret;
+			dfs(auxiliary, ret, nums, true, false);
+			return ret;
+		}
+	};
+	```
 
 - [1111. Maximum Nesting Depth of Two Valid Parentheses Strings](https://leetcode.com/problems/maximum-nesting-depth-of-two-valid-parentheses-strings/)
 
