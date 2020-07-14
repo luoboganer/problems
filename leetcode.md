@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-07-14 16:02:08
+ * @LastEditTime: 2020-07-14 16:13:25
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -13658,6 +13658,47 @@
 			}
 			vector<TreeNode *> ret;
 			dfs(auxiliary, ret, nums, true, false);
+			return ret;
+		}
+	};
+	```
+
+	- cpp的优化实现
+
+	```cpp
+	class Solution
+	{
+	private:
+		unordered_set<int> nums;
+		vector<TreeNode *> ret;
+		TreeNode *dfs(TreeNode *root, bool is_root)
+		{
+			if (root)
+			{
+				bool deleted = nums.find(root->val) != nums.end();
+				if (is_root && !deleted)
+				{
+					ret.push_back(root); // root节点且不需要delete
+				}
+				root->left = dfs(root->left, deleted);
+				root->right = dfs(root->right, deleted);
+				if (deleted)
+				{
+					root = nullptr;
+				}
+			}
+			return root;
+		}
+
+	public:
+		vector<TreeNode *> delNodes(TreeNode *root, vector<int> &to_delete)
+		{
+			nums.clear(), ret.clear();
+			for (auto &&v : to_delete)
+			{
+				nums.insert(v);
+			}
+			dfs(root, true);
 			return ret;
 		}
 	};
