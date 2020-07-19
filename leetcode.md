@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-07-20 00:19:23
+ * @LastEditTime: 2020-07-20 01:19:38
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -13971,6 +13971,44 @@
         return ans;
     }
     ```
+
+- [1140. Stone Game II](https://leetcode.com/problems/stone-game-ii/)
+
+	DP，时间复杂度$O(n^3)$
+
+	```cpp
+	int stoneGameII(vector<int> &piles)
+	{
+		/**
+		 * Dynamic Plan
+		 * dp[i][j] 表示 M = j 时 Alex 从 piles[i] 开始到结束时可以获得的最多石头数字
+		 * dp[i][j] = max(suffix_sum[i] - dp[i+X][max(j,X)]), 1 <= X <= 2*j
+		 *            这里去max(j,X)是因为alex去完之后到lee，则M=max(M,X)
+		 * */
+		int n = piles.size();
+		vector<vector<int>> dp(n + 1, vector<int>(n + 1));
+		vector<int> suffix_sum(n + 1, 0);
+		for (int i = n - 1; i >= 0; i--)
+		{
+			suffix_sum[i] = suffix_sum[i + 1] + piles[i];
+		}
+		for (auto i = 0; i <= n; i++)
+		{
+			dp[i][n] = suffix_sum[i]; // M足够大时Alex可以一次拿完全部stones
+		}
+		for (auto i = n - 1; i >= 0; i--)
+		{
+			for (auto j = n - 1; j >= 1; j--)
+			{
+				for (auto x = 1; x <= 2 * j && i + x <= n; x++)
+				{
+					dp[i][j] = max(dp[i][j], suffix_sum[i] - dp[i + x][max(j, x)]);
+				}
+			}
+		}
+		return dp[0][1]; // initially, M = 1
+	}
+	```
 
 - [1169](https://leetcode.com/problems/invalid-transactions/)
 
