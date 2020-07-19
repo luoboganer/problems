@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-07-14 16:13:25
+ * @LastEditTime: 2020-07-19 20:57:55
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -16512,6 +16512,77 @@ paths with max score，时间复杂度$O(n^2)$
             return ret;
         }
     };
+	```
+
+- [1519. Number of Nodes in the Sub-Tree With the Same Label](https://leetcode.com/problems/number-of-nodes-in-the-sub-tree-with-the-same-label/)
+
+	DP + DFS-topdown，时间复杂度$O(n)$
+
+	```cpp
+	class Solution
+	{
+	private:
+		void dfs(vector<vector<int>> &graph, vector<vector<int>> &dp, vector<int> &ret, string &labels, int node, int parent)
+		{
+			int cur_label = static_cast<int>(labels[node] - 'a');
+			dp[node][cur_label] += 1;
+			if (!graph[node].empty())
+			{
+				for (auto &&subnode : graph[node])
+				{
+					if (subnode != parent)
+					{
+						dfs(graph, dp, ret, labels, subnode, node);
+						for (auto i = 0; i < 26; i++)
+						{
+							dp[node][i] += dp[subnode][i];
+						}
+					}
+				}
+			}
+			ret[node] = dp[node][cur_label];
+		}
+
+	public:
+		vector<int> countSubTrees(int n, vector<vector<int>> &edges, string labels)
+		{
+			// 建立邻接链表
+			vector<vector<int>> graph(n);
+			for (auto &&e : edges)
+			{
+				graph[e[0]].push_back(e[1]);
+				graph[e[1]].push_back(e[0]);
+			}
+			// dp[i][ch] 节点i及其子树上的字母ch数量
+			vector<vector<int>> dp(n, vector<int>(26, 0));
+			vector<int> ret(n, 0);
+			dfs(graph, dp, ret, labels, 0, -1);
+			return ret;
+		}
+	};
+	```
+
+	- some test case
+
+	```cpp
+	7
+	[[0,1],[0,2],[1,4],[1,5],[2,3],[2,6]]
+	"abaedcd"
+	4
+	[[0,1],[1,2],[0,3]]
+	"bbbb"
+	5
+	[[0,1],[0,2],[1,3],[0,4]]
+	"aabab"
+	6
+	[[0,1],[0,2],[1,3],[3,4],[4,5]]
+	"cbabaa"
+	7
+	[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]]
+	"aaabaaa"
+	4
+	[[0,2],[0,3],[1,2]]
+	"aeed"
 	```
 
 - [...](123)
