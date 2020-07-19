@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-07-19 20:57:55
+ * @LastEditTime: 2020-07-20 00:19:23
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -13367,6 +13367,86 @@
         return ans;
     }
     ```
+
+- [1072. Flip Columns For Maximum Number of Equal Rows](https://leetcode.com/problems/flip-columns-for-maximum-number-of-equal-rows/)
+
+	- 假设$ith row$在flip之后与$jth row$完全一样，在flip之前也是完全一样的，假设$ith row$在flip之后与$kth row$完全相反，则在flip之前也是完全相反的，因此问题转化为寻找与$ith row$完全相反或完全相同的行的数量，时间复杂度$O(m^2*n)$，leetcode评测机$\color{red}{TLE}$
+
+	```cpp
+	class Solution
+	{
+	private:
+		bool is_same(vector<int> &a, vector<int> &b, int length)
+		{
+			for (auto i = 0; i < length; ++i)
+			{
+				if (a[i] != b[i])
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+	public:
+		int maxEqualRowsAfterFlips(vector<vector<int>> &matrix)
+		{
+			int ret = 0;
+			if (matrix.size() > 0 && matrix[0].size() > 0)
+			{
+				int m = matrix.size(), n = matrix[0].size();
+				for (auto i = 0; i < m; i++)
+				{
+					int cnt = 0;
+					// 寻找与第i行完全相同或者完全不同的行的数量
+					for (auto k = 0; k < m; k++)
+					{
+						vector<int> flip(n);
+						for (int j = 0; j < n; j++)
+						{
+							flip[j] = 1 - matrix[k][j];
+						}
+						if (is_same(matrix[i], matrix[k], n) || is_same(matrix[i], flip, n))
+						{
+							cnt++;
+						}
+					}
+					ret = max(cnt, ret);
+				}
+			}
+			return ret;
+		}
+	};
+	```
+
+	- hashmap优化，时间复杂度$O(m*n)$
+
+	```cpp
+	int maxEqualRowsAfterFlips(vector<vector<int>> &matrix)
+	{
+		int ret = 0;
+		if (matrix.size() > 0 && matrix[0].size() > 0)
+		{
+			int m = matrix.size(), n = matrix[0].size();
+			unordered_map<string, int> count;
+			for (auto i = 0; i < m; i++)
+			{
+				string cur;
+				int top = matrix[i][0];
+				for (auto j = 1; j < n; j++)
+				{
+					(matrix[i][j] == top) ? cur.push_back('1') : cur.push_back('0');
+				}
+				count[cur]++;
+			}
+			for (auto &&[item, val] : count)
+			{
+				ret = max(ret, val);
+			}
+		}
+		return ret;
+	}
+	```
 
 - [1079. Letter Tile Possibilities](https://leetcode.com/problems/letter-tile-possibilities/)
 
