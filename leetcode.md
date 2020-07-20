@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-07-20 01:19:38
+ * @LastEditTime: 2020-07-20 11:31:48
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -16029,6 +16029,49 @@ paths with max score，时间复杂度$O(n^2)$
         return (x <= 0 && y <= 0) || (x > 0 && y < 0 && x <= radius) || (x < 0 && y > 0 && y <= radius) || square_of_distance_AB <= square_of_radius;
     }
     ```
+
+- [1406. Stone Game III](https://leetcode.com/problems/stone-game-iii/)
+
+	DP，时间复杂度$O(n)$
+
+	```cpp
+	string stoneGameIII(vector<int> &stoneValue)
+	{
+		/**
+		 * dynamic plan, dp[i]表示从在给定stoneValue[i,i+1,...,n-1]先手可以获得的最大值
+		 * dp[i] = max(suffix_sum[i] - dp[i+x]), 1 <= x <= 3
+		*/
+		const int n = stoneValue.size();
+		vector<int> suffix_sum(n + 1, 0), dp(n + 1, numeric_limits<int>::min());
+		dp[n] = 0; // initialization
+		for (int i = n - 1; i >= 0; i--)
+		{
+			suffix_sum[i] = stoneValue[i] + suffix_sum[i + 1];
+		}
+		for (int i = n; i >= 0; i--)
+		{
+			for (auto step = 1; step <= 3 && i + step <= n; step++)
+			{
+				dp[i] = max(dp[i], suffix_sum[i] - dp[i + step]);
+			}
+		}
+		int alice = dp[0], bob = suffix_sum[0] - dp[0];
+		string ret;
+		if (alice > bob)
+		{
+			ret = "Alice";
+		}
+		else if (alice < bob)
+		{
+			ret = "Bob";
+		}
+		else
+		{
+			ret = "Tie";
+		}
+		return ret;
+	}
+	```
 
 - [1410. HTML Entity Parser](https://leetcode.com/problems/html-entity-parser/)
 
