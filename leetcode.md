@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-07-20 11:31:48
+ * @LastEditTime: 2020-08-03 13:29:05
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -16744,6 +16744,41 @@ paths with max score，时间复杂度$O(n^2)$
 	4
 	[[0,2],[0,3],[1,2]]
 	"aeed"
+	```
+
+- [1524. Number of Sub-arrays With Odd Sum](https://leetcode.com/problems/number-of-sub-arrays-with-odd-sum/)
+
+	DP，时间复杂度$O(n)$
+
+	```cpp
+	int numOfSubarrays(vector<int> &arr)
+	{
+		const int n = arr.size(), mod = 1e9 + 7;
+		for (int i = 0; i < n; i++)
+		{
+			arr[i] %= 2; // 奇偶问题可以转化为0/1问题
+		}
+		vector<int> dp_zero(n + 1, 0), dp_one(n + 1, 0);
+		for (int i = n - 1; i >= 0; i--)
+		{
+			if (arr[i] == 1)
+			{
+				dp_zero[i] = dp_one[i + 1];
+				dp_one[i] = (dp_zero[i + 1] + 1) % mod;
+			}
+			else
+			{
+				dp_zero[i] = (dp_zero[i + 1] + 1) % mod;
+				dp_one[i] = dp_one[i + 1];
+			}
+		}
+		int ret = 0;
+		for (auto &&v : dp_one)
+		{
+			ret = (ret + v) % mod;
+		}
+		return ret;
+	}
 	```
 
 - [...](123)
