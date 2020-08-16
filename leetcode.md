@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-08-03 13:29:05
+ * @LastEditTime: 2020-08-16 12:13:49
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -16778,6 +16778,76 @@ paths with max score，时间复杂度$O(n^2)$
 			ret = (ret + v) % mod;
 		}
 		return ret;
+	}
+	```
+
+- [1553. Minimum Number of Days to Eat N Oranges](https://leetcode.com/problems/minimum-number-of-days-to-eat-n-oranges/)
+
+	- DP，时间复杂度$O(n)$，leetcode评测机$\color{red}{Out of memory}$
+
+	```cpp
+	int minDays(int n)
+	{
+		vector<int> dp(n + 1, 0);
+		for (int i = 1; i <= n; i++)
+		{
+			dp[i] = dp[i - 1] + 1;
+			if (i % 2 == 0)
+			{
+				dp[i] = min(dp[i], dp[i / 2] + 1);
+			}
+			if (i % 3 == 0)
+			{
+				dp[i] = min(dp[i], dp[i / 3] + 1);
+			}
+		}
+		return dp.back();
+	}
+	```
+
+	- hashmap优化，时间复杂度$O(n)$
+
+	```cpp
+	int minDays(int n)
+	{
+		unordered_map<int, int> n2v;
+		queue<int> bfs;
+		bfs.push(n);
+		n2v[n] = 0;
+		while (true)
+		{
+			int cur = bfs.front();
+			bfs.pop();
+			int a = cur - 1, v = n2v[cur] + 1;
+			if (n2v.find(a) == n2v.end())
+			{
+				n2v[a] = v;
+				bfs.push(a);
+			}
+			if (cur % 2 == 0)
+			{
+				int b = cur / 2;
+				if (n2v.find(b) == n2v.end())
+				{
+					n2v[b] = v;
+					bfs.push(b);
+				}
+			}
+			if (cur % 3 == 0)
+			{
+				int c = cur / 3;
+				if (n2v.find(c) == n2v.end())
+				{
+					n2v[c] = v;
+					bfs.push(c);
+				}
+			}
+			if (n2v.find(0) != n2v.end())
+			{
+				return n2v[0];
+			}
+		}
+		return 0;
 	}
 	```
 
