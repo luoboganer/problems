@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-08-16 12:13:49
+ * @LastEditTime: 2020-08-23 00:41:52
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -16849,6 +16849,65 @@ paths with max score，时间复杂度$O(n^2)$
 		}
 		return 0;
 	}
+	```
+
+- [1559. Detect Cycles in 2D Grid](https://leetcode.com/problems/detect-cycles-in-2d-grid/)
+
+	- DFS搜索，时间复杂度$O(m*n)$
+
+	```cpp
+	class Solution
+	{
+	private:
+		vector<vector<char>> grid;
+		vector<vector<bool>> vis;
+		int m, n;
+		const vector<int> directions{1, 0, -1, 0, 1};
+		bool dfs(int r, int c, int x, int y, char ch)
+		{
+			bool ret = false;
+			if (r >= 0 && c >= 0 && r < m && c < n && grid[r][c] == ch)
+			{
+				if (vis[r][c])
+				{
+					return true; // 形成了环
+				}
+				vis[r][c] = true;
+				for (auto i = 0; !ret && i < 4; i++)
+				{
+					int ni = r + directions[i], nj = c + directions[i + 1];
+					if (ni != x || nj != y) // 不是aba式的环
+					{
+						ret = dfs(ni, nj, r, c, ch);
+					}
+				}
+			}
+			return ret;
+		}
+
+	public:
+		bool containsCycle(vector<vector<char>> &grid)
+		{
+			this->grid = grid;
+			bool ret = false;
+			if (grid.size() > 0 && grid[0].size() > 0)
+			{
+				m = grid.size(), n = grid[0].size();
+				vis.resize(m, vector<bool>(n, false));
+				for (auto i = 0; !ret && i < m; i++)
+				{
+					for (auto j = 0; !ret && j < n; j++)
+					{
+						if (!vis[i][j])
+						{
+							ret = dfs(i, j, -1, -1, grid[i][j]);
+						}
+					}
+				}
+			}
+			return ret;
+		}
+	};
 	```
 
 - [...](123)
