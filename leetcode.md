@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-08-23 00:41:52
+ * @LastEditTime: 2020-08-23 15:32:19
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -8370,6 +8370,54 @@
         }
     };
     ```
+
+- [497. Random Point in Non-overlapping Rectangles](https://leetcode.com/problems/random-point-in-non-overlapping-rectangles/)
+
+	- 借用概率密度函数的特性，solution时间复杂度$O(n)$，pick时间复杂度$O(log(n))$
+
+	**注意uppter_bound()函数的使用**
+
+	```cpp
+	class Solution
+	{
+	private:
+		int total_area;
+		vector<int> weights;
+		vector<vector<int>> rects;
+
+	public:
+		Solution(vector<vector<int>> &rects)
+		{
+			this->rects = rects;
+			for (auto &&rect : rects)
+			{
+				int width = rect[2] - rect[0] + 1, height = rect[3] - rect[1] + 1;
+				weights.push_back(width * height);
+			}
+			int n = weights.size();
+			for (int i = 1; i < n; i++)
+			{
+				weights[i] += weights[i - 1];
+			}
+			total_area = weights.back();
+		}
+
+		vector<int> pick()
+		{
+			int v = rand() % total_area;
+			int index = upper_bound(weights.begin(), weights.end(), v) - weights.begin();
+			vector<int> rect = rects[index];
+			int width = rect[2] - rect[0] + 1, height = rect[3] - rect[1] + 1;
+			int x = rand() % width + rect[0], y = rand() % height + rect[1];
+			return vector<int>{x, y};
+		}
+	};
+	/**
+	* Your Solution object will be instantiated and called as such:
+	* Solution* obj = new Solution(rects);
+	* vector<int> param_1 = obj->pick();
+	*/
+	```
 
 - [508. Most Frequent Subtree Sum](https://leetcode.com/problems/most-frequent-subtree-sum/)
 
