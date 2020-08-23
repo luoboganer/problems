@@ -16910,4 +16910,65 @@ paths with max score，时间复杂度$O(n^2)$
 	};
 	```
 
+- [1560. Most Visited Sector in a Circular Track](https://leetcode.com/problems/most-visited-sector-in-a-circular-track/)
+
+	- 暴力模拟，时间复杂度$O(n^2)$
+
+	```cpp
+	vector<int> mostVisited(int n, vector<int> &rounds)
+	{
+		vector<int> visited(n + 1, 0), ret;
+		int m = rounds.size() - 1;
+		visited[rounds[0]]++; // 起点
+		for (int i = 0; i < m; i++)
+		{
+			int start = rounds[i], length = ((rounds[i + 1] - start) % n + n) % n;
+			for (auto j = 0; j < length; j++)
+			{
+				visited[(start + j) % n + 1]++;
+			}
+		}
+		int max_values = *max_element(visited.begin() + 1, visited.end());
+		for (int i = 1; i <= n; i++)
+		{
+			if (visited[i] == max_values)
+			{
+				ret.push_back(i);
+			}
+		}
+		return ret;
+	}
+	```
+
+	- 数学分析，时间复杂度$O(n)$
+
+	因为是在循环，因此只需要关注start和end，当$start <= end$的时候，结果为$[start,end]$，当$start > end$的时候，结果为$[1,end]+[start,n]$
+
+	```cpp
+	vector<int> mostVisited(int n, vector<int> &rounds)
+	{
+		vector<int> ret;
+		int start = rounds[0], end = rounds[rounds.size() - 1];
+		if (start <= end)
+		{
+			for (int i = start; i <= end; i++)
+			{
+				ret.push_back(i);
+			}
+		}
+		else
+		{
+			for (int i = 1; i <= end; i++)
+			{
+				ret.push_back(i);
+			}
+			for (int i = start; i <= n; i++)
+			{
+				ret.push_back(i);
+			}
+		}
+		return ret;
+	}
+	```
+
 - [...](123)
