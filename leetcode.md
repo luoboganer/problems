@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-08-23 15:32:19
+ * @LastEditTime: 2020-08-28 12:48:01
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -12803,6 +12803,38 @@
 		}
 	};
     ```
+
+- [983. Minimum Cost For Tickets](https://leetcode.com/problems/minimum-cost-for-tickets/)
+
+    dynamic plan，时序性的动态规划，注意状态表示与状态转移方程，时间复杂度$O(n)$
+
+	```cpp
+	int mincostTickets(vector<int> &days, vector<int> &costs)
+	{
+		int n = days.size(), ret = 0;
+		if (n > 0)
+		{
+			unordered_set<int> days_set(days.begin(), days.end());
+			vector<vector<int>> dp(366, vector<int>(3, 0));
+			for (auto day = 1; day <= 365; day++)
+			{
+				if (days_set.find(day) != days_set.end())
+				{
+					dp[day][0] = *min_element(dp[day - 1].begin(), dp[day - 1].end()) + costs[0];
+					int a = day >= 7 ? day - 7 : 0, b = day >= 30 ? day - 30 : 0;
+					dp[day][1] = *min_element(dp[a].begin(), dp[a].end()) + costs[1];
+					dp[day][2] = *min_element(dp[b].begin(), dp[b].end()) + costs[2];
+				}
+				else
+				{
+					dp[day] = dp[day - 1];
+				}
+			}
+			ret = *min_element(dp.back().begin(), dp.back().end());
+		}
+		return ret;
+	}
+	```
 
 - [984. String Without AAA or BBB](https://leetcode.com/problems/string-without-aaa-or-bbb/)
 
