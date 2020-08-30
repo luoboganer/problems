@@ -17051,4 +17051,55 @@ paths with max score，时间复杂度$O(n^2)$
 	}
 	```
 
+- [1566. Detect Pattern of Length M Repeated K or More Times](https://leetcode.com/problems/detect-pattern-of-length-m-repeated-k-or-more-times/)
+
+	- 暴力模拟，时间复杂度$O(n^2)$
+
+	```cpp
+	bool containsPattern(vector<int> &arr, int m, int k)
+	{
+		// 检测长度为m重复次数为k的pattern
+		int n = arr.size(), length = m * (k - 1), right_bound = n - k * m;
+		for (auto left = 0; left <= right_bound; left++)
+		{
+			for (auto repeat = 1, i = left + m; i < left + k * m; i += m)
+			{
+				int j = 0;
+				while (j < m && arr[left + j] == arr[i + j])
+				{
+					j++;
+				}
+				if (j == m)
+				{
+					repeat++;
+				}
+				if (repeat == k)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	```
+
+	- one pass扫描，通过计数器cnt来记录当前匹配模式的长度，时间复杂度$O(n)$
+
+	```cpp
+	bool containsPattern(vector<int> &arr, int m, int k)
+	{
+		// 检测长度为m重复次数为k的pattern
+		int n = arr.size(), cnt = 0, expected_cnt = m * (k - 1), right_bound = n - m;
+		for (auto i = 0; i < right_bound; i++)
+		{
+			arr[i] == arr[i + m] ? cnt++ : cnt = 0;
+			if (cnt == expected_cnt)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	```
+
 - [...](123)
