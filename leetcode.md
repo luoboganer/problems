@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-09-03 15:49:24
+ * @LastEditTime: 2020-09-03 18:14:00
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -8899,6 +8899,51 @@
         depth(root);
         return ans - 1;
     }
+    ```
+
+- [547. Friend Circles](https://leetcode.com/problems/friend-circles/)
+
+	并查集的建立与使用，时间复杂度$O(n^2log(n)))$
+
+	```cpp
+	class Solution
+	{
+	private:
+		vector<int> father;
+		int find(int x)
+		{
+			return father[x] == x ? x : (father[x] = find(father[x]));
+		}
+
+	public:
+		int findCircleNum(vector<vector<int>> &M)
+		{
+			// initialization of the union find
+			int n = M.size(), count = n;
+			father.reserve(n);
+			for (auto i = 0; i < n; i++)
+			{
+				father[i] = i;
+			}
+			// update of the union find
+			for (auto i = 0; i < n; i++)
+			{
+				for (auto j = 0; j < i; j++)
+				{
+					if (M[i][j])
+					{
+						int fi = find(i), fj = find(j);
+						if (fi != fj)
+						{
+							count--, father[fi] = fj;
+						}
+					}
+				}
+			}
+			return count;
+		}
+	};
+	```
 
 - [560. Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/)
 
@@ -12418,3 +12463,4803 @@
         return ret;
     }
     ```
+
+- [952. Largest Component Size by Common Factor](https://leetcode.com/problems/largest-component-size-by-common-factor/)
+
+	并查集的建立与使用，时间复杂度$O(n*sqrt(max_value(A)))$
+
+	```cpp
+	class Solution
+	{
+	private:
+		int find(vector<int> &father, int x)
+		{
+			return father[x] == x ? x : (father[x] = find(father, father[x]));
+		}
+
+	public:
+		int largestComponentSize(vector<int> &A)
+		{
+			int ret = 0, max_value = *max_element(A.begin(), A.end());
+			// 并查集初始化
+			vector<int> father(max_value + 1, 0);
+			for (auto i = 0; i <= max_value; i++)
+			{
+				father[i] = i;
+			}
+			for (auto &&v : A)
+			{
+				// 遍历A中的每一个值v
+				for (int d = sqrt(v); d >= 2; d--)
+				{
+					// 遍历v所有可能的大于1的factor
+					if (v % d == 0)
+					{
+						// 添加可能的边（v和d，v和v/d）
+						father[find(father, v)] = father[find(father, d)];
+						father[find(father, v)] = father[find(father, v / d)];
+					}
+				}
+			}
+			// 用hashmap来统计每个连通区域的大小
+			unordered_map<int, int> map;
+			for (auto &&v : A)
+			{
+				// 对于A中的每个v，将其所在联通区域的节点个数加1，并在此过程中更新节点数统计的最大值ret
+				ret = max(ret, ++map[find(father, v)]);
+			}
+			return ret;
+		}
+	};
+	```
+
+- [955. Delete Columns to Make Sorted II](https://leetcode.com/problems/delete-columns-to-make-sorted-ii/)
+
+	贪心算法，遍历每一列是否会删除，如果不删除标记将会造成那些行符合字典序要求（标记的这些行将不参与之后列的判断），时间复杂度$O(rows*cols)$
+
+	```cpp
+	int minDeletionSize(vector<string> &A)
+	{
+		int ret = 0, rows = A.size(), cols = A[0].size();
+		vector<bool> sorted(rows - 1, false);
+		for (auto j = 0; j < cols; j++)
+		{
+			/* 检查每一列是否为字典序 */
+			bool deleted_col = false;
+			vector<int> sorted_rows;
+			for (auto i = 1; i < rows; i++)
+			{
+				if (sorted[i - 1] == false)
+				{
+					if (A[i - 1][j] < A[i][j])
+					{
+						sorted_rows.push_back(i - 1);
+					}
+					else if (A[i - 1][j] > A[i][j])
+					{
+						deleted_col = true;
+						break;
+					}
+				}
+			}
+			// 一列遍历完成以后，处理这一列的情况，是否删除，如果不删除将造成那些行成为字典序的
+			if (deleted_col)
+			{
+				ret++;
+			}
+			else
+			{
+				for (auto &&index : sorted_rows)
+				{
+					sorted[index] = true;
+				}
+			}
+		}
+		return ret;
+	}
+	```
+
+	- some test cases
+
+	```cpp
+	["ca","bb","ac"]
+	["xc","yb","za"]
+	["zyx","wvu","tsr"]
+	["xga","xfb","yfa"]
+	["abx","agz","bgc","bfc"]
+	["doeeqiy","yabhbqe","twckqte"]
+	```
+
+- [961](https://leetcode.com/problems/n-repeated-element-in-size-2n-array/)
+    In a array A of size 2N, there are N+1 unique elements, and exactly one of these elements is repeated N time, find and return this element.
+    - HashTable 通过hash统计找到个数不是1的那个数，时间复杂度为O(N)，空间复杂度O(1)
+    - 根据排列组合，相当于把N个不同的数插入到N个重复的数中，因此无论怎么插入连续的两个数作为一组中一定有一个数是那个重复的major element，因此两组、即连续的四个数中一定有两个major element，它们是相等的，因此按照步长为1,2,3,4搜索相等的两个数即可，时间复杂度与hash法相同为O(N)，空间复杂度O(1)
+
+    ```cpp
+    for (int i=0; i<A.size(); i+=2) {
+        if (A[i] == A[i+1]) return A[i];
+    }
+    return A[0] == A[2] || A[0] == A[3] ? A[0] : A[1];
+    ```
+
+- [962. Maximum Width Ramp](https://leetcode.com/problems/maximum-width-ramp/)
+
+    - 暴力搜索，对当前A[i]，从A的右侧开始找到第一个$A[j]>=A[i]$，则$ret=max(ret,j-i)$，时间复杂度$O(n^2)$，LeetCode时间效率$\color{red}{TLE}$
+
+    ```cpp
+    int maxWidthRamp(vector<int> &A)
+    {
+        const int length = A.size();
+        int ret = 0;
+        for (int i = 0; i < length; i++)
+        {
+            for (int j = length-1; j>i; j--)
+            {
+                if(A[i]<=A[j]){
+                    ret = max(ret, j - i);
+                    break;
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 根据数组A的大小对其下标进行排序(稳定排序)，时间复杂度$O(nlog(n))$
+
+    ```cpp
+    int maxWidthRamp(vector<int> &A)
+    {
+        vector<vector<int>> values;
+        for (int i = 0; i < A.size(); i++)
+        {
+            values.push_back({i, A[i]});
+        }
+        stable_sort(values.begin(), values.end(), [](const vector<int> &a, const vector<int> &b) -> bool { return a[1] < b[1]; });
+        int ramp = 0, pre_index = A.size();
+        for (auto &&item : values)
+        {
+            int i = item[0];
+            ramp = max(ramp, i - pre_index); // 通过排序保证A[pre_index]<=A[i]，即A[pre_index]是比A[i]小的数
+            pre_index = min(pre_index, i);   // 保证pre_index最小，从而i-pre_index是当前最大，即A[pre_index]是A中比A[i]小的数中最靠左的
+        }
+        return ramp;
+    }
+    ```
+
+    - 维护一个降序栈，时间复杂度$O(n)$
+
+    ```cpp
+    int maxWidthRamp(vector<int> &A)
+    {
+        stack<int> st;
+        for (int i = 0; i < A.size(); i++)
+        {
+            if (st.empty() || A[st.top()] > A[i])
+            {
+                st.push(i);
+            }
+        }
+        int ramp = 0;
+        for (int i = A.size() - 1; i > ramp; i--)
+        {
+            while (!st.empty() && A[i] >= A[st.top()])
+            {
+                ramp = max(ramp, i - st.top()), st.pop();
+            }
+        }
+        return ramp;
+    }
+    ```
+
+- [966](https://leetcode.com/problems/vowel-spellchecker/)
+
+    给定一个字典wordlist，给定查询单词word：
+    - word在wordlist中有完全匹配的单词s，返回s
+    - 忽略大小写之后word在wordlist中有匹配的单词s，返回s
+    - 忽略大小写并将元音字母全部替换为任意的其它元音字母之后word在wordlist中存在匹配的单词s，返回s
+    - 以上三种情况均不符合在返回空字符串
+
+    ```cpp
+    vector<string> spellchecker(vector<string>& wordlist, vector<string>& queries) {
+		/*
+			three pass scan:
+			first pass for completely matched
+			second pass for match up to capitalization
+			three pass for match with vowel error
+			brute force scan will get a TLE, so we need store wordlist with hashset and hashmap
+		*/
+		unordered_set<string> wordlist_correct;
+		unordered_map<string,string> wordlist_lowercase;
+		unordered_map<string,string> wordlist_without_vowel;
+		string vowels="aoeiu";
+		// re-struct the wordlist
+		for (int i = wordlist.size()-1; i>=0; i--)
+		{
+			wordlist_correct.insert(wordlist[i]);
+			string lowercase,no_vewel;
+			for(const auto c:wordlist[i]){
+				char lowercase_c=tolower(c);
+				lowercase+=lowercase_c;
+				if(vowels.find(lowercase_c)==string::npos){
+					no_vewel+=lowercase_c;
+				}else{
+					no_vewel+='*';
+					// to guarantee length of word is equal
+				}
+			}
+			wordlist_lowercase[lowercase]=wordlist[i];
+			wordlist_without_vowel[no_vewel]=wordlist[i];
+		}
+		// queries
+		vector<string> ans;
+		for (auto const &s:queries)
+		{
+			if(wordlist_correct.find(s)!=wordlist_correct.end()){
+				ans.push_back(s);
+				break;
+			}
+			string lowercase,no_vewel;
+			for(const auto c:s){
+				char lowercase_c=tolower(c);
+				lowercase+=lowercase_c;
+				if(vowels.find(lowercase_c)==string::npos){
+					no_vewel+=lowercase_c;
+				}else{
+					no_vewel+='*';
+					// to guarantee length of word is equal
+				}
+			}
+			if(wordlist_lowercase.find(lowercase)!=wordlist_lowercase.end()){
+				ans.push_back(wordlist_lowercase[lowercase]);
+				break;
+			}
+			if(wordlist_without_vowel.find(no_vewel)!=wordlist_without_vowel.end()){
+				ans.push_back(wordlist_without_vowel[no_vewel]);
+				break;
+			}
+			// no match
+			ans.push_back("");
+		}
+		return ans;
+    }
+    ```
+
+    本题充分体现了hash存储的优势
+
+- [969. Pancake Sorting](https://leetcode.com/problems/pancake-sorting/)
+
+    采用插入排序的思想，通过每两次flip将当前最大数置换到当前数组的最后位置，时间复杂度$O(n^2)$
+
+    ```cpp
+    vector<int> pancakeSort(vector<int> &A)
+    {
+        int cur = 0;
+        vector<int> ret;
+        for (int last = A.size() - 1; last >= 0; last--)
+        {
+            if (A[last] != last + 1)
+            {
+                int i = 0;
+                while (A[i] != last + 1)
+                {
+                    i++;
+                }
+                ret.push_back(i + 1);
+                reverse(A.begin(), A.begin() + i + 1);
+                if (A[last] != last + 1)
+                {
+                    ret.push_back(last + 1);
+                    reverse(A.begin(), A.begin() + last + 1);
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+- [974. Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k/)
+
+    此类连续子数组和差之类的问题，大多使用prefix sum的方式解决
+
+    ```cpp
+    int subarraysDivByK(vector<int> &A, int K)
+    {
+        int count = A.size(), prefix_sum = 0, ans = 0;
+        vector<int> remainder_count(K, 0);
+        remainder_count[0] = 1; // for the first prefix sum with value K
+        for (int i = 0; i < count; i++)
+        {
+            prefix_sum += A[i];
+            remainder_count[(prefix_sum % K + K) % K]++; // avoiding negative remainder
+        }
+        for (auto &&v : remainder_count)
+        {
+            ans += ((v * (v - 1)) >> 1);
+        }
+        return ans;
+    }
+    ```
+
+- [976](https://leetcode.com/problems/largest-perimeter-triangle/)
+
+    给定一个$size>3$数组array，求数组中数可以组成的周长最长的三角形，这本质上是个数学题。首先岁数组中所有的数按降序排列有
+    $$a_0>a_1>a_2>...>a_{n-1}>a_n$$
+    则对任意满足
+    $$a_i-a_{i+1}<a_{i+2}$$
+    的三个数可以由数组的降序来保证
+    $$a_i+a_{i+1}>a_{i+2}$$
+    使得这三个数可以构成有效三角形，
+    此时由于数组的降序性有$i$最小时三角形周长$C=a_i+a_{i+1}+a_{i+2}$获得最大值。
+
+    ```cpp
+    int largestPerimeter(vector<int>& A) {
+	    int ans=0;
+        if(A.size()>=3){
+			sort(A.begin(),A.end(),[](const int a,const int b)->bool{return a>b;});
+			for(int i = 2; i < A.size(); i++)
+			{
+				if(A[i-2]-A[i-1]<A[i]){
+					ans=A[i]+A[i-1]+A[i-2];
+					break;
+				}
+			}
+		}
+		return ans;
+    }
+    ```
+
+    但是对于[812](https://leetcode.com/problems/largest-triangle-area/)这样根据给定的一群点来求面积最大三角形的优化问题则只能是用三重循环暴力搜索，即使可以使用凸包(convex hull)优化，效果不明显，最坏情况下仍然是$O(n^3)$复杂度。另外一个问题，根据给定的点$A,B,C$求三角形面积的公式有：
+    - 海伦公式
+
+        令$p=\frac{a+b+c}{2}$,则$S=\sqrt{p(p-a)(p-b)(p-c)}$,其中$a,b,c$为三条边边长
+    - [向量外积](https://en.wikipedia.org/wiki/Cross_product)
+
+        $$
+        \begin{array}{c}{\text { Area }=\frac{1}{2}|\vec{AB} \times \vec{AC}|} \\
+        {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}, y_{b}-y_{a}\right) ) \times\left(x_{c}-x_{a}, y_{c}-y_{a}\right) ) |} \\
+        {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}\right)\left(y_{c}-y_{a}\right)-\left(x_{c}-x_{a}, y_{b}-y_{a}\right) ) |} \\
+        {\text {Area}=\frac{1}{2}\left|x_{a} y_{b}+x_{b} y_{c}+x_{c} y_{a}-x_{a} y_{c}-x_{c} y_{b}-x_{b} y_{a}\right|}\end{array}$$
+
+- [979. Distribute Coins in Binary Tree](https://leetcode.com/problems/distribute-coins-in-binary-tree/)
+
+    DFS遍历每个节点，时间复杂度$O(n)$，其中n为给定树root中的节点数
+
+    ```cpp
+    int dfs_distributeCoins(TreeNode *root, int &ret)
+    {
+        int ans = 0;
+        if (root)
+        {
+            int left = dfs_distributeCoins(root->left, ret);
+            int right = dfs_distributeCoins(root->right, ret);
+            root->val += left + right;
+            ans = root->val - 1;
+            ret += abs(ans);
+        }
+        return ans;
+    }
+    int distributeCoins(TreeNode *root)
+    {
+        int ret = 0;
+        dfs_distributeCoins(root, ret);
+        return ret;
+    }
+    ```
+
+- [980](https://leetcode.com/problems/unique-paths-iii/)
+
+    [62](https://leetcode.com/problems/unique-paths/)和[63](https://leetcode.com/problems/unique-paths-ii/)的进阶版，除了指定起点和终点之外，增加了不可通过的障碍点，求从起点到终点并经过所有无障碍点的路径数量，使用DFS进行递归遍历，在此过程中维护一个已经访问过的点的记录矩阵visited、可经过点的数量count_0，从而保证不循环访问已经访问过的点，同时当可经过的点count_0为0且到达指定终点时，发现一条符合条件的路径，路径计数器ans自增加一
+
+    ```cpp
+    void dfs_helper(vector<vector<int>> &grid, vector<vector<bool>> &visited, int i, int j, int *ans, int count_0)
+    {
+        if (!(i < 0 || j < 0 || i >= grid.size() || j >= grid[0].size() || grid[i][j] == -1 || visited[i][j] == true))
+        {
+            // 超出边界或者障碍(-1)或者已经访问过的节点，nothing to be done
+            if (grid[i][j] == 0 || grid[i][j] == 1)
+            {
+                visited[i][j] = true;
+                dfs_helper(grid, visited, i - 1, j, ans, count_0 - 1);
+                dfs_helper(grid, visited, i + 1, j, ans, count_0 - 1);
+                dfs_helper(grid, visited, i, j - 1, ans, count_0 - 1);
+                dfs_helper(grid, visited, i, j + 1, ans, count_0 - 1);
+                visited[i][j] = false;
+            }
+            else if (grid[i][j] == 2)
+            {
+                if (count_0 == 0)
+                {
+                    (*ans)++;
+                }
+            }
+        }
+    }
+    int uniquePathsIII(vector<vector<int>> &grid)
+    {
+        const int m = grid.size(), n = grid[0].size();
+        int ans = 0, count_0 = 0;
+        int row, col;
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (grid[i][j] == 1)
+                {
+                    // start point
+                    row = i, col = j;
+                    count_0++;
+                }
+                else if (grid[i][j] == 0)
+                {
+                    count_0++;
+                }
+            }
+        }
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+        dfs_helper(grid, visited, row, col, &ans, count_0);
+        return ans;
+    }
+    ```
+
+- [981. Time Based Key-Value Store](https://leetcode.com/problems/time-based-key-value-store/)
+
+	- 假定给定的set序列中timestamp是self-increasing的，则用hashmap来存储一个key2value-timestamp对，然后get的时候寻找给定timestamp在hashmap[key]中的上界即可，时间复杂度$O(mlog(n))$，其中m是get操作的数量，n是set操作的数量，即每次set是$O(1)$的，每次get是$O(log(n))$
+
+	```cpp
+	class TimeMap 
+	{
+	private:
+		unordered_map<string, vector<pair<int, string>>> key2value;
+
+	public:
+		/** Initialize your data structure here. */
+		TimeMap()
+		{
+			key2value.clear();
+		}
+
+		void set(string key, string value, int timestamp)
+		{
+			key2value[key].push_back(make_pair(timestamp, value));
+		}
+
+		string get(string key, int timestamp)
+		{
+			/**
+			* lower_bound 从begin到end-1寻找第一个大于等于val的地址，没有则返回end
+			* upper_bound 从begin到end-1寻找第一个大于val的地址，没有则返回end
+			*/
+			auto it = upper_bound(key2value[key].begin(), key2value[key].end(), pair<int, string>(timestamp, ""), [](const auto &a, const auto &b) -> bool { return a.first < b.first; });
+			return key2value[key].begin() == it ? "" : prev(it)->second;
+		}
+	};
+	```
+
+    - 假定给定的set序列中timestamp不能保证self-increasing，则使用ordered_map来保存可以的hash值
+
+    ```cpp
+	class TimeMap
+	{
+	private:
+		unordered_map<string, map<int, string>> key2value;
+
+	public:
+		/** Initialize your data structure here. */
+		TimeMap()
+		{
+			key2value.clear();
+		}
+
+		void set(string key, string value, int timestamp)
+		{
+			key2value[key].insert({timestamp, value});
+		}
+
+		string get(string key, int timestamp)
+		{
+			auto it = key2value[key].upper_bound(timestamp);
+			return (it == key2value[key].begin()) ? "" : prev(it)->second;
+		}
+	};
+    ```
+
+- [983. Minimum Cost For Tickets](https://leetcode.com/problems/minimum-cost-for-tickets/)
+
+    dynamic plan，时序性的动态规划，注意状态表示与状态转移方程，时间复杂度$O(n)$
+
+	```cpp
+	int mincostTickets(vector<int> &days, vector<int> &costs)
+	{
+		int n = days.size(), ret = 0;
+		if (n > 0)
+		{
+			unordered_set<int> days_set(days.begin(), days.end());
+			vector<vector<int>> dp(366, vector<int>(3, 0));
+			for (auto day = 1; day <= 365; day++)
+			{
+				if (days_set.find(day) != days_set.end())
+				{
+					dp[day][0] = *min_element(dp[day - 1].begin(), dp[day - 1].end()) + costs[0];
+					int a = day >= 7 ? day - 7 : 0, b = day >= 30 ? day - 30 : 0;
+					dp[day][1] = *min_element(dp[a].begin(), dp[a].end()) + costs[1];
+					dp[day][2] = *min_element(dp[b].begin(), dp[b].end()) + costs[2];
+				}
+				else
+				{
+					dp[day] = dp[day - 1];
+				}
+			}
+			ret = *min_element(dp.back().begin(), dp.back().end());
+		}
+		return ret;
+	}
+	```
+
+- [984. String Without AAA or BBB](https://leetcode.com/problems/string-without-aaa-or-bbb/)
+
+    贪心原则，时间复杂度$O(A+B)$
+
+    ```cpp
+    string strWithout3a3b(int A, int B)
+    {
+        char a = 'a', b = 'b';
+        if (A < B)
+        {
+            swap(A, B), swap(a, b);
+        }
+        string ret(A + B, ' ');
+        int i = 0;
+        while (A > 0 && B > 0 && A > B)
+        {
+            ret[i++] = a, ret[i++] = a, A -= 2;
+            ret[i++] = b, B--;
+        }
+        while (A > 0 && B > 0)
+        {
+            A--, B--;
+            ret[i++] = a, ret[i++] = b;
+        }
+        while (A > 0)
+        {
+            ret[i++] = a, A--;
+        }
+        while (B > 0)
+        {
+            ret[i++] = b, B--;
+        }
+        return ret;
+    }
+    ```
+
+- [985](https://leetcode.com/problems/sum-of-even-numbers-after-queries/)
+    注意每次query对应下标的数字在query前后的奇偶性，分别有不同的操作。time complexity O(n+q)，其中n(size of array) and q(the number of queries)。
+
+- [1002](https://leetcode.com/problems/find-common-characters/)
+
+    用两个长度为26的数组来统计两个单词中每个字母出现的次数，然后共同字母的次数为两个单词分别统计结果中的较小值，如果有一方为0则表示没有共同出现过，时间复杂度$O(n)$，其中n是所有单词长度的和，即所有字母的个数。
+
+    ```cpp
+    vector<string> commonChars(vector<string> &A)
+    {
+        // string s = A[0];
+        // sort(s.begin(), s.end());
+        // for (int k = 1; k < A.size(); k++)
+        // {
+        // 	string x, t = A[k];
+        // 	sort(t.begin(), t.end());
+        // 	int i = 0, j = 0;
+        // 	while (i < s.length() && j < t.length())
+        // 	{
+        // 		if (s[i] == t[j])
+        // 		{
+        // 			x += s[i];
+        // 			i++;
+        // 			j++;
+        // 		}
+        // 		else if (s[i] < t[j])
+        // 		{
+        // 			i++;
+        // 		}
+        // 		else
+        // 		{
+        // 			j++;
+        // 		}
+        // 	}
+        // 	s = x;
+        // }
+        // vector<string> ret;
+        // for (string::iterator it = s.begin(); it != s.end(); it++)
+        // {
+        // 	string t;
+        // 	t += *it;
+        // 	ret.push_back(t);
+        // }
+        // return ret;
+
+        // method 2, O(n)
+        const int length_of_lowercases = 26;
+        vector<int> count(length_of_lowercases, numeric_limits<int>::max());
+        for (auto word : A)
+        {
+            vector<int> cnt(length_of_lowercases, 0);
+            for (auto c : word)
+            {
+                cnt[c - 'a']++;
+            }
+            for (int i = 0; i < length_of_lowercases; i++)
+            {
+                count[i] = min(count[i], cnt[i]);
+            }
+        }
+        vector<string> ret;
+        for (int i = 0; i < length_of_lowercases; i++)
+        {
+            for (int j = 0; j < count[i]; j++)
+            {
+                ret.push_back(string(1, i + 'a'));
+            }
+        }
+        return ret;
+    }
+    ```
+
+- [1008](https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/)
+
+    从二叉搜索树BST的先序遍历preorder开始重建BST
+
+    - 以preorder[0]为分界线将后面preorder后面的部分划分成两部份，左半部分递归重建左子树，右半部分递归重建右子树，时间复杂度$O(nlog(n))$
+
+    ```cpp
+    TreeNode *bstFromPreorder(vector<int> &preorder)
+    {
+        if (preorder.size() > 0)
+        {
+            TreeNode *root = new TreeNode(preorder[0]);
+            int index = 1;
+            while (index < preorder.size() && preorder[0] > preorder[index])
+            {
+                index++;
+            }
+            root->left = bstFromPreorder(vector<int>&(preorder.begin() + 1, preorder.begin() + index));
+            root->right = bstFromPreorder(vector<int>&(preorder.begin() + index, preorder.end()));
+            return root;
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+    ```
+
+    - 重写函数为bstFromPreorder(vector<int>& preorder,int boundary)，设定一个界boundary，从preorder[i]开始用下标i遍历preorder，小于界boundary的递归建立左子树，大于界的递归建立右子树，可以实现线性时间复杂度$O(n)$
+
+    ```cpp
+    int i = 0;
+    TreeNode *bstFromPreorder(vector<int> &preorder)
+    {
+        return bstFromPreorder(preorder, numeric_limits<int>::max());
+    }
+    TreeNode *bstFromPreorder(vector<int> &preorder, int boundary)
+    {
+        if (!(i < preorder.size()) || preorder[i] > boundary)
+        {
+            return NULL;
+        }
+        else
+        {
+            TreeNode *root = new TreeNode(preorder[i++]);
+            root->left = bstFromPreorder(preorder, root->val);
+            root->right = bstFromPreorder(preorder, boundary);
+            return root;
+        }
+    }
+    ```
+
+    - 栈实现，时间复杂度$O(n)$，遍历数组中的每个元素item，找到第一个比item小的数p，然后把item挂到p的右孩子，因此需要维护一个从栈底到栈顶递减的栈序列，从而为数组迭代过程中的每个数item找到第一个比它小的数p，即栈顶元素；如果栈中不存在p比item小，则item当前最小，成为栈顶元素的左孩子。
+
+    ```cpp
+    TreeNode *bstFromPreorder(vector<int> &preorder)
+    {
+        TreeNode *cur_root = new TreeNode(numeric_limits<int>::max());
+        stack<TreeNode *> st;
+        st.push(cur_root);
+        for (auto item : preorder)
+        {
+            TreeNode *cur = new TreeNode(item), *p = nullptr;
+            while (st.top()->val < item)
+            {
+                p = st.top();
+                st.pop();
+            }
+            if (p)
+            {
+                p->right = cur;
+            }
+            else
+            {
+                st.top()->left = cur;
+            }
+            st.push(cur);
+        }
+        return cur_root->left;
+    }
+    ```
+
+- [1014. Best Sightseeing Pair](https://leetcode.com/problems/best-sightseeing-pair/)
+
+    对于给定数组中的所有数对$A[i],A[j]$求$max(A[i]+A[j]+i-j)$
+
+    - 朴素的遍历所有可能的数对，时间复杂度$O(n^2)$，结果正确但是$\color{red}{TLE}$
+
+    ```cpp
+    int maxScoreSightseeingPair(vector<int> &A)
+    {
+        int ret = 0;
+        for (int i = 0; i < A.size(); i++)
+        {
+            for (int j = i + 1; j < A.size(); j++)
+            {
+                ret = max(ret, A[i] + A[j] + i - j);
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - one pass scan，时间复杂度$O(n)$，参考[ref](https://leetcode.com/problems/best-sightseeing-pair/discuss/260850/JavaC%2B%2BPython-One-Pass)
+
+    ```cpp
+    int maxScoreSightseeingPair(vector<int> &A)
+    {
+        int ret = 0, cur = 0;
+        for (int i = 0; i < A.size(); i++)
+        {
+            ret = max(ret, cur + A[i]);
+            cur = max(cur, A[i]) - 1;
+        }
+        return ret;
+    }
+    ```
+
+- [1015. Smallest Integer Divisible by K](https://leetcode.com/problems/smallest-integer-divisible-by-k/)
+
+    求全部有1组成的、可以被K整除的十进制数字的位宽，因为是位宽而无需求出这个数字，因此可以在$ans=ans*10+1$的过程中不断对K取模以限制ans在int的范围内
+
+    ```cpp
+    int smallestRepunitDivByK(int K)
+    {
+        unsigned int ans = 0;
+        for (int i = 0; i < K; i++)
+        {
+            ans = (ans * 10 + 1) % K;
+            if (ans % K == 0)
+            {
+                return i + 1;
+            }
+        }
+        return -1;
+    }
+    ```
+
+- [1019](https://leetcode.com/problems/next-greater-node-in-linked-list/)
+
+    用栈可以实现$O(n)$时间复杂度，即对数组从右往左遍历的过程中保持栈顶$st[i]<st[i-1]$，从栈底到栈顶是严格递增的顺序
+
+    ```cpp
+    vector<int> nextLargerNodes(ListNode *head)
+    {
+        // method 1, O(n^2)
+
+        // vector<int> ret;
+        // while (head)
+        // {
+        // 	ListNode *cur = head->next;
+        // 	int base = 0;
+        // 	while (cur->next)
+        // 	{
+        // 		if (head->val < cur->val)
+        // 		{
+        // 			base = cur->val;
+        // 			break;
+        // 		}
+        // 		else
+        // 		{
+        // 			cur = cur->next;
+        // 		}
+        // 	}
+        // 	ret.push_back(base);
+        // 	head = head->next;
+        // }
+        // return ret;
+
+        // method 2, O(n), using stack
+
+        vector<int> ret, st;
+        while (head)
+        {
+            // convert linked list to array
+            ret.push_back(head->val);
+            head = head->next;
+        }
+        for (int i = ret.size() - 1; i >= 0; i--)
+        {
+            // maintain the stack is decreasing from st.top() to st.bottom()
+            while (!st.empty() && st.back() <= ret[i])
+            {
+                st.pop_back();
+            }
+            st.push_back(ret[i]);
+            // st[i-1] is the next greater number of st[i]
+            ret[i] = st.size() > 1 ? st[st.size() - 2] : 0;
+        }
+        return ret;
+    }
+    ```
+
+- [1024](https://leetcode.com/problems/video-stitching/)
+
+    一开始设定当前右端点$cur_right$，然后按照贪心策略寻找左端点小于等于当前右端点(保证可以连接而没有断点)且右端点最远(贪心原则，以便使用最少的视频片段)的没有用过的视频片段，直到所有视频片段被用完或者当前右端点$cur_right$超过了总时间长度要求$T$。
+
+- [1026. Maximum Difference Between Node and Ancestor](https://leetcode.com/problems/maximum-difference-between-node-and-ancestor/)
+
+    给定一颗树，自顶向下的找到全局最小值min和全局最大值max，返回$max-min$即可
+
+    ```cpp
+    int helper(TreeNode *root, int max_value, int min_value)
+    {
+        int ret = max_value - min_value;
+        if (root)
+        {
+            max_value = max(max_value, root->val), min_value = min(min_value, root->val);
+            ret = max(ret, max(helper(root->left, max_value, min_value), helper(root->right, max_value, min_value)));
+        }
+        return ret;
+    }
+    int maxAncestorDiff(TreeNode *root)
+    {
+        return helper(root, root->val, root->val);
+    }
+    ```
+
+    几组典型测试数据
+
+    ```cpp
+    [8,3,10,1,6,null,14,null,null,4,7,13]
+    [2,5,0,null,null,4,null,null,6,1,null,3]
+    [1,null,2,null,0,3]
+    [2,null,0,1]
+    ```
+
+- [1028. Recover a Tree From Preorder Traversal](https://leetcode.com/problems/recover-a-tree-from-preorder-traversal/)
+
+    使用一个辅助栈来存储所有当前节点cur的父/祖节点，则栈的大小即是当前节点的深度，对新的数字构成节点后如果cur左子树为空，则优先挂到左子树，否则挂到右子树，时间复杂度$O(n),n=S.length$
+
+    ```cpp
+    TreeNode *recoverFromPreorder(string S)
+    {
+        TreeNode *auxiliary_root = new TreeNode(0), *cur = auxiliary_root;
+        if (S.length() > 0)
+        {
+            stack<TreeNode *> st;
+            int depth = 0;
+            int i = 0, length = S.length();
+            while (i < length)
+            {
+                if (S[i] == '-')
+                {
+                    depth = 0;
+                    while (i < length && S[i] == '-')
+                    {
+                        depth++, i++;
+                    }
+                }
+                else
+                {
+                    int base = 0;
+                    while (i < length && S[i] != '-')
+                    {
+                        base = base * 10 + (int)(S[i++] - '0');
+                    }
+                    TreeNode *temp = new TreeNode(base);
+                    while (st.size() != depth)
+                    {
+                        cur = st.top(), st.pop();
+                    }
+                    if (cur->left)
+                    {
+                        cur->right = temp, st.push(cur);
+                        cur = cur->right;
+                    }
+                    else
+                    {
+                        cur->left = temp, st.push(cur);
+                        cur = cur->left;
+                    }
+                }
+            }
+        }
+        return auxiliary_root->left;
+    }
+    ```
+
+- [1031. Maximum Sum of Two Non-Overlapping Subarrays](https://leetcode.com/problems/maximum-sum-of-two-non-overlapping-subarrays/)
+
+    在给定数组A中选择两个长度分别为L和M的连续、无重叠子数组，使这两个子数组的和最大。用两个辅助数组subArraySumL、subArraySumM分别表示当前下标左侧L、M个数的和，即表示题目要求的两个长度分别为L和M的连续子数组的元素之和，然后在针对subArraySumL中每个值（下标i），在subArraySumM中找到下标i - M - 1及其左侧的最大值left（构成长度为M的数组）、下标i + L及其右侧的最大值right（构成长度为L的子数组）,这样$ret=max(ret,subArraySumL[i]+(max(let,right))$即为所求的最终值，时间复杂度$O(A.length)$
+
+    ```cpp
+    vector<int> getSubArraySum(vector<int> &nums, int length)
+    {
+        vector<int> ret(nums.size(), -1);
+        int i = 0, base = 0;
+        while (i < length)
+        {
+            base += nums[i++];
+        }
+        ret[i - 1] = base;
+        while (i < nums.size())
+        {
+            base += nums[i] - nums[i - length];
+            ret[i++] = base;
+        }
+        return ret;
+    }
+    int maxSumTwoNoOverlap(vector<int> &A, int L, int M)
+    {
+        const int length = A.size();
+        vector<int> subArraySumL = getSubArraySum(A, L), subArraySumM = getSubArraySum(A, M);
+        vector<int> leftMostL = subArraySumL, rightMostL = subArraySumL;
+        for (int i = 0; i < length - 1; i++)
+        {
+            leftMostL[i + 1] = (leftMostL[i + 1] == -1) ? leftMostL[i + 1] : max(leftMostL[i], leftMostL[i + 1]);
+            rightMostL[length - i - 2] = (rightMostL[length - i - 2] == -1) ? rightMostL[length - i - 2] : max(rightMostL[length - i - 2], rightMostL[length - i - 1]);
+        }
+        int ret = 0;
+        for (int i = M - 1; i < length; i++)
+        {
+            int left = (i - M - 1 >= 0) ? leftMostL[i - M - 1] : 0, right = (i + L < length) ? rightMostL[i + L] : 0;
+            ret = max(ret, subArraySumM[i] + max(left, right));
+        }
+        return ret;
+    }
+    ```
+
+- [1032](https://leetcode.com/problems/stream-of-characters/)
+
+    本题主要练习字典树的的构建与查询，tire tree是一种高效的单词存储与查询数据结构，比如可以完成IDE的代码自动提示语补全功能，[here](https://blog.csdn.net/v_july_v/article/details/6897097)有相关博客。
+
+- [1035](https://leetcode.com/problems/uncrossed-lines/)
+
+    类似于LCS最长公共子序列的问题，二维dp或者一维dp均可，注意问题中隐藏的dp思维。
+
+- [1042](https://leetcode.com/problems/flower-planting-with-no-adjacent/)
+
+    贪心思想，时间复杂度$O(n)$：经典的染色问题，在给定四种颜色且保证有满足条件的答案时可以确保每个节点的连通节点小于等于三个，因此外层循环遍历每个节点i，内层循环遍历该节点链接的所有节点j，使用j尚未使用的颜色染给i即可。
+
+    ```cpp
+    vector<int> gardenNoAdj(int N, vector<vector<int>>& paths) {
+        vector<vector<int>> connections(N);
+        vector<int> ans(N,0);
+        for (int i = 0; i < paths.size(); i++)
+        {
+            connections[paths[i][0]-1].push_back(paths[i][1]-1);
+            connections[paths[i][1]-1].push_back(paths[i][0]-1);
+        }
+        for (int i = 0; i < N; i++)
+        {
+            int colors[5]={0};
+            for (int j : connections[i])
+            {
+                // 与i相连的节点j最多有3个
+                colors[ans[j]]=1;
+                // 表示颜色colors[ans[j]]已经被用了
+            }
+            for (int color = 1; color <= 4; color++)
+            {
+                if(!colors[color]){
+                    // 颜色color尚未被与i相连的节点使用
+                    ans[i]=color;
+                    break;
+                }
+            }
+        }
+        return ans;
+    }
+    ```
+
+- [1043. Partition Array for Maximum Sum](https://leetcode.com/problems/partition-array-for-maximum-sum/)
+
+    动态规划，dp[i]表示可以从dp[0,1,...,i]得到的最大和，则$dp[i]=\max_{1 \le size \le K }(dp[i-size]+max_{i-szie \le j \le i}A[j])$，时间复杂度$O(K*A.length)$
+
+    ```cpp
+    int maxSumAfterPartitioning(vector<int> &A, int K)
+    {
+        const int n = A.size();
+        vector<int> dp(n + 1, 0);
+        for (int i = 0; i < n; i++)
+        {
+            int cur_max_value = A[i];
+            for (int size = 1; size <= i + 1 && size <= K; size++)
+            {
+                cur_max_value = max(cur_max_value, A[i - size + 1]);
+                dp[i + 1] = max(dp[i + 1], dp[i - size + 1] + cur_max_value * size);
+            }
+        }
+        return dp.back();
+    }
+    ```
+
+- [1044. Longest Duplicate Substring](https://leetcode.com/problems/longest-duplicate-substring/)
+
+    - binary search + rabin karp (rolling hash)，时间复杂度$O(nlog(n))$，空间复杂度$O(n)$
+        - binary search，如果有长度为n的子串duplicated，那么一定有长度为k($1<k<n$)的子串duplicated，因此可以二分搜索这个可能的长度
+        - rabin karp，通过rolling hash的办法快速比较滑动窗口内的字符串是否相同
+
+	```cpp
+	class Solution
+	{
+	private:
+		bool compare_equal(vector<int> &nums, int p1, int p2, int length)
+		{
+			for (auto i = 0; i < length; i++)
+			{
+				if (nums[i + p1] != nums[i + p2])
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+	public:
+		string longestDupSubstring(string S)
+		{
+			const int n = S.length(), mod = 1e9 + 7;
+			long long base = 26;
+			vector<long long> powers(n, 1);
+			// 提前计算好可能用到的base的幂
+			for (auto i = 1; i < n; i++)
+			{
+				powers[i] = (powers[i - 1] * base) % mod;
+			}
+			vector<int> nums(n);
+			for (int i = 0; i < n; i++)
+			{
+				nums[i] = (int)(S[i] - 'a');
+			}
+			vector<int> result{-1, 0};
+			int min_length = 1, max_length = n;
+			while (min_length < max_length)
+			{
+				int length = min_length + (max_length - min_length) / 2;
+				bool flag = false;
+				// 验证是否有长度为length的重复子串
+				unordered_map<int, vector<int>> map;
+				long long current = 0;
+				for (auto i = 0; i < length; i++)
+				{
+					current = (current * base + nums[i]) % mod;
+				}
+				map[current] = vector<int>{0};
+				/**
+				* 这里是长度为length的以i为结尾下标的字符串s[i-length+1,i]是否存在重复，一旦发现重复则无需继续遍历i
+				* !flag的作用是在flag为true是退出循环，达到剪枝的目的
+				*/
+				for (auto i = length; !flag && i < n; i++)
+				{
+					int cur_start_index = i - length + 1;
+					current = ((current - nums[i - length] * powers[length - 1]) % mod + mod) % mod;
+					current = (current * base + nums[i]) % mod;
+					auto it = map.find(current);
+					if (it == map.end())
+					{
+						map[current] = vector<int>{i - length + 1};
+						// i - length + 1 是当前rolling hash值为current的长度为length的子串的起点下标index
+					}
+					else
+					{
+						// 发现了hash值的重复
+						for (auto &&start : map[current])
+						{
+							if (compare_equal(nums, cur_start_index, start, length) == true)
+							{
+								// 发现了重复字符串
+								if (length > result[1])
+								{
+									// 重复字符串的长度比当前值高
+									result[0] = cur_start_index;
+									result[1] = length;
+								}
+								flag = true;
+								break; // 剪枝，已经发现了长度为length的重复字符串，后面hash值相同长度相同的子串也就没必要再去检测
+							}
+						}
+						map[current].push_back(cur_start_index);
+					}
+				}
+				flag ? min_length = length + 1 : max_length = length;
+			}
+			return result[0] == -1 ? "" : S.substr(result[0], result[1]);
+		}
+	};
+	```
+
+- [1049](https://leetcode.com/problems/last-stone-weight-ii/)
+
+    本题需要把数组stones分为两部分$A,B$使得$min(abs(sum(A)-sum(B)))$，是经典的$0,1$背包问题。
+
+    ```cpp
+    int lastStoneWeightII(vector<int>& stones) {
+        bitset<1501> dp{1};
+        int sum_stones=0,ans=numeric_limits<int>::max();
+        // dp[x]表示可以在stones中选择一部分数使其和为x
+        for(auto const &it:stones){
+            for (int i = 1500; i >= it; i--)
+            {
+                dp[i]=dp[i]|dp[i-it];
+            }
+            sum_stones+=it;
+        }
+        for (int i = 0; i <= 1500; i++)
+        {
+            ans=min(ans,abs(sum_stones-dp[i]*2*i));
+        }
+        return ans;
+    }
+    ```
+
+- [1072. Flip Columns For Maximum Number of Equal Rows](https://leetcode.com/problems/flip-columns-for-maximum-number-of-equal-rows/)
+
+	- 假设$ith row$在flip之后与$jth row$完全一样，在flip之前也是完全一样的，假设$ith row$在flip之后与$kth row$完全相反，则在flip之前也是完全相反的，因此问题转化为寻找与$ith row$完全相反或完全相同的行的数量，时间复杂度$O(m^2*n)$，leetcode评测机$\color{red}{TLE}$
+
+	```cpp
+	class Solution
+	{
+	private:
+		bool is_same(vector<int> &a, vector<int> &b, int length)
+		{
+			for (auto i = 0; i < length; ++i)
+			{
+				if (a[i] != b[i])
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+	public:
+		int maxEqualRowsAfterFlips(vector<vector<int>> &matrix)
+		{
+			int ret = 0;
+			if (matrix.size() > 0 && matrix[0].size() > 0)
+			{
+				int m = matrix.size(), n = matrix[0].size();
+				for (auto i = 0; i < m; i++)
+				{
+					int cnt = 0;
+					// 寻找与第i行完全相同或者完全不同的行的数量
+					for (auto k = 0; k < m; k++)
+					{
+						vector<int> flip(n);
+						for (int j = 0; j < n; j++)
+						{
+							flip[j] = 1 - matrix[k][j];
+						}
+						if (is_same(matrix[i], matrix[k], n) || is_same(matrix[i], flip, n))
+						{
+							cnt++;
+						}
+					}
+					ret = max(cnt, ret);
+				}
+			}
+			return ret;
+		}
+	};
+	```
+
+	- hashmap优化，时间复杂度$O(m*n)$
+
+	```cpp
+	int maxEqualRowsAfterFlips(vector<vector<int>> &matrix)
+	{
+		int ret = 0;
+		if (matrix.size() > 0 && matrix[0].size() > 0)
+		{
+			int m = matrix.size(), n = matrix[0].size();
+			unordered_map<string, int> count;
+			for (auto i = 0; i < m; i++)
+			{
+				string cur;
+				int top = matrix[i][0];
+				for (auto j = 1; j < n; j++)
+				{
+					(matrix[i][j] == top) ? cur.push_back('1') : cur.push_back('0');
+				}
+				count[cur]++;
+			}
+			for (auto &&[item, val] : count)
+			{
+				ret = max(ret, val);
+			}
+		}
+		return ret;
+	}
+	```
+
+- [1079. Letter Tile Possibilities](https://leetcode.com/problems/letter-tile-possibilities/)
+
+    可以用递归的DFS实现，模拟所有可能被组成的字符串
+
+    - 引用传值实现
+
+    ```cpp
+    void dfs(int &ret, vector<int> &count)
+    {
+        for (int i = 0; i < 26; i++)
+        {
+            if (count[i] != 0)
+            {
+                ret++, count[i]--;
+                dfs(ret, count);
+                count[i]++;
+            }
+        }
+    }
+    int numTilePossibilities(string tiles)
+    {
+        vector<int> count(26, 0);
+        for (auto &&ch : tiles)
+        {
+            count[(int)(ch - 'A')]++;
+        }
+        int ret = 0;
+        dfs(ret, count);
+        return ret;
+    }
+    ```
+
+    - 函数返回值实现
+
+    ```cpp
+    int dfs(vector<int> &count)
+    {
+        int ret = 0;
+        for (int i = 0; i < 26; i++)
+        {
+            if (count[i] != 0)
+            {
+                ret++, count[i]--;
+                ret += dfs(count);
+                count[i]++;
+            }
+        }
+        return ret;
+    }
+    int numTilePossibilities(string tiles)
+    {
+        vector<int> count(26, 0);
+        for (auto &&ch : tiles)
+        {
+            count[(int)(ch - 'A')]++;
+        }
+        return dfs(count);
+    }
+    ```
+
+- [1081. Smallest Subsequence of Distinct Characters](https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/)
+
+    与[316. Remove Duplicate Letters](https://leetcode.com/problems/remove-duplicate-letters/)完全相同，在给定字符串s中选择一个子串使其每个字符最多出现一次且逻辑序最小，可以用栈的思想来实现，即在顺序扫描字符串的过程中遇到任何当前还未使用的字符ch，则必须入栈（保证每个字符至少出现一次且仅仅出现一次），然后将当前栈顶比ch逻辑序大且在后面仍然有备用（统计每个字符的数量，每当ch使用一次则减少一次其可用量，直到减为0时不可用）的字符弹栈，之后将当前字符ch入栈即可，在此过程中s的每个字符有最多进栈一次弹栈一次操作两次，加上前期统计每个字符总的可用数量操作一次，每个字符最多操作三次，时间复杂度$O(n)$
+
+    ```cpp
+    string smallestSubsequence(string text)
+    {
+        string ret;
+        vector<int> count(26, 0), unused(26, 1);
+        for (auto &&ch : text)
+        {
+            count[(int)(ch - 'a')]++;
+        }
+        for (auto &&ch : text)
+        {
+            if (unused[(int)(ch - 'a')] == 1)
+            {
+                while (!ret.empty() && ret.back() > ch && count[(int)(ret.back() - 'a')] > 0)
+                {
+                    unused[(int)(ret.back() - 'a')] = 1;
+                    ret.pop_back();
+                }
+                unused[(int)(ch - 'a')] = 0, ret.push_back(ch);
+            }
+            count[(int)(ch - 'a')]--;
+        }
+        return ret;
+    }
+    ```
+
+- [1090. Largest Values From Labels](https://leetcode.com/problems/largest-values-from-labels/)
+
+    贪心算法，将所有值values从大到小排序，然后在不超出限制的情况下优先选择更大的value，在此过程中用hashmap记录每个label的使用情况以备查询是否超出限制，时间复杂度$O(nlog(n))$
+    
+    ```cpp
+    void quick_sort(vector<int> &values, vector<int> &labels, int left, int right)
+    {
+        if (left < right)
+        {
+            int p = left + ((right - left) >> 1);
+            int i = left, j = right;
+            swap(values[i], values[p]), swap(labels[i], labels[p]);
+            int value = values[i], label = labels[i];
+            while (i < j)
+            {
+                while (i < j && values[j] <= value)
+                {
+                    j--;
+                }
+                values[i] = values[j], labels[i] = labels[j];
+                while (i < j && values[i] >= value)
+                {
+                    i++;
+                }
+                values[j] = values[i], labels[j] = labels[i];
+            }
+            values[i] = value, labels[i] = label;
+            quick_sort(values, labels, left, i - 1);
+            quick_sort(values, labels, i + 1, right);
+        }
+    }
+    int largestValsFromLabels(vector<int> &values, vector<int> &labels, int num_wanted, int use_limit)
+    {
+        int ret = 0;
+        // 手写快速排序
+        quick_sort(values, labels, 0, values.size() - 1);
+        // cout << integerVectorToString(values) << endl;
+        // cout << integerVectorToString(labels) << endl;
+        unordered_map<int, int> count;
+        for (auto &&label : labels)
+        {
+            if (count.find(label) == count.end())
+            {
+                count[label] = use_limit;
+            }
+        }
+        for (int i = 0; num_wanted > 0 && i < values.size(); i++)
+        {
+            if (count[labels[i]] > 0)
+            {
+                ret += values[i], count[labels[i]]--, num_wanted--;
+            }
+        }
+        return ret;
+    
+    ```
+
+- [1091. Shortest Path in Binary Matrix](https://leetcode.com/problems/shortest-path-in-binary-matrix/)
+
+    BFS+Queue
+
+    ```cpp
+    int shortestPathBinaryMatrix(vector<vector<int>> &grid)
+    {
+        int ret = -1;
+        if (grid.size() > 0 && grid[0].size() > 0 && grid[0][0] == 0)
+        {
+            int rows = grid.size(), cols = grid[0].size();
+            vector<int> shifts{-1, 0, 1};
+            queue<vector<int>> cords;
+            cords.push({0, 0});
+            ret = 0;
+            bool notfound = true;
+            while (notfound && !cords.empty())
+            {
+                int count = cords.size();
+                while (count)
+                {
+                    int r0 = cords.front()[0], c0 = cords.front()[1];
+                    cords.pop();
+                    if (r0 == rows - 1 && c0 == cols - 1)
+                    {
+                        notfound = false;
+                        break;
+                    }
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            int r = r0 + shifts[i], c = c0 + shifts[j];
+                            if (r >= 0 && c >= 0 && r < rows && c < cols && grid[r][c] == 0)
+                            {
+                                grid[r][c] = 1;
+                                cords.push({r, c});
+                            }
+                        }
+                    }
+                    count--;
+                }
+                ret++;
+            }
+            ret = notfound ? -1 : ret;
+        }
+        return ret;
+    }
+    ```
+
+- [1109. Corporate Flight Bookings](https://leetcode.com/problems/corporate-flight-bookings/)
+
+    - 最直接的想法是用一个数组记录每个飞机的定位数，时间复杂度$O(n*bookings.length)$，但是会$\color{red}{TLE}$
+
+    ```cpp
+    vector<int> corpFlightBookings(vector<vector<int>>& bookings, int n) {
+        vector<int> ans(n+1,0);
+        for (int i = 0; i < bookings.size(); i++)
+        {
+            for (int j = bookings[i][0]; j <= bookings[i][1]; j++)
+            {
+                ans[j]+=bookings[i][2];
+            }
+        }
+        ans.erase(ans.begin());
+        return ans;
+    }
+    ```
+
+    - 使用扫描线（running scan）的概念，可以记录一个定位区间的首架飞机（定位数，正值）和最后一架飞机的下一架（负值），然后从左向右累加，时间复杂度$O(max(n,bookings.length))$，参考[BLOG](https://blog.csdn.net/sinat_27953939/article/details/95119024)
+
+    ```cpp
+    vector<int> corpFlightBookings(vector<vector<int>> &bookings, int n)
+    {
+        vector<int> count(n + 1, 0);
+        for (auto &&item : bookings)
+        {
+            count[item[0] - 1] += item[2], count[item[1]] -= item[2];
+        }
+        for (int i = 1; i < n; i++)
+        {
+            count[i] += count[i - 1];
+        }
+        count.pop_back(); // throw the last auxiliary value
+        return count;
+    }
+    ```
+
+- [1110. Delete Nodes And Return Forest](https://leetcode.com/problems/delete-nodes-and-return-forest/)
+
+	- 使用一个辅助节点auxiliary来标记每个节点的父节点，当父节点的子节点需要删除时，父节点指向需要删除子节点的指针为空NULL，然后递归处理每个子节点，因为每个节点最多访问一次，因此时间复杂度$O(n)$
+
+	```cpp
+	class Solution
+	{
+	private:
+		void dfs(TreeNode *parent, vector<TreeNode *> &ret, unordered_set<int> &nums, bool need_delete, bool parent_deleted)
+		{
+			if (parent)
+			{
+				if (parent_deleted && !need_delete)
+				{
+					// 父节点已经被删除，但是本身该节点不需要删除
+					ret.push_back(parent);
+				}
+				if (parent->left)
+				{
+					TreeNode *cur = parent->left;
+					bool deleted_left = false;
+					if (nums.find(cur->val) != nums.end())
+					{
+						parent->left = nullptr;
+						deleted_left = true;
+					}
+					dfs(cur, ret, nums, deleted_left, need_delete);
+				}
+				if (parent->right)
+				{
+
+					TreeNode *cur = parent->right;
+					bool deleted_right = false;
+					if (nums.find(cur->val) != nums.end())
+					{
+						parent->right = nullptr;
+						deleted_right = true;
+					}
+					dfs(cur, ret, nums, deleted_right, need_delete);
+				}
+			}
+		}
+
+	public:
+		vector<TreeNode *> delNodes(TreeNode *root, vector<int> &to_delete)
+		{
+			TreeNode *auxiliary = new TreeNode(-1);
+			auxiliary->left = root;
+			unordered_set<int> nums;
+			for (auto &&v : to_delete)
+			{
+				nums.insert(v);
+			}
+			vector<TreeNode *> ret;
+			dfs(auxiliary, ret, nums, true, false);
+			return ret;
+		}
+	};
+	```
+
+	- cpp的优化实现
+
+	```cpp
+	class Solution
+	{
+	private:
+		unordered_set<int> nums;
+		vector<TreeNode *> ret;
+		TreeNode *dfs(TreeNode *root, bool is_root)
+		{
+			if (root)
+			{
+				bool deleted = nums.find(root->val) != nums.end();
+				if (is_root && !deleted)
+				{
+					ret.push_back(root); // root节点且不需要delete
+				}
+				root->left = dfs(root->left, deleted);
+				root->right = dfs(root->right, deleted);
+				if (deleted)
+				{
+					root = nullptr;
+				}
+			}
+			return root;
+		}
+
+	public:
+		vector<TreeNode *> delNodes(TreeNode *root, vector<int> &to_delete)
+		{
+			nums.clear(), ret.clear();
+			for (auto &&v : to_delete)
+			{
+				nums.insert(v);
+			}
+			dfs(root, true);
+			return ret;
+		}
+	};
+	```
+
+- [1111. Maximum Nesting Depth of Two Valid Parentheses Strings](https://leetcode.com/problems/maximum-nesting-depth-of-two-valid-parentheses-strings/)
+
+	- 并列的两个vps不增加其中任何一个的depth，因此只需要将嵌套的vps尽可能分开到A和B即可，时间复杂度$O(n)$
+
+	```cpp
+	vector<int> maxDepthAfterSplit(string seq)
+	{
+		int n = seq.size();
+		vector<int> ret(n);
+		int left = 0, right = 0, k = 0;
+		for (auto &&ch : seq)
+		{
+			if (ch == '(')
+			{
+				ret[k++] = left;
+				left = 1 - left;
+			}
+			else
+			{
+				ret[k++] = right;
+				right = 1 - right;
+			}
+		}
+		return ret;
+	}
+	```
+
+- [1114](https://leetcode.com/problems/print-in-order/)
+
+    注意cpp中的多线程与线程锁机制
+
+- [1115](https://leetcode.com/problems/print-foobar-alternately/)
+
+    cpp中的多线程机制，线程锁的使用，mutex包和mutex，基本格式如下，两个线程A和B交替使用，则：
+
+    ```cpp
+    mutex a,b;
+    b.lock();
+    A{
+        a.lock();
+        something;
+        b.unlock();
+    }
+    B{
+        b.lock();
+        something;
+        a.unlock();
+    }
+    ```
+
+    本题解法如下：
+
+    ```cpp
+    class FooBar {
+        private:
+            int n;
+            mutex m1,m2;
+
+        public:
+            FooBar(int n) {
+                this->n = n;
+                m2.lock();
+            }
+
+            void foo(function<void()> printFoo) {
+                for (int i = 0; i < n; i++) {
+                    // printFoo() outputs "foo". Do not change or remove this line.
+                    m1.lock();
+                    printFoo();
+                    m2.unlock();
+                }
+            }
+
+            void bar(function<void()> printBar) {
+                for (int i = 0; i < n; i++)
+                    // printBar() outputs "bar". Do not change or remove this line.
+                    m2.lock();
+                    printBar();
+                    m1.unlock();
+                }
+            }
+    };
+    ```
+
+- [1128](https://leetcode.com/problems/number-of-equivalent-domino-pairs/)
+
+    - brute force[$O(n^2)$]
+
+    ```cpp
+    int numEquivDominoPairs(vector<vector<int>>& dominoes) {
+        int const count=dominoes.size();
+        for (int i = 0; i < count; i++)
+        {
+            if(dominoes[i][0]>dominoes[i][1]){
+                swap(dominoes[i][0],dominoes[i][1]);
+            }
+        }
+        sort(dominoes.begin(),dominoes.end(),[](vector<int>& x,vector<int>&y)->bool{return x[0]<y[0];});
+        int ans=0;
+        for (int i = 0; i < count; i++)
+        {
+            int j=i+1;
+            while(j<count && dominoes[i][0]==dominoes[j][0]){
+                if(dominoes[i][1]==dominoes[j][1]){
+                    ans++;
+                }
+                j++;
+            }
+        }
+        return ans;
+    }
+    ```
+
+    - encoding method[$O(n)$]
+
+    ```cpp
+    int numEquivDominoPairs(vector<vector<int>>& dominoes) {
+        int ans=0;
+        // 1 <= dominoes[i][j] <= 9
+        vector<int> count(100,0);
+        for (int i = 0; i < dominoes.size(); i++)
+        {
+            count[10*max(dominoes[i][0],dominoes[i][1])+min(dominoes[i][0],dominoes[i][1])]++;
+        }
+        for (int i = 0; i < count.size(); i++)
+        {
+            if(count[i]!=0){
+                ans+=count[i]*(count[i]-1)/2;
+            }
+        }
+        return ans;
+    }
+    ```
+
+- [1138. Alphabet Board Path](https://leetcode.com/problems/alphabet-board-path/)
+
+    难点在于涉及到z的移动，需要控制移动方向不要超出board的范围
+
+    ```cpp
+    string move(int src, int dst, bool horizontal)
+    {
+        vector<char> chars{'L', 'R', 'U', 'D'};
+        int shift = horizontal ? 0 : 2;
+        string ans;
+        if (dst > src)
+        {
+            while (src < dst)
+            {
+                src++, ans += chars[1 + shift];
+            }
+        }
+        else
+        {
+            while (src > dst)
+            {
+                src--, ans += chars[0 + shift];
+            }
+        }
+        return ans;
+    }
+    string alphabetBoardPath(string target)
+    {
+        int r0 = 0, c0 = 0;
+        string ans;
+        for (auto &&ch : target)
+        {
+            int r = (int)(ch - 'a') / 5, c = (int)(ch - 'a') % 5;
+            int mid_r = r0, mid_c = c, v = mid_r * 5 + mid_c;
+            if (v < 26)
+            {
+                // 先水平移动，后垂直移动
+                ans += move(c0, c, true);
+                ans += move(r0, r, false);
+                ans.push_back('!');
+            }
+            else
+            {
+                // 如果失败，先垂直移动，后水平移动
+                ans += move(r0, r, false);
+                ans += move(c0, c, true);
+                ans.push_back('!');
+            }
+            r0 = r, c0 = c;
+        }
+        return ans;
+    }
+    ```
+
+- [1140. Stone Game II](https://leetcode.com/problems/stone-game-ii/)
+
+	DP，时间复杂度$O(n^3)$
+
+	```cpp
+	int stoneGameII(vector<int> &piles)
+	{
+		/**
+		 * Dynamic Plan
+		 * dp[i][j] 表示 M = j 时 Alex 从 piles[i] 开始到结束时可以获得的最多石头数字
+		 * dp[i][j] = max(suffix_sum[i] - dp[i+X][max(j,X)]), 1 <= X <= 2*j
+		 *            这里去max(j,X)是因为alex去完之后到lee，则M=max(M,X)
+		 * */
+		int n = piles.size();
+		vector<vector<int>> dp(n + 1, vector<int>(n + 1));
+		vector<int> suffix_sum(n + 1, 0);
+		for (int i = n - 1; i >= 0; i--)
+		{
+			suffix_sum[i] = suffix_sum[i + 1] + piles[i];
+		}
+		for (auto i = 0; i <= n; i++)
+		{
+			dp[i][n] = suffix_sum[i]; // M足够大时Alex可以一次拿完全部stones
+		}
+		for (auto i = n - 1; i >= 0; i--)
+		{
+			for (auto j = n - 1; j >= 1; j--)
+			{
+				for (auto x = 1; x <= 2 * j && i + x <= n; x++)
+				{
+					dp[i][j] = max(dp[i][j], suffix_sum[i] - dp[i + x][max(j, x)]);
+				}
+			}
+		}
+		return dp[0][1]; // initially, M = 1
+	}
+	```
+
+- [1169](https://leetcode.com/problems/invalid-transactions/)
+
+    在一个transaction列表中通过两条规则过滤掉invalid的transaction，规则如下：
+    - amount > 1000
+    - time[i]-time[j]<=60且names[i]=name[j],city[i]!=city[j]
+    解析存储所有的transactions之后，规则1线性时间过滤一遍就好，规则2需要平方时间验证所有相同姓名下不同城市时间差在60以内的交易
+
+    ```cpp
+    vector<string> invalidTransactions(vector<string> &transactions)
+    {
+        const int count = transactions.size();
+        vector<string> names, cities;
+        vector<int> times(count, 0), amounts(count, 0);
+        vector<bool> valid(count, true);
+
+        // 解析记录
+        for (int i = 0; i < count; i++)
+        {
+            string item;
+            stringstream ss(transactions[i]);
+            getline(ss, item, ',');
+            names.push_back(item);
+            getline(ss, item, ',');
+            times[i] = stoi(item);
+            getline(ss, item, ',');
+            amounts[i] = stoi(item);
+            getline(ss, item, ',');
+            cities.push_back(item);
+            if (amounts[i] > 1000)
+            {
+                valid[i] = false;
+            }
+        }
+        // n^2时间遍历所有相同人名的不同交易
+        for (int i = 0; i < count; i++)
+        {
+            for (int j = i + 1; j < count; j++)
+            {
+                if (names[i].compare(names[j]) == 0 && abs(times[i] - times[j]) <= 60 && cities[i].compare(cities[j]) != 0)
+                {
+                    valid[i] = false;
+                    valid[j] = false;
+                }
+            }
+        }
+
+        // 输出结果
+        vector<string> ans;
+        for (int i = 0; i < count; i++)
+        {
+            if (valid[i] == false)
+            {
+                ans.push_back(transactions[i]);
+            }
+        }
+        return ans;
+    }
+    ```
+
+- [1171. Remove Zero Sum Consecutive Nodes from Linked List](https://leetcode.com/problems/remove-zero-sum-consecutive-nodes-from-linked-list/)
+
+    给定链表存储的数组，删除其中和为0的连续子数组。将其视为array处理，首先求出前缀和，前缀和为0的数及之前的部分全部删除，然后在剩余的前缀和中，如果$prefix[j]-prefix[i]=0$，则数组中$nums_{i+1},...,nums_j$的连续和为0，删除这部分，时间复杂度$O(n^2)$
+
+    ```cpp
+    ListNode *removeZeroSumSublists(ListNode *head)
+    {
+        vector<int> nums, ret;
+        int prefixSum = 0;
+        ListNode *cur = head;
+        while (cur)
+        {
+            prefixSum += cur->val;
+            if (prefixSum)
+            {
+                nums.push_back(prefixSum);
+            }
+            else
+            {
+                nums.clear(), prefixSum = 0;
+            }
+            cur = cur->next;
+        }
+        for (int i = 0; i < nums.size(); i++)
+        {
+            if (nums[i] != 0)
+            {
+                for (int j = nums.size() - 1; j > i; j--)
+                {
+                    if (nums[j] - nums[i] == 0)
+                    {
+                        for (int k = i + 1; k <= j; k++)
+                        {
+                            nums[k] = 0;
+                        }
+                        i = j - 1; // with i++ in the outer for circle
+                        break;
+                    }
+                }
+            }
+        }
+        ListNode *auxiliary_head = new ListNode(0);
+        cur = auxiliary_head;
+        int i = 0, prev_non_zero = 0;
+        for (int i = 0; i < nums.size(); i++)
+        {
+            if (nums[i] != 0)
+            {
+                cur->next = new ListNode(nums[i] - prev_non_zero);
+                cur = cur->next;
+                prev_non_zero = nums[i];
+            }
+        }
+        return auxiliary_head->next;
+    }
+    ```
+
+- [1186. Maximum Subarray Sum with One Deletion](https://leetcode.com/problems/maximum-subarray-sum-with-one-deletion/)
+
+	动态规划，时间复杂度$O(n)$，空间复杂度$O(1)$
+
+	```cpp
+	int maximumSum(vector<int> &arr)
+	{
+		/**
+		 * withDelete 表示包含当前元素结尾且尚未删除任何一个元素的最大子数组和
+		 * withoutDelete 表示包含当前元素结尾且已经删除了一个元素的最大子数组和
+		*/
+		const int n = arr.size(), negative_inf = numeric_limits<int>::min();
+		long long ret = negative_inf, withoutDelete = negative_inf, withDelete = negative_inf;
+		for (int i = 0; i < n; i++)
+		{
+			withDelete = max(withoutDelete, withDelete + arr[i]);
+			withoutDelete = max((long long)(arr[i]), withoutDelete + arr[i]);
+			ret = max(ret, max(withoutDelete, withDelete));
+		}
+		return (int)(ret);
+	}
+	```
+
+- [1201. Ugly Number III](https://leetcode.com/problems/ugly-number-iii/)
+
+	- 从1开始递增的逐个列出所有$v(v\%a==0||v\%b==0||v\%c==0)$，时间复杂度$O(n)$，leetcode评测机$\color{red}{TLE}$
+
+	```cpp
+	int nthUglyNumber(int n, int a, int b, int c)
+	{
+		int ret = 1, a_coef = 1, b_coef = 1, c_coef = 1;
+		for (auto i = 0; i < n; ++i)
+		{
+			int v = min(min(a * a_coef, b * b_coef), c * c_coef);
+			if (v % a == 0)
+			{
+				a_coef++;
+			}
+			if (v % b == 0)
+			{
+				b_coef++;
+			}
+			if (v % c == 0)
+			{
+				c_coef++;
+			}
+			ret = v;
+		}
+		return ret;
+	}
+	```
+
+	- binary search，时间复杂度$O(log(n))$
+
+	```cpp
+	class Solution
+	{
+	private:
+		long long gcd(long long a, long long b)
+		{
+			if (a < b)
+			{
+				swap(a, b);
+			}
+			while (a % b != 0)
+			{
+				int r = a % b;
+				a = b;
+				b = r;
+			}
+			return b;
+		}
+
+		long long lcd(long long a, long long b)
+		{
+			return a * b / gcd(a, b);
+		}
+
+	public:
+		int nthUglyNumber(int n, int a, int b, int c)
+		{
+			long long lcd_ab = lcd(a, b), lcd_bc = lcd(b, c), lcd_ca = lcd(c, a);
+			long long lcd_abc = lcd(lcd_ab, c);
+			long long left = min(min(a, b), c), right = 2 * 1e9;
+			while (left < right)
+			{
+				long long v = left + (right - left) / 2;
+				long long count = v / a + v / b + v / c - v / lcd_ab - v / lcd_bc - v / lcd_ca + v / lcd_abc;
+				if (count < n)
+				{
+					left = v + 1;
+				}
+				else
+				{
+					right = v;
+				}
+			}
+			return static_cast<int>(left);
+		}
+	};
+	```
+
+- [1209. Remove All Adjacent Duplicates in String II](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/)
+
+    删除一个字符串s中重复次数为k的串，可以使用栈的方式来存储每个字符及其出现的次数，每个字符至多被访问两次，时间复杂度$O(n)$
+
+    ```cpp
+    string removeDuplicates(string s, int k)
+    {
+        string st;
+        stack<int> count;
+        for (auto &&ch : s)
+        {
+            if (st.length() == 0)
+            {
+                st.push_back(ch);
+                count.push(1);
+            }
+            else
+            {
+                if (st.back() == ch)
+                {
+                    count.push(count.top() + 1);
+                }else{
+                    count.push(1);
+                }
+                st.push_back(ch);
+                if (count.top() == k)
+                {
+                    for (int i = 0; i < k; i++)
+                    {
+                        st.pop_back(), count.pop();
+                    }
+                }
+            }
+        }
+        return st;
+    }
+    ```
+
+- [1217](https://leetcode.com/problems/play-with-chips/)
+
+    将指定位置的筹码chip集中移动到任何位置，移动一格的花费为1、移动两格的花费为0，因此偶数位置多时全部集中到0位置，奇数位置多时全部集中到1位置，即统计位置的奇偶数数量，返回最小值即可
+
+    ```cpp
+    int minCostToMoveChips(vector<int>& chips) {
+        int odd=0,even=0;
+        for(auto &&v:chips){
+            if(v&0x1){
+                odd++;
+            }else{
+                even++;
+            }
+        }
+        return min(odd,even);
+    }
+    ```
+
+- [1218](https://leetcode.com/problems/longest-arithmetic-subsequence-of-given-difference/)
+
+    求给定数组中，公差为给定difference的等差子序列的最大长度，显然为动态规划类型
+
+    - 尝试用$dp[i]$表示包含数$arr[i]$的最长等差子序列长度，则$dp[i]=dp[j]+1$，其中$arr[j]$为$arr[i]$左侧第一个值为$arr[i]-difference$的数，需要遍历$i$左侧的数组查找，因此时间复杂度为$O(n^2)$，可以得出正确结果，但是$\color{red}{[TLE](Time Limit Exceeded)}$
+
+    ```cpp
+    int longestSubsequence(vector<int>& arr, int difference) {
+        const int count=arr.size();
+        vector<int> dp(count,1);
+        int ret=1;
+        for(int i=0;i<count;i++){
+            int target=arr[i]-difference;
+            for(int j=i-1;j>=0;j--){
+                if(arr[j]==target){
+                    dp[i]=dp[j]+1;
+                    break;
+                }
+            }
+            ret=max(ret,dp[i]);
+        }
+        return ret;
+    }
+    ```
+
+    - 注意到$arr[i]$的限定范围为$[-1e4,1e4]$，因此可以直接用$dp[v]$表示last element为$v$的最长等差子序列长度，这样$dp[v]=dp[v-difference]+1$，其中$dp[v-difference]$可以直接索引到，因此时间复杂度为$O(n)$
+
+    ```cpp
+    int longestSubsequence(vector<int>& arr, int difference) {
+        const int count=arr.size(),length=1e4*2+1;
+        vector<int> dp(length,0);
+        int ret=0;
+        for(int i=0;i<count;i++){
+            int index=arr[i]-difference+1e4;
+            dp[arr[i]+1e4]=(index>=0 && index<length)?dp[index]+1:1;
+            ret=max(ret,dp[arr[i]+1e4]);
+        }
+        return ret;
+    }
+    ```
+
+- [1219](https://leetcode.com/problems/path-with-maximum-gold/)
+
+    在给定矩阵中求出可以一笔连起来的非零数字和最大即可，根据给定的数据规模来看是典型的DFS应用，这里特别注意每次标记一个$visited[i][j]$之后，在完成与该点相关的计算之后，要释放该标记，以便回溯
+
+    ```cpp
+    int dfs_helper(vector<vector<int>> &grid, int i, int j, vector<vector<bool>> &visited)
+    {
+        int ret = 0;
+        if (!(i < 0 || j < 0 || i >= grid.size() || j >= grid[0].size() || grid[i][j] == 0 || visited[i][j] == 1))
+        {
+            visited[i][j] = true;
+            ret = max(ret, dfs_helper(grid, i - 1, j, visited));
+            ret = max(ret, dfs_helper(grid, i + 1, j, visited));
+            ret = max(ret, dfs_helper(grid, i, j - 1, visited));
+            ret = max(ret, dfs_helper(grid, i, j + 1, visited));
+            ret += grid[i][j];
+            visited[i][j] = false;  // for backtracing
+        }
+        return ret;
+    }
+    int getMaximumGold(vector<vector<int>> &grid)
+    {
+        int ret = 0;
+        if (grid.size() > 0 && grid[0].size() > 0)
+        {
+            const int m = grid.size(), n = grid[0].size();
+            vector<vector<bool>> visited(m, vector<bool>(n, false));
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    ret = max(ret, dfs_helper(grid, i, j, visited));
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+- [1227](https://leetcode.com/problems/airplane-seat-assignment-probability/)
+
+    本题中，前n-1个人占据前n-1个座位的情况有$A_{n-1}^{n-1}$种，此时第n个人一定可以匹配到自己的位置，当前n-1个人在前n-1个座位中只占据了n-2个并占用第n个座位的可能情况有$A_{n-1}^{n-2}$种，此时第n个人只能坐在前n-1个座位中空出来的那个，因此第n个人坐在第n个座位的概率为
+    $$Prob=\left\{\begin{matrix} \frac{A_{n-1}^{n-1}}{A_{n-1}^{n-1}+A_{n-1}^{n-2}} = 0.5, \quad n \ge 2\\  1.0 \quad n=1 \end{matrix}\right.$$
+
+    ```cpp
+    double nthPersonGetsNthSeat(int n) {
+        double ans=1.0;
+        if(n>1){
+            ans=0.5;
+        }
+        return ans;
+    }
+    ```
+
+- [1230](https://leetcode.com/problems/toss-strange-coins/)
+
+    有n个硬币，第i个随机扔起正面朝上的概率为$prob_i$，求将n个硬币全部随机扔起之后有target个正面朝上的概率。本题属于典型的动态规划DP类型，递推公式为$$dp_{ij}=dp_{i-1,j-1}*prob_i+dp_{i-1,j}*(1-prob_i)$$，其中$dp_{ij}$表示随机扔起i个硬币后有j个朝上的概率，即随机扔起i个后有j个朝上有两种情况，一是随机扔起$i-1$个有$j-1$个朝上并且第j个也朝上，二是随机扔起$i-1$个有$j$个朝上并且第j个朝下。
+
+    ```cpp
+    double probabilityOfHeads(vector<double>& prob, int target) {
+        int const count=prob.size();
+        vector<double> dp(target+1,0);
+        dp[0]=1.0;
+        for (int i = 0; i < count; i++)
+        {
+            for (int j = min(i+1,target); j > 0; j--)
+            {
+                dp[j]=dp[j-1]*prob[i]+dp[j]*(1-prob[i]);
+            }
+            dp[0]*=1-prob[i];
+        }
+        return dp.back();
+    }
+    ```
+
+- [1245](https://leetcode.com/problems/tree-diameter/)
+
+    给定一颗树，即N叉树，求树的直径，即树中任意两各节点之间的最远距离，通过两遍BFS来求解，首先BFS从任意节点start出发求得最远节点end，然后第二遍BFS从节点end出发求得最远节点last，end到last之间的距离即为树的直径。
+
+    ```cpp
+    int depth_BFS(int start, vector<vector<int>> &from_i_to_node, int &end)
+    {
+        int depth = 0;
+        vector<int> cur_level{start};
+        vector<bool> visited(from_i_to_node.size(), false);
+        end = start;
+        while (true)
+        {
+            vector<int> next_level;
+            for (auto &&node : cur_level)
+            {
+                if (!visited[node])
+                {
+                    next_level.insert(next_level.end(), from_i_to_node[node].begin(), from_i_to_node[node].end());
+                    if (!from_i_to_node[node].empty())
+                    {
+                        end = from_i_to_node[node].back();
+                    }
+                    visited[node] = true;
+                }
+            }
+            if (next_level.empty())
+            {
+                break;
+            }
+            else
+            {
+                depth++;
+                cur_level = next_level;
+            }
+        }
+        return depth;
+    }
+    int treeDiameter(vector<vector<int>> &edges)
+    {
+        int ans = 0;
+        const int count = edges.size();
+        if (count > 0)
+        {
+            // 第一次bfs，从任意节点start出发找到最远节点end
+            int start = 0, end = 0;
+            // sort(edges.begin(), edges.end(), [](vector<int> &a, vector<int> &b) -> bool { return a[0] < b[0]; });
+            vector<vector<int>> from_i_to_node(count + 1, vector<int>{});
+            for (int i = 0; i < count; i++)
+            {
+                from_i_to_node[edges[i][0]].push_back(edges[i][1]);
+                from_i_to_node[edges[i][1]].push_back(edges[i][0]);
+            }
+            int depth = depth_BFS(start, from_i_to_node, end);
+            // 第二次bfs，从end出发找到最远节点last，end到last之间的距离即为树的直径 diameter
+            ans = depth_BFS(end, from_i_to_node, end);
+        }
+        return ans;
+    }
+    ```
+
+- [1249](https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/)
+
+    在一个包含英文字母和左右小括号的字符串中，移除最少数量的左右括号，使得字符串中的左右括号相匹配，使用栈来实现即可。
+
+    ```cpp
+    string minRemoveToMakeValid(string s)
+    {
+        stack<int> st; // record index of left parenthese
+        vector<int> removed_index;
+        for (int i = 0; i < s.length(); i++)
+        {
+            if(s[i]=='('){
+                st.push(i);
+            }else if(s[i]==')'){
+                if(st.empty()){
+                    removed_index.push_back(i);
+                }else{
+                    st.pop();
+                }
+            }
+        }
+        while(!st.empty()){
+            removed_index.push_back(st.top());
+            st.pop();
+        }
+        sort(removed_index.begin(), removed_index.end());
+        string ans;
+        for (int i = 0, j = 0; i < s.length(); i++)
+        {
+            if(j<removed_index.size() && i==removed_index[j]){
+                j++;
+            }else{
+                ans.push_back(s[i]);
+            }
+        }
+        return ans;
+    }
+    ```
+
+- [1250](https://leetcode.com/problems/check-if-it-is-a-good-array/)
+
+    数论中存在一个裴蜀定理[wikipad](https://www.wikidata.org/wiki/Q513028)，简单讲就是两个整数$x,y$互质的充要条件为存在整数$a,b$使得$a*x+b*y=1$，因此本题给定一维数组$x$，如果它们的最大公约数（GCD）为1，则它们可以采用合适的权重$a$实现$\sum_{i=1}^{n}a_i*x_i=1$，即只需验证给定数组中是否存在一组互质的数即可。
+
+    ```cpp
+    int gcd(int a,int b){
+        if(a<b){
+            swap(a, b);
+        }
+        while(b){
+            int r = a % b;
+            a = b;
+            b = r;
+        }
+        return a;
+    }
+    bool isGoodArray(vector<int> &nums)
+    {
+        bool ans = false;
+        if(nums.size()>0){
+            int v = nums.front();
+            for (int i = 1; i < nums.size(); i++)
+            {
+                v = gcd(v, nums[i]);
+            }
+            if(v==1){
+                ans = true;
+            }
+        }
+        return ans;
+    }
+    ```
+
+- [1254](https://leetcode.com/problems/number-of-closed-islands/)
+
+    求被水域完全包围的陆地（岛屿）的数量，DFS遍历所有岛屿，与常规统计岛屿数量[200](https://leetcode.com/problems/number-of-islands/)多的一点是，放弃所有与边界相连的岛屿
+
+    ```cpp
+    bool is_closed(vector<vector<int>> &grid, int i, int j)
+    {
+        bool ans = true;
+        if (i < 0 || j < 0 || i >= grid.size() || j >= grid[0].size())
+        {
+            ans = false;
+            // 到达边界
+        }
+        else
+        {
+            if (grid[i][j] == 1)
+            {
+                // 水域
+                ans = true;
+            }
+            else
+            {
+                // 陆地
+                grid[i][j] = 1; // flag for visited
+                ans &= is_closed(grid, i - 1, j);
+                ans &= is_closed(grid, i + 1, j);
+                ans &= is_closed(grid, i, j - 1);
+                ans &= is_closed(grid, i, j + 1);
+            }
+        }
+        return ans;
+    }
+    int closedIsland(vector<vector<int>> &grid)
+    {
+        int ans = 0;
+        if (grid.size() > 0 && grid[0].size() > 0)
+        {
+            const int rows = grid.size(), cols = grid[0].size();
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    if (grid[i][j] == 0 && is_closed(grid, i, j))
+                    {
+                        ans++;
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+    ```
+
+- [1257](https://leetcode.com/problems/smallest-common-region/)
+
+    按照层次大小给定一些区域，大区域包含小区域，求包含两个给定区域的最小区域，按照区域的包含关系建立层次化的树结构，父节点为大区域，子节点为其包含的所有子区域，然后求两个给定区域的最低公共父节点即可
+
+    ```cpp
+    class Solution {
+        public:
+            struct TreeNodeString
+            {
+                /* data */
+                string region;
+                TreeNodeString *parent;
+                int level;
+                vector<TreeNodeString *> children;
+                TreeNodeString(string x, int v, TreeNodeString *p) : region(x), level(v), parent(p) {}
+            };
+            string findSmallestRegion(vector<vector<string>> &regions, string region1, string region2)
+            {
+                unordered_map<string, TreeNodeString *> queries;
+                TreeNodeString *root = new TreeNodeString("", 0, nullptr);
+                for (auto &&region : regions)
+                {
+                    string common_region = region[0];
+                    TreeNodeString *cur;
+                    // 确定父节点
+                    if (queries.find(common_region) != queries.end())
+                    {
+                        cur = queries[common_region];
+                    }
+                    else
+                    {
+                        cur = new TreeNodeString(common_region, 1, root);
+                        root->children.push_back(cur);
+                        queries[common_region] = cur;
+                    }
+                    for (int i = 1; i < region.size(); i++)
+                    {
+                        TreeNodeString *node = new TreeNodeString(region[i], cur->level + 1, cur);
+                        cur->children.push_back(node);
+                        queries[region[i]] = node;
+                    }
+                }
+                // 寻找给定的两个区域的最低公共父节点
+                TreeNodeString *r1 = queries[region1], *r2 = queries[region2];
+                while (r1->level > r2->level)
+                {
+                    r1 = r1->parent;
+                }
+                while (r1->level < r2->level)
+                {
+                    r2 = r2->parent;
+                }
+                while (r1 != r2)
+                {
+                    r1 = r1->parent;
+                    r2 = r2->parent;
+                }
+                return r1->region;
+            }
+    };
+    ```
+
+    一些测试案例
+
+    ```cpp
+    [["Earth","North America","South America"],["North America","United States","Canada"],["United States","New York","Boston"],["Canada","Ontario","Quebec"],["South America","Brazil"]]
+    "Quebec"
+    "New York"
+    [["Earth", "North America", "South America"],["North America", "United States", "Canada"],["United States", "New York", "Boston"],["Canada", "Ontario", "Quebec"],["South America", "Brazil"]]
+    "Canada"
+    "South America"
+    [["Earth", "North America", "South America"],["North America", "United States", "Canada"],["United States", "New York", "Boston"],["Canada", "Ontario", "Quebec"],["South America", "Brazil"]]
+    "Canada"
+    "Quebec"
+    ```
+
+- [1268. Search Suggestions System](https://leetcode.com/problems/search-suggestions-system/)
+
+    做出类似于现代编辑器中代码提示、自动补全的功能，即在给定的所有字符串中，搜索符合当前已经键入的字符的串，按字典序排序只要前3个
+
+    - [Trie]字典树方法，这里不知道为什么我的字典树写法会超时(TLE)，讨论区有些人的字典树方法是可以AC的，很纠结
+
+    ```cpp
+    struct TrieNode
+    {
+        // 字典树节点的定义
+        bool isWord;
+        TrieNode *next[26];
+        TrieNode()
+        {
+            isWord = false;
+            for (int i = 0; i < 26; i++)
+            {
+                next[i] = nullptr;
+            }
+        }
+    };
+    class Solution
+    {
+    private:
+        void insertWordToDictory(TrieNode *root, string s)
+        {
+            for (int i = 0; i < s.length(); i++)
+            {
+                int index = (int)(s[i] - 'a');
+                if (root->next[index] == nullptr)
+                {
+                    root->next[index] = new TrieNode();
+                }
+                root = root->next[index];
+            }
+            root->isWord = true;
+        }
+        void dfs_query(vector<string> &ans, string s, TrieNode *root)
+        {
+            if (root && ans.size() < 3)
+            {
+                if (root->isWord)
+                {
+                    ans.push_back(s);
+                }
+                for (int i = 0; i < 26; i++)
+                {
+                    dfs_query(ans, s + (char)('a' + i), root->next[i]);
+                }
+            }
+        }
+        vector<string> query(TrieNode *root, string s)
+        {
+            vector<string> ans;
+            if (root && s.length() > 0)
+            {
+                // 首先保证目前已经键入的字母完全匹配
+                for (int i = 0; root && i < s.length(); i++)
+                {
+                    root = root->next[(int)(s[i] - 'a')];
+                }
+                dfs_query(ans, s, root);
+            }
+            return ans;
+        }
+
+    public:
+        vector<vector<string>> suggestedProducts(vector<string> &products, string searchWord)
+        {
+            TrieNode *dictionary = new TrieNode();
+            for (auto &&word : products)
+            {
+                insertWordToDictory(dictionary, word);
+            }
+            vector<vector<string>> ans;
+            string target;
+            for (auto &&ch : searchWord)
+            {
+                target.push_back(ch);
+                ans.push_back(query(dictionary, target));
+            }
+            return ans;
+        }
+    };
+    ```
+
+    - 统计公共前缀长度方法
+
+    ```cpp
+    vector<vector<string>> suggestedProducts(vector<string> &products, string searchWord)
+    {
+        const int nubmer_products = products.size(), length_word = searchWord.length();
+        vector<int> cnt(nubmer_products, 0);
+        sort(products.begin(), products.end());
+        for (int i = 0; i < nubmer_products; i++)
+        {
+            int j = 0;
+            while (j < length_word && j < products[i].length() && searchWord[j] == products[i][j])
+            {
+                j++;
+            }
+            cnt[i] = j;
+        }
+        vector<vector<string>> ans;
+        for (int i = 0; i < length_word; i++)
+        {
+            vector<string> cur;
+            int j = 0;
+            while (cur.size() < 3 && j < nubmer_products)
+            {
+                if (cnt[j] > i)
+                {
+                    cur.push_back(products[j]);
+                }
+                j++;
+            }
+            ans.push_back(cur);
+        }
+        return ans;
+    }
+    ```
+
+- [1277. Count Square Submatrices with All Ones](https://leetcode.com/problems/count-square-submatrices-with-all-ones/)
+
+    求一个0和1组成的矩阵中由1表示的正方形的个数，动态规划
+
+    ```cpp
+    int countSquares(vector<vector<int>> &matrix)
+    {
+        int ans = 0;
+        if (matrix.size() > 0 && matrix[0].size() > 0)
+        {
+            int row = matrix.size(), col = matrix[0].size();
+            for (int i = 1; i < row; i++)
+            {
+                for (int j = 1; j < col; j++)
+                {
+                    if (matrix[i][j] == 1)
+                    {
+                        int edge = min(matrix[i - 1][j], matrix[i][j - 1]);
+                        if (matrix[i - edge][j - edge] > 0)
+                        {
+                            matrix[i][j] = edge + 1;
+                        }
+                        else
+                        {
+                            matrix[i][j] = edge;
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < row; i++)
+            {
+                for (int j = 0; j < col; j++)
+                {
+                    ans += matrix[i][j];
+                }
+            }
+        }
+        return ans;
+    }
+    ```
+
+- [1287. Element Appearing More Than 25% In Sorted Array](https://leetcode.com/problems/element-appearing-more-than-25-in-sorted-array/)
+
+    寻找升序排序数组中出现次数超过$\frac{1}{4}$的元素
+
+    - 数组有序，则遍历数组统计所有元素出现的次数，直到该次数大于数组元素总数的$\frac{1}{4}$，时间复杂度$O(n)$
+
+    ```cpp
+    int findSpecialInteger(vector<int> &arr)
+    {
+        const int length = arr.size();
+        int value = -1, count = 0;
+        for (int i = 0; i < length; i++)
+        {
+            if (arr[i] == value)
+            {
+                count++;
+            }
+            else
+            {
+                count = 1, value = arr[i];
+            }
+            if (count * 4 > length)
+            {
+                break;
+            }
+        }
+        return value;
+    }
+    ```
+
+    - 出现次数超出元素总数的$\frac{1}{4}$，则该数一定会在$\frac{1}{4}$、$\frac{1}{2}$、$\frac{3}{4}$三个位置中的一个出现，统计这三个数的数量是否超出$\frac{1}{4}$即可，在此过程中还可以使用二叉搜索该数在数组中的位置，将时间复杂度降低到$O(log(n))$
+
+    ```cpp
+    int findSpecialInteger(vector<int> &arr)
+    {
+        const int length = arr.size();
+        vector<int> indexs{length / 4, length / 2, length * 3 / 4};
+        int value = -1, count = 0;
+        for (auto &&index : indexs)
+        {
+            value = arr[index], count = 1;
+            int i = index - 1;
+            while (i >= 0 && arr[i] == value)
+            {
+                count++, i--;
+            }
+            i = index + 1;
+            while (i < length && arr[i] == value)
+            {
+                count++, i++;
+            }
+            if (count * 4 > length)
+            {
+                break;
+            }
+        }
+        return value;
+    }
+    ```
+
+    - 方法二的binary search版本
+
+    ```cpp
+    int binary_search(vector<int> &arr, int index, bool left_end)
+    {
+        int target = arr[index];
+        if (left_end)
+        {
+            // find left-most index so that arr[index]=target
+            int left = 0, right = index;
+            while (left < right)
+            {
+                int mid = left + ((right - left - 1) >> 1);
+                if (arr[mid] < target)
+                {
+                    left = mid + 1;
+                }
+                else
+                {
+                    right = mid;
+                }
+            }
+            index = left;
+        }
+        else
+        {
+            // find right-most index so that arr[index]=target
+            int left = index, right = arr.size() - 1;
+            while (left < right)
+            {
+                int mid = left + ((right - left + 1) >> 1);
+                if (arr[mid] > target)
+                {
+                    right = mid - 1;
+                }
+                else
+                {
+                    left = mid;
+                }
+            }
+            index = left;
+        }
+        return index;
+    }
+    int findSpecialInteger(vector<int> &arr)
+    {
+        const int length = arr.size();
+        vector<int> indexs{length / 4, length / 2, length * 3 / 4};
+        int value = -1, count = 0;
+        for (auto &&index : indexs)
+        {
+            int left = binary_search(arr, index, true);
+            int right = binary_search(arr, index, false);
+            if ((right - left + 1) * 4 > length)
+            {
+                value = arr[index];
+                break;
+            }
+        }
+        return value;
+    }
+    ```
+
+- [1288. Remove Covered Intervals](https://leetcode.com/problems/remove-covered-intervals/)
+
+    给定n个时间段，移除被其他时间段完全覆盖的时间段，统计还剩下的时间段
+
+    - 顺序扫描所有的时间段interval，如果interval还未被移除，则和用除自己之外的所有其它时间段intervals[j]比较，如果intervals[j]被覆盖，则移除interv[j]，时间复杂度$O(n^2)$
+
+    ```cpp
+    int removeCoveredIntervals(vector<vector<int>> &intervals)
+    {
+        int count = intervals.size();
+        vector<bool> removed(count, false);
+        for (int i = 0; i < count; i++)
+        {
+            if (!removed[i])
+            {
+                int start = intervals[i][0], end = intervals[i][1];
+                int j = 0;
+                while (j < i)
+                {
+                    if (!removed[j] && intervals[j][0] >= start && intervals[j][1] <= end)
+                    {
+                        removed[j] = true;
+                    }
+                    j++;
+                }
+                j++; // avoiding to remove intervals[i] (itself)
+                while (j < count)
+                {
+                    if (!removed[j] && intervals[j][0] >= start && intervals[j][1] <= end)
+                    {
+                        removed[j] = true;
+                    }
+                    j++;
+                }
+            }
+        }
+        for (auto &&remove : removed)
+        {
+            if (remove)
+            {
+                count--;
+            }
+        }
+        return count;
+    }
+    ```
+
+    - 首先在$O(nlog(n))$时间内对intervals按照每个时间段的开时时间即intervals[i][0]排序，则当$j>i$时不可能存在$intervals[i][0]>intervals[j][0]$的情况，即此时intervals[i]不可能覆盖intervals[j]，可以将$O(n^2)$时间内检查的内存循环操作数减少一半
+
+    ```cpp
+    int removeCoveredIntervals(vector<vector<int>> &intervals)
+    {
+        int const count = intervals.size();
+        int ret = count;
+        sort(intervals.begin(), intervals.end(), [](vector<int> a, vector<int> b) -> bool { return a[0] < b[0]; });
+        vector<bool> removed(count, false);
+        for (int i = 0; i < count; i++)
+        {
+            if (!removed[i])
+            {
+                const int end_bound = intervals[i][1];
+                for (int j = i + 1; j < count; j++)
+                {
+                    if (!removed[j] && intervals[j][1] <= end_bound)
+                    {
+                        removed[j] = true, ret--;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 进一步，在排序时首先按照interval[0]升序排列，interval[0]相同的时间区间则按interval[1]升序排列，之后一次遍历intervals时标记当前右界right，如果$intervals[i][1]<right$则interval[i]一定可以被他之前的某个interval覆盖，时间复杂度直接降低到排序时间$O(nlog(n))$
+
+    ```cpp
+    int removeCoveredIntervals(vector<vector<int>> &intervals)
+    {
+        int const count = intervals.size();
+        int ret = 0, right_bound = 0;
+        sort(intervals.begin(), intervals.end(), [](vector<int> a, vector<int> b) -> bool { return (a[0] != b[0]) ? (a[0] < b[0]) : (a[1] < b[1]); });
+        for (auto &&interval : intervals)
+        {
+            if (interval[1] > right_bound)
+            {
+                ret++, right_bound = interval[1];
+            }
+        }
+        return ret;
+    }
+    ```
+
+- [1289. Minimum Falling Path Sum II](https://leetcode.com/problems/minimum-falling-path-sum-ii/)
+
+    和[931. Minimum Falling Path Sum](https://leetcode.com/problems/minimum-falling-path-sum/)不同的是，本题限定如果第i行选在第j列，则第i+1行不能选择第j列
+    
+    - 动态规划，用dp[i][j]表示以arr[i][j]为结尾的Falling Path Sum，状态转移方程为$dp[i][j]=arr[i][j]+min(dp[i-1][k]),k \neq j$，然后求$min(dp.back())$即可，时间复杂度$O(n^3)$，其中n为方阵arr的边长
+
+    ```cpp
+    int minFallingPathSum(vector<vector<int>> &arr)
+    {
+        int ans = 0;
+        if (arr.size() > 0 && arr[0].size() > 0)
+        {
+            int rows = arr.size(), cols = arr[0].size();
+            for (int i = 1; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    int temp = numeric_limits<int>::max(), k = 0;
+                    while (k < j)
+                    {
+                        temp = min(temp, arr[i - 1][k++]);
+                    }
+                    k++;
+                    while (k < cols)
+                    {
+                        temp = min(temp, arr[i - 1][k++]);
+                    }
+                    arr[i][j] += temp;
+                }
+            }
+            ans = numeric_limits<int>::max();
+            for (auto &&v : arr.back())
+            {
+                ans = min(ans, v);
+            }
+        }
+        return ans;
+    }
+    ```
+    
+    - 进一步优化，可以将求$min(dp[i-1][k]),k \neq j$的过程转化为求dp[i-1]中的最小值$dp[index_0]$和第二小值$dp[index_1]$，则$dp[i][j]=arr[i][j]+\left\{\begin{matrix} dp[i-1][index_0], index_0 \neq j\\  dp[i-1][index_1],index_0 = j \end{matrix}\right.$然后求$min(dp.back())$即可，时间复杂度降低到$O(n^2)$，其中n为方阵arr的边长
+
+    ```cpp
+    int minFallingPathSum(vector<vector<int>> &arr)
+    {
+        int ans = 0;
+        if (arr.size() > 0 && arr[0].size() > 0)
+        {
+            int rows = arr.size(), cols = arr[0].size();
+            for (int i = 1; i < rows; i++)
+            {
+                int first_min = numeric_limits<int>::max(), second_min = first_min;
+                int first = -1;
+                for (int j = 0; j < cols; j++)
+                {
+                    if (arr[i - 1][j] < first_min)
+                    {
+                        second_min = first_min, first_min = arr[i - 1][j], first = j;
+                    }
+                    else if (arr[i - 1][j] < second_min)
+                    {
+                        second_min = arr[i - 1][j];
+                    }
+                }
+                for (int j = 0; j < cols; j++)
+                {
+                    arr[i][j] += (first == j) ? second_min : first_min;
+                }
+            }
+            ans = *min_element(arr.back().begin(), arr.back().end());
+        }
+        return ans;
+    }
+    ```
+
+- [1291. Sequential Digits](https://leetcode.com/problems/sequential-digits/)
+
+    - 递归构造所有符合条件的数
+
+    ```cpp
+    string next(string s)
+    {
+        string ret;
+        if (!s.empty() && s.back() < '9')
+        {
+            s.push_back(s.back() + 1);
+            ret = s.substr(1, s.length() - 1);
+        }
+        return ret;
+    }
+    vector<int> sequentialDigits(int low, int high)
+    {
+        vector<int> ans;
+        string a = to_string(low), b = to_string(high), start;
+        char start_digit = '0';
+        int width_a = a.length(), width_b = b.length();
+        for (int i = 0; i < width_a; i++)
+        {
+            start.push_back(++start_digit);
+        }
+        for (int width = width_a; width <= width_b; width++)
+        {
+            string cur = start;
+            start.push_back(++start_digit);
+            while (!cur.empty() && cur.length() == width_a && cur.compare(a) < 0)
+            {
+                cur = next(cur);
+            }
+            while (!cur.empty() && (cur.length() < width_b || (cur.length() == width_b && cur.compare(b) <= 0)))
+            {
+                ans.push_back(stoi(cur));
+                cur = next(cur);
+            }
+        }
+        return ans;
+    }
+    ```
+
+    - 打表
+
+    ```cpp
+    vector<int> sequentialDigits(int low, int high)
+    {
+        vector<int> ans, table{12, 23, 34, 45, 56, 67, 78, 89, 123, 234, 345, 456, 567, 678, 789, 1234, 2345, 3456, 4567, 5678, 6789, 12345, 23456, 34567, 45678, 56789, 123456, 234567, 345678, 456789, 1234567, 2345678, 3456789, 12345678, 23456789, 123456789};
+        int i = 0, length = table.size();
+        while (i < length && table[i] < low)
+        {
+            i++;
+        }
+        while (i < length && table[i] <= high)
+        {
+            ans.push_back(table[i++]);
+        }
+        return ans;
+    }
+    ```
+
+- [1301. Number of Paths with Max Score](https://leetcode.com/problems/number-of-paths-with-max-score/)
+
+    典型的动态规划问题，用dp[i][j]表示当前状态，其中dp[i][j][0]表示到当前的max score，dp[i][j][1]表示到当前的number of  
+paths with max score，时间复杂度$O(n^2)$
+
+    ```cpp
+    vector<int> pathsWithMaxScore(vector<string> &board)
+    {
+        const int n = board.size(), mode = 1e9 + 7;
+        vector<int> ret{0, 0};
+        if (n > 0)
+        {
+            board.back().back() = '0';
+            vector<vector<int>> directions{{-1, -1}, {-1, 0}, {0, -1}};
+            vector<vector<vector<int>>> dp(n, vector<vector<int>>(n, vector<int>(2, 0)));
+            dp[0][0][1] = 1; // 出发点是永远可以到达的，且距离为0路径数为1
+            long long auxiliary = 0;
+            // first row and first col
+            for (int i = 1; i < n; i++)
+            {
+                if (board[0][i] == 'X')
+                {
+                    break;
+                }
+                else
+                {
+                    dp[0][i][0] = dp[0][i - 1][0] + (int)(board[0][i] - '0');
+                    dp[0][i][1] = 1; // 只有board[0][i-1]到board[0][i]一条路径
+                }
+            }
+            for (int i = 1; i < n; i++)
+            {
+                if (board[i][0] == 'X')
+                {
+                    break;
+                }
+                else
+                {
+                    dp[i][0][0] = dp[i - 1][0][0] + (int)(board[i][0] - '0');
+                    dp[i][0][1] = 1; // 只有board[i-1][0]到board[i][0]一条路径
+                }
+            }
+            for (int i = 1; i < n; i++)
+            {
+                for (int j = 1; j < n; j++)
+                {
+                    if (board[i][j] != 'X')
+                    {
+                        for (auto &&item : directions)
+                        {
+                            if (dp[i + item[0]][j + item[1]][1] > 0)
+                            {
+                                if (dp[i + item[0]][j + item[1]][0] > dp[i][j][0])
+                                {
+                                    dp[i][j][0] = dp[i + item[0]][j + item[1]][0]; // 可到达的路径
+                                    dp[i][j][1] = dp[i + item[0]][j + item[1]][1];
+                                }
+                                else if (dp[i + item[0]][j + item[1]][0] == dp[i][j][0])
+                                {
+                                    dp[i][j][1] = (auxiliary + dp[i][j][1] + dp[i + item[0]][j + item[1]][1]) % mode;
+                                }
+                            }
+                        }
+                        dp[i][j][0] += (int)(board[i][j] - '0');
+                    }
+                }
+            }
+            if (dp.back().back()[1] != 0)
+            {
+                ret = dp.back().back();
+            }
+        }
+        return ret;
+    }
+    ```
+
+- [1312. Minimum Insertion Steps to Make a String Palindrome](https://leetcode.com/problems/minimum-insertion-steps-to-make-a-string-palindrome/)
+
+    - 递归方法，$\color{red}{TLE}$
+
+    ```cpp
+    int findMinInsertions(string &s,int left,int right){
+        int ret = 0;
+        if(left>right){
+            ret = numeric_limits<int>::max();
+        }else if(left==right){
+            ret = 0;
+        }else if(left==right-1){
+            ret = s[left] == s[right] ? 0 : 1;
+        }else{
+            ret = (s[left] == s[right]) ? (findMinInsertions(s, left + 1, right - 1)) : (min(findMinInsertions(s, left + 1, right), findMinInsertions(s, left, right - 1)) + 1);
+        }
+        return ret;
+    }
+    int minInsertions(string s)
+    {
+        return findMinInsertions(s, 0, s.length() - 1);
+    }
+    ```
+
+    - DP方法直接求需要插入字符的次数，时间复杂度$O(n^2)$
+
+    ```cpp
+    int minInsertions(string s)
+    {
+        int n = s.length();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int gap = 1; gap < n; gap++)
+        {
+            for (int left = 0, right = gap; right < n; left++, right++)
+            {
+                dp[left][right] = (s[left] == s[right]) ? (dp[left + 1][right - 1]) : (min(dp[left + 1][right], dp[left][right - 1]) + 1);
+            }
+        }
+        return dp[0].back();
+    }
+    ```
+
+    - DP求最长公共子串，将剩下的部分补齐即可构成回文串，时间复杂度$O(n^2)$
+
+    ```cpp
+    int minInsertions(string s)
+    {
+        const int n = s.length();
+        string t(s.rbegin(), s.rend());
+        vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+        for (int i = 1; i <= n; i++)
+        {
+            for (int j = 1; j <= n; j++)
+            {
+                dp[i][j] = (s[i - 1] == t[j - 1]) ? (dp[i - 1][j - 1] + 1) : max(dp[i][j - 1], dp[i - 1][j]);
+            }
+        }
+        return n - dp.back().back();
+    }
+    ```
+
+    几个典型testcase
+
+    ```cpp
+    "zzazz"
+    "mbadm"
+    "leetcode"
+    "g"
+    "no"
+    "vsrgaxxpgfiqdnwvrlpddcz"
+    "tldjbqjdogipebqsohdypcxjqkrqltpgviqtqz"
+    ```
+
+- [1314. Matrix Block Sum](https://leetcode.com/problems/matrix-block-sum/)
+
+    - 暴力求和，时间复杂度$O(n^2*k^2)$，LeetCode时间效率$\color{red}{872 ms, 14.37\%}$
+
+    ```cpp
+    vector<vector<int>> matrixBlockSum(vector<vector<int>> &mat, int K)
+    {
+        const int m = mat.size(), n = mat[0].size();
+        vector<vector<int>> ret(m, vector<int>(n, 0));
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                int r = i, c = j;
+                for (int x = r - K; x <= r + K; x++)
+                {
+                    for (int y = c - K; y <= c + K; y++)
+                    {
+                        if (x >= 0 && y >= 0 && x < m && y < n)
+                        {
+                            ret[r][c] += mat[x][y];
+                        }
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 对原数组从左上至右下累加求和（前缀和），时间复杂度$O(n^2)$，LeetCode时间效率$\color{red}{24 ms, 96.44\%}$
+
+    ```cpp
+    vector<vector<int>> matrixBlockSum(vector<vector<int>> &mat, int K)
+    {
+        const int m = mat.size(), n = mat[0].size();
+        vector<vector<int>> prefixSum(m + 1, vector<int>(n + 1, 0));
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                prefixSum[i + 1][j + 1] += mat[i][j] - prefixSum[i][j] + prefixSum[i][j + 1] + prefixSum[i + 1][j];
+            }
+        }
+        vector<vector<int>> ret(m, vector<int>(n, 0));
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                int r1 = max(0, i - K), c1 = max(0, j - K), r2 = min(i + 1 + K, m), c2 = min(j + 1 + K, n);
+                ret[i][j] = prefixSum[r2][c2] + prefixSum[r1][c1] - prefixSum[r1][c2] - prefixSum[r2][c1];
+            }
+        }
+        return ret;
+    }
+    ```
+
+- [1316. Distinct Echo Substrings](https://leetcode.com/problems/distinct-echo-substrings/)
+
+    - 用一个hashset来存储所有符合条件的子串，统计数量，时间复杂度$O(n^2),n=text.length$，LeetCode时间效率$\color{red}{184 ms, 76.06\%}$
+
+    ```cpp
+    int distinctEchoSubstrings(string text)
+    {
+        unordered_set<string> substrings;
+        const int n = text.length() / 2;
+        for (int i = 1; i <= n; i++)
+        {
+            // 搜索所有被重复子串长度为i的子串substring
+            int left = 0, right = i, c = 0;
+            while (right < text.length())
+            {
+                if (text[left++] == text[right++])
+                {
+                    c++;
+                }
+                else
+                {
+                    c = 0;
+                }
+                if (c >= i && c < i * 2)
+                {
+                    substrings.insert(text.substr(left, i));
+                }
+            }
+        }
+        return substrings.size();
+    }
+    ```
+
+    - 抛弃hashset，两次遍历，避免重复，时间复杂度$O(n^2),n=text.length$，LeetCode时间效率$\color{red}{80 ms, 88.09\%}$
+
+    ```cpp
+    int distinctEchoSubstrings(string text)
+    {
+        const int n = text.length();
+        vector<int> copy_n(n + 1, 0);
+        for (int i = 1; i < n; i++)
+        {
+            int left = 0, right = i, c = 0;
+            while (right < n)
+            {
+                if (text[left++] == text[right++])
+                {
+                    c++;
+                }
+                else
+                {
+                    c = 0;
+                }
+                copy_n[right] = max(copy_n[right], c);
+            }
+        }
+        int ret = 0;
+        for (int i = 1; i <= n / 2; i++)
+        {
+            int left = 0, right = i, c = 0;
+            while (right < n)
+            {
+                if (text[left++] == text[right++])
+                {
+                    c++;
+                }
+                else
+                {
+                    c = 0;
+                }
+                if (c >= i && copy_n[right] < i * 2)
+                {
+                    ret++;
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+- [1325. Delete Leaves With a Given Value](https://leetcode.com/problems/delete-leaves-with-a-given-value/)
+
+    - 迭代式post-order遍历二叉树，将符合条件的节点值标记为-1，然后递归式遍历所有节点，删除值为-1的节点，时间复杂度$O(n)$，其中n为二叉树所有节点的数量
+
+    ```cpp
+    TreeNode *dfs_remove(TreeNode *root)
+    {
+        if (root)
+        {
+            if (root->val == -1)
+            {
+                root = nullptr;
+            }
+            else
+            {
+                root->left = dfs_remove(root->left);
+                root->right = dfs_remove(root->right);
+            }
+        }
+        return root;
+    }
+    TreeNode *removeLeafNodes(TreeNode *root, int target)
+    {
+        if (root)
+        {
+            TreeNode *cur = root;
+            stack<TreeNode *> st;
+            unordered_set<TreeNode *> visited;
+            while (cur || !st.empty())
+            {
+                if (cur)
+                {
+                    st.push(cur);
+                    cur = cur->left;
+                }
+                else
+                {
+                    if (visited.find(st.top()->right) != visited.end())
+                    {
+                        cur = st.top(), st.pop();
+                        if (cur->val == target && (!cur->left || cur->left->val == -1) && (!cur->right || cur->right->val == -1))
+                        {
+                            cur->val = -1;
+                        }
+                        cur = nullptr;
+                    }
+                    else
+                    {
+                        cur = st.top()->right;
+                        visited.insert(cur);
+                    }
+                }
+            }
+            root = dfs_remove(root);
+        }
+        return root;
+    }
+    ```
+
+    - 将迭代式post-order遍历改为递归式
+
+    ```cpp
+    TreeNode *dfs_remove(TreeNode *root)
+    {
+        if (root)
+        {
+            if (root->val == -1)
+            {
+                root = nullptr;
+            }
+            else
+            {
+                root->left = dfs_remove(root->left);
+                root->right = dfs_remove(root->right);
+            }
+        }
+        return root;
+    }
+    void dfs_mark(TreeNode *root, int target)
+    {
+        if (root)
+        {
+            if (root->left)
+            {
+                dfs_mark(root->left, target);
+            }
+            if (root->right)
+            {
+                dfs_mark(root->right, target);
+            }
+            if (root->val == target && (!root->left || root->left->val == -1) && (!root->right || root->right->val == -1))
+            {
+                root->val = -1;
+            }
+        }
+    }
+    TreeNode *removeLeafNodes(TreeNode *root, int target)
+    {
+        dfs_mark(root, target);
+        root = dfs_remove(root);
+        return root;
+    }
+    ```
+
+    部分测试数据
+
+    ```cpp
+    [1,2,3,2,null,2,4]
+    2
+    [1,3,3,3,2]
+    3
+    [1,2,null,2,null,2]
+    2
+    [1,1,1]
+    1
+    [1,2,3]
+    1
+    ```
+
+- [1346. Check If N and Its Double Exist](https://leetcode.com/problems/check-if-n-and-its-double-exist/)
+
+    - 快速排序后从前向后遍历arr[i]和arr[j]是否存在二倍关系，时间复杂度$O(n^2)$
+
+    ```cpp
+    bool checkIfExist(vector<int> &arr)
+    {
+        int const count = arr.size();
+        sort(arr.begin(), arr.end());
+        bool ans = true;
+        for (int i = 0; ans && i < count; i++)
+        {
+            for (int j = i + 1; ans && j < count; j++)
+            {
+                if (arr[i] * 2 == arr[j] || arr[i] == arr[j] * 2)
+                {
+                    ans = false;
+                }
+            }
+        }
+        return !ans;
+    }
+    ```
+
+    - 快排后对任意arr[i]二分查找是否存在arr[j]与其存在二倍关系切$i!=j$，时间复杂度$O(n)$
+
+    ```cpp
+    int binary_search(vector<int> &arr, int v)
+    {
+        int left = 0, right = arr.size() - 1, ans = -1;
+        while (left <= right)
+        {
+            int mid = left + (right - left) / 2;
+            if (arr[mid] == v)
+            {
+                ans = mid;
+                break;
+            }
+            else if (arr[mid] > v)
+            {
+                right = mid - 1;
+            }
+            else
+            {
+                left = mid + 1;
+            }
+        }
+        return ans;
+    }
+    bool checkIfExist(vector<int> &arr)
+    {
+        int const count = arr.size();
+        sort(arr.begin(), arr.end());
+        bool ans = false;
+        for (int i = 0; !ans & i < count; i++)
+        {
+            int j = binary_search(arr, arr[i] * 2);
+            if (j != -1 && i != j)
+            {
+                ans = true;
+            }
+        }
+        return ans;
+    }
+    ```
+
+- [1361. Validate Binary Tree Nodes](https://leetcode.com/problems/validate-binary-tree-nodes/)
+
+	检查所有节点的入度，其中root有且仅有一个入度为0，其它节点入度必须为1，在此基础上保证root代表的二叉树包含了全部节点节即可，时间复杂度$O(n)$
+
+	```cpp
+	class Solution
+	{
+	private:
+		int countNodes(vector<int> &leftChild, vector<int> &rightChild, vector<int> &visited, int root)
+		{
+			int ret = 1;
+			visited[root] = 1;
+			if (leftChild[root] != -1 && !visited[leftChild[root]])
+			{
+				ret += countNodes(leftChild, rightChild, visited, leftChild[root]);
+			}
+			if (rightChild[root] != -1 && !visited[rightChild[root]])
+			{
+				ret += countNodes(leftChild, rightChild, visited, rightChild[root]);
+			}
+			return ret;
+		}
+
+	public:
+		bool validateBinaryTreeNodes(int n, vector<int> &leftChild, vector<int> &rightChild)
+		{
+			vector<int> in_degree(n, 0), visited(n, 0);
+			for (int i = 0; i < n; i++)
+			{
+				if (leftChild[i] != -1)
+				{
+					in_degree[leftChild[i]]++;
+					if (in_degree[leftChild[i]] > 1)
+					{
+						return false;
+					}
+				}
+				if (rightChild[i] != -1)
+				{
+					in_degree[rightChild[i]]++;
+					if (in_degree[rightChild[i]] > 1)
+					{
+						return false; // 二叉树中节点的入度为0(root)或者1(nonRoot)
+					}
+				}
+			}
+			int root = -1;
+			for (int i = 0; i < n; i++)
+			{
+				if (in_degree[i] == 0)
+				{
+					// 入度为0即为root
+					if (root == -1)
+					{
+						root = i;
+					}
+					else
+					{
+						return false; // root多于一个
+					}
+				}
+			}
+			// 统计root下面的节点数量，保证n个节点全部纳入root下面，避免漏掉某些点或者形成环
+			return root != -1 && n == countNodes(leftChild, rightChild, visited, root);
+		}
+	};
+
+- [1379. Find a Corresponding Node of a Binary Tree in a Clone of That Tree](https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/)
+
+    - 递归方法，DFS，时间效率$\color{red}{688 ms, 53.45\%}$
+
+    ```cpp
+    TreeNode *findTargetNode(TreeNode *node, TreeNode *target)
+    {
+        TreeNode *ret = nullptr;
+        if (node != nullptr)
+        {
+            if (node->val == target->val)
+            {
+                ret = node;
+            }
+            else
+            {
+                TreeNode *left = findTargetNode(node->left, target);
+                if (left != nullptr)
+                {
+                    ret = left;
+                }
+                else
+                {
+                    ret = findTargetNode(node->right, target);
+                }
+            }
+        }
+        return ret;
+    }
+    TreeNode *getTargetCopy(TreeNode *original, TreeNode *cloned, TreeNode *target)
+    {
+        return findTargetNode(cloned, target);
+    }
+    ```
+
+    - 队列实现，BFS，时间效率$\color{red}{732 ms, 20.92\%}$
+
+    ```cpp
+    TreeNode *getTargetCopy(TreeNode *original, TreeNode *cloned, TreeNode *target)
+    {
+        queue<TreeNode *> qe;
+        qe.push(cloned);
+        TreeNode *ret = nullptr, *current_node = nullptr;
+        while (ret == nullptr && !qe.empty())
+        {
+            current_node = qe.front();
+            qe.pop();
+            if (current_node->val == target->val)
+            {
+                ret = current_node;
+            }
+            else
+            {
+                if (current_node->left)
+                {
+                    qe.push(current_node->left);
+                }
+                if (current_node->right)
+                {
+                    qe.push(current_node->right);
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+- [1381. Design a Stack With Increment Operation](https://leetcode.com/problems/design-a-stack-with-increment-operation/)
+
+    - 每次inc操作都给所有的数字加val值，时间复杂度$O(k)$
+
+    ```cpp
+    class CustomStack
+    {
+    private:
+        int top, capacity;
+        vector<int> st;
+
+    public:
+        CustomStack(int maxSize)
+        {
+            st = vector<int>(maxSize, 0);
+            top = -1;
+            capacity = maxSize;
+        }
+
+        void push(int x)
+        {
+            if (top != capacity - 1)
+            {
+                st[++top] = x;
+            }
+        }
+
+        int pop()
+        {
+            int val = -1;
+            if (top >= 0)
+            {
+                val = st[top--];
+            }
+            return val;
+        }
+
+        void increment(int k, int val)
+        {
+            for (auto i = 0; i < k && i <= top; i++)
+            {
+                st[i] += val;
+            }
+        }
+    };
+    ```
+
+    - lazy increment，空间换时间，用一个额外的inc数组来记录增量值，其中inc[i]标识下标从0到i的每个元素增量值，时间复杂度$O(1)$
+
+    ```cpp
+    class CustomStack
+    {
+    private:
+        int top, capacity;
+        vector<int> st, inc;
+
+    public:
+        CustomStack(int maxSize)
+        {
+            st = vector<int>(maxSize, 0);
+            inc = vector<int>(maxSize, 0);
+            top = -1;
+            capacity = maxSize;
+        }
+
+        void push(int x)
+        {
+            if (top != capacity - 1)
+            {
+                st[++top] = x;
+            }
+        }
+
+        int pop()
+        {
+            int val = -1;
+            if (top >= 0)
+            {
+                val = st[top];
+                val += inc[top];
+                if (top > 0)
+                {
+                    inc[top - 1] += inc[top];
+                }
+                inc[top] = 0; // 清除对栈顶之后元素的increment操作
+                top--;
+            }
+            return val;
+        }
+
+        void increment(int k, int val)
+        {
+            int index = min(k - 1, top);
+            if (index >= 0)
+            {
+                inc[index] += val;
+            }
+        }
+    };
+    ```
+
+- [1387. Sort Integers by The Power Value](https://leetcode.com/problems/sort-integers-by-the-power-value/)
+
+    - lo和hi数据范围未知情况下每个数字单独计算power，时间效率$\color{red}{92 ms, 46.65\%}$
+
+    ```cpp
+    int getKth(int lo, int hi, int k)
+    {
+        const int count = hi - lo + 1;
+        vector<vector<int>> powers(count, vector<int>(2, -1));
+        for (int v = lo; v <= hi; v++)
+        {
+            int power = 0, temp_v = v;
+            while (temp_v != 1)
+            {
+                if (lo <= temp_v && temp_v <= hi && powers[temp_v - lo][1] != -1)
+                {
+                    power += powers[temp_v - lo][1];
+                    temp_v = 1;
+                }
+                else
+                {
+                    power++;
+                    temp_v = (temp_v & 0x1) ? (3 * temp_v + 1) : (temp_v >> 1);
+                }
+            }
+            powers[v - lo][0] = v, powers[v - lo][1] = power;
+        }
+        sort(powers.begin(), powers.end(), [](auto &a, auto &b) -> bool { return a[1] < b[1] || (a[1] == b[1] && a[0] < b[0]); });
+        return powers[k - 1][0];
+    }
+    ```
+
+    - 给定lo和hi的数据范围，固定DP或者recursion，时间效率$\color{red}{100 ms, 45.50\%}$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        int getPower(int v, vector<int> &powers)
+        {
+            int ret = 0;
+            if (v <= 1000)
+            {
+                if (powers[v] == -1)
+                {
+                    powers[v] = 1 + ((v & 0x1) ? getPower(v * 3 + 1, powers) : getPower(v / 2, powers));
+                }
+                ret = powers[v];
+            }
+            else
+            {
+                ret = 1 + ((v & 0x1) ? getPower(v * 3 + 1, powers) : getPower(v / 2, powers));
+            }
+            return ret;
+        }
+
+    public:
+        int getKth(int lo, int hi, int k)
+        {
+            const int count = hi - lo + 1, max_hi = 3001;
+            vector<int> powers_maxHi(max_hi, -1);
+            powers_maxHi[1] = 0;
+            vector<vector<int>> powers(count, vector<int>(2, -1));
+            for (int v = lo; v <= hi; v++)
+            {
+                powers[v - lo][0] = v, powers[v - lo][1] = getPower(v, powers_maxHi);
+            }
+            sort(powers.begin(), powers.end(), [](auto &a, auto &b) -> bool { return a[1] < b[1] || (a[1] == b[1] && a[0] < b[0]); });
+            return powers[k - 1][0];
+        }
+    };
+    ```
+
+- [1395. Count Number of Teams](https://leetcode.com/problems/count-number-of-teams/)
+
+    - 给定i,j,k三个下标暴力遍历，时间复杂度$O(n^3)$
+
+    ```cpp
+    int numTeams(vector<int> &rating)
+    {
+        int ret = 0, count = rating.size();
+        for (auto i = 0; i < count; i++)
+        {
+            for (auto j = i + 1; j < count; j++)
+            {
+                for (auto k = j + 1; k < count; k++)
+                {
+                    if ((rating[i] < rating[j] && rating[j] < rating[k]) || (rating[i] > rating[j] && rating[j] > rating[k]))
+                    {
+                        ret++;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 二重遍历记录每个数v两侧大于v的数个数和右侧小于v的数个数，然后计算即可，时间复杂度$O(n^2)$
+
+    ```cpp
+    int numTeams(vector<int> &rating)
+    {
+        int ret = 0, count = rating.size();
+        for (auto i = 1; i < count - 1; i++)
+        {
+            int leftLess = 0, rightLess = 0, leftGreater = 0, rightGreater = 0;
+            for (auto j = 0; j < i; j++)
+            {
+                rating[j] < rating[i] ? leftLess++ : leftGreater++;
+            }
+            for (auto j = i + 1; j < count; j++)
+            {
+                rating[i] < rating[j] ? rightGreater++ : rightLess++;
+            }
+            ret += leftLess * rightGreater + leftGreater * rightLess;
+        }
+        return ret;
+    }
+    ```
+
+- [1401. Circle and Rectangle Overlapping](https://leetcode.com/problems/circle-and-rectangle-overlapping/)
+
+    - 这是一道几何计算题目，时间复杂度$O(1)$，参考[reference](https://www.zhihu.com/question/24251545/answer/27184960)
+
+    ```cpp
+    bool checkOverlap(int radius, int x_center, int y_center, int x1, int y1, int x2, int y2)
+    {
+        // 转换坐标原点为矩形正中心O，此时矩形在坐标系正中心,矩形右上角坐标点必然在第一象限记为A，可以将圆中心坐标映射到对称的第一象限B
+        double x_center_rectangle = x1 + (x2 - x1) * 0.5, y_center_rectangle = y1 + (y2 - y1) * 0.5;
+        double x_center_new = abs(x_center - x_center_rectangle), y_center_new = abs(y_center - y_center_rectangle);
+        double x2_new = x2 - x_center_rectangle, y2_new = y2 - y_center_rectangle;
+        // 计算向量 AB
+        double x = x_center_new - x2_new, y = y_center_new - y2_new;
+        /**
+         *  计算矩形右上角A点到圆心B点的距离，分四种情况讨论
+         * 1. x>0 y>0 该距离小于等于圆半径，即为有交点（相切或者相交)
+         * 2. x<0 y>0 若x <= radius则相交或者相切
+         * 3. x>0 y<0 若y <= radius则相交或者相切
+         * 4. x<=0 y<=0 必然相交
+        */
+        double square_of_distance_AB = x * x + y * y, square_of_radius = radius * radius;
+        return (x <= 0 && y <= 0) || (x > 0 && y < 0 && x <= radius) || (x < 0 && y > 0 && y <= radius) || square_of_distance_AB <= square_of_radius;
+    }
+    ```
+
+- [1406. Stone Game III](https://leetcode.com/problems/stone-game-iii/)
+
+	DP，时间复杂度$O(n)$
+
+	```cpp
+	string stoneGameIII(vector<int> &stoneValue)
+	{
+		/**
+		 * dynamic plan, dp[i]表示从在给定stoneValue[i,i+1,...,n-1]先手可以获得的最大值
+		 * dp[i] = max(suffix_sum[i] - dp[i+x]), 1 <= x <= 3
+		*/
+		const int n = stoneValue.size();
+		vector<int> suffix_sum(n + 1, 0), dp(n + 1, numeric_limits<int>::min());
+		dp[n] = 0; // initialization
+		for (int i = n - 1; i >= 0; i--)
+		{
+			suffix_sum[i] = stoneValue[i] + suffix_sum[i + 1];
+		}
+		for (int i = n; i >= 0; i--)
+		{
+			for (auto step = 1; step <= 3 && i + step <= n; step++)
+			{
+				dp[i] = max(dp[i], suffix_sum[i] - dp[i + step]);
+			}
+		}
+		int alice = dp[0], bob = suffix_sum[0] - dp[0];
+		string ret;
+		if (alice > bob)
+		{
+			ret = "Alice";
+		}
+		else if (alice < bob)
+		{
+			ret = "Bob";
+		}
+		else
+		{
+			ret = "Tie";
+		}
+		return ret;
+	}
+	```
+
+- [1410. HTML Entity Parser](https://leetcode.com/problems/html-entity-parser/)
+
+    - 暴力比较是否字符串相同，LeetCode评测机$\color{red}{TLE}$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        int get_index(string text, int start_pointer)
+        {
+            // start_pointer is the index of the next char of '&'
+            int index = 6; // not found
+            bool not_found = true;
+            int count = text.length(), partial_length = count - start_pointer;
+            if (not_found && partial_length >= 6 && text.substr(start_pointer, 6).compare("frasl;") == 0)
+            {
+                index = 5, not_found = false;
+            }
+            if (not_found && partial_length >= 5 && text.substr(start_pointer, 5).compare("quot;") == 0)
+            {
+                index = 0, not_found = false;
+            }
+            if (not_found && partial_length >= 5 && text.substr(start_pointer, 5).compare("apos;") == 0)
+            {
+                index = 1, not_found = false;
+            }
+            if (not_found && partial_length >= 4 && text.substr(start_pointer, 4).compare("amp;") == 0)
+            {
+                index = 2, not_found = false;
+            }
+            if (not_found && partial_length >= 3 && text.substr(start_pointer, 3).compare("gt;") == 0)
+            {
+                index = 3, not_found = false;
+            }
+            if (not_found && partial_length >= 3 && text.substr(start_pointer, 3).compare("lt;") == 0)
+            {
+                index = 4, not_found = false;
+            }
+            return index;
+        }
+
+    public:
+        string entityParser(string text)
+        {
+            vector<char> entities{'"', '\'', '&', '>', '<', '/'};
+            vector<int> lengths{5, 5, 4, 3, 3, 6};
+            string ret;
+            const int count = text.length();
+            for (int i = 0; i < count; i++)
+            {
+                char ch = text[i];
+                if (ch == '&')
+                {
+                    int index = get_index(text, i + 1);
+                    if (index < 6)
+                    {
+                        ch = entities[index];
+                        i += lengths[index];
+                    }
+                }
+                ret.push_back(ch);
+            }
+            return ret;
+        }
+    };
+    ```
+
+    - two pointer method，时间效率$\color{red}{160 ms, 99.67\%}$
+
+    ```cpp
+    string entityParser(string text)
+    {
+        // 用字符串的长度记录特殊字符串对应的转义字符
+        vector<pair<string, char>> sp2char_map[6] = {{}, {}, {{"gt", '>'}, {"lt", '<'}}, {{"amp", '&'}}, {{"quot", '"'}, {"apos", '\''}}, {{"frasl", '/'}}};
+        // 用start和and记录每一对&和;的位置
+        int start = 0, current = 0, count = text.length();
+        for (auto i = 0; i < count; i++, current++)
+        {
+            text[current] = text[i]; // update current character
+            if (text[current] == '&')
+            {
+                start = current;
+            }
+            if (text[current] == ';')
+            {
+                auto size = current - start - 1;
+                if (size >= 2 && size <= 5)
+                {
+                    //所有可能的特殊字符序列长度为2,3,4,5
+                    for (auto &[enc, dec] : sp2char_map[size])
+                    {
+                        if (text.compare(start + 1, size, enc) == 0)
+                        {
+                            current = start;
+                            text[current] = dec;
+                            break;
+                        }
+                    }
+                }
+                start = current + 1;
+            }
+        }
+        text.resize(current);
+        return text;
+    }
+    ```
+
+- [1414. Find the Minimum Number of Fibonacci Numbers Whose Sum Is K](https://leetcode.com/problems/find-the-minimum-number-of-fibonacci-numbers-whose-sum-is-k/)
+
+    - 动态规划，DP，$O(k^2)$，结果正确但是$\color{red}{TLE}$
+
+    ```cpp
+    int findMinFibonacciNumbers(int k)
+    {
+        vector<int> fibonacci{1, 2};
+        int last = 1;
+        while (fibonacci[last] < k)
+        {
+            fibonacci.push_back(fibonacci[last - 1] + fibonacci[last]);
+            last++;
+        }
+        vector<int> dp(k + 1, 0);
+        for (auto i = 0; i <= k; i++)
+        {
+            dp[i] = i; // 全部用1
+        }
+        for (auto &&v : fibonacci)
+        {
+            for (auto i = v; i <= k; i++)
+            {
+                dp[i] = min(dp[i - v] + 1, dp[i]);
+            }
+        }
+        return dp.back();
+    }
+    ```
+
+    - 贪心法则，greedy，$f(k)=f(k-x)+1$，递归式写法，时间复杂度$O((log(k))^2)$
+
+    ```cpp
+    int findMinFibonacciNumbers(int k)
+    {
+        int ret;
+        if (k < 2)
+        {
+            ret = k;
+        }
+        else
+        {
+            int a = 1, b = 1;
+            while (b <= k)
+            {
+                a += b;
+                swap(a, b);
+            }
+            ret = 1 + findMinFibonacciNumbers(k - a);
+        }
+        return ret;
+    }
+    ```
+
+    - 贪心法则，greedy，$f(k)=f(k-x)+1$，迭代式写法，时间复杂度$O(log(k))$
+
+    ```cpp
+    int findMinFibonacciNumbers(int k)
+    {
+        int ret = 0, a = 1, b = 1, temp;
+        while (b <= k)
+        {
+            temp = a + b;
+            a = b;
+            b = temp;
+        }
+        while (a > 0)
+        {
+            if (a <= k)
+            {
+                k -= a;
+                ret++;
+            }
+            temp = b - a;
+            b = a;
+            a = temp;
+        }
+        return ret;
+    }
+    ```
+
+- [1415. The k-th Lexicographical String of All Happy Strings of Length n](https://leetcode.com/problems/the-k-th-lexicographical-string-of-all-happy-strings-of-length-n/)
+
+    - 用组合数学的方法直接计算第k个happy string，时间复杂度$O(n)$
+
+    ```cpp
+    string getHappyString(int n, int k)
+    {
+        vector<int> powersOf2{1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
+        string letters_all = "abc", letters_next = "bcacab", ret;
+        if (k <= 3 * powersOf2[n - 1])
+        {
+            char fisrt_letter = letters_all[(--k) / powersOf2[n - 1]];
+            ret.push_back(fisrt_letter), k %= powersOf2[n - 1];
+            for (auto i = 1; i < n; i++)
+            {
+                int next_index = k < powersOf2[n - 1 - i] ? 0 : 1;
+                ret.push_back(letters_next[(int)(ret.back() - 'a') * 2 + next_index]);
+                k %= powersOf2[n - 1 - i];
+            }
+        }
+        return ret;
+    }
+    ```
+
+- [1424. Diagonal Traverse II](https://leetcode.com/problems/diagonal-traverse-ii/)
+
+    - 从左下角到右上角遍历所有可能的坐标，时间复杂度$O(rows*cols)$，提交结果答案正确但是$\color{red}{TLE}$
+
+    ```cpp
+    vector<int> findDiagonalOrder(vector<vector<int>> &nums)
+    {
+        int rows = nums.size(), total = 0, k = 0, max_col = 0;
+        vector<int> cols(rows, 0), prefix_max_cols(rows, 0);
+        for (auto i = 0; i < rows; i++)
+        {
+            cols[i] = nums[i].size();
+            max_col = max(max_col, cols[i]), total += cols[i];
+            prefix_max_cols[i] = max_col;
+        }
+        vector<int> ret(total, 0); // 保存结果
+        int max_i_j_sum = rows + max_col - 2;
+        for (auto i_j_sum = 0; i_j_sum <= max_i_j_sum && k < total; i_j_sum++)
+        {
+            /*
+                1. k<total 元素总数目约数剪枝
+            */
+            int i = min(i_j_sum, rows - 1), j = i_j_sum - i;
+            while (i >= 0 && j < prefix_max_cols[i] && k < total)
+            {
+                if (j < cols[i])
+                {
+                    ret[k++] = nums[i][j];
+                }
+                i--, j++; // 从左下角向右上角走
+            }
+        }
+        return ret;
+    }
+    ```
+
+    - 采用桶排序的方式将下标$i+j$相同的对角线元素全部放入同一个桶里面，时间复杂度$O(n)$，其中n为总的元素个数
+
+    ```cpp
+    vector<int> findDiagonalOrder(vector<vector<int>> &nums)
+    {
+        int rows = nums.size(), max_key = 0;
+        unordered_map<int, vector<int>> buckets;
+        vector<int> ret;
+        for (auto i = 0; i < rows; i++)
+        {
+            auto cols = nums[i].size();
+            for (auto j = 0; j < cols; j++)
+            {
+                max_key = max(max_key, i + j);
+                buckets[i + j].push_back(nums[i][j]);
+            }
+        }
+        for (auto i = 0; i <= max_key; i++)
+        {
+            for (auto v = buckets[i].rbegin(); v != buckets[i].rend(); v++)
+            {
+                ret.push_back(*v);
+            }
+        }
+        return ret;
+    }
+    ```
+
+- [1449. Form Largest Integer With Digits That Add up to Target](https://leetcode.com/problems/form-largest-integer-with-digits-that-add-up-to-target/)
+
+    
+    1-9的每个数字需要消耗的weight是cost数组，在相同的cost下优先选择值更大的数字v，然后使用DP方法动态规划背包容量为target时的最大结果，这里注意不超过背包容量的最优解和恰好装满背包的最优解（需要从target=0开始使用，所有值初始化为inf，最优解为max时inf为max，最优解为min时inf为min，然后dp[0]=0），时间复杂度$O(target)$
+
+	```cpp
+    class Solution
+    {
+    private:
+        string max_string(string a, string b, char inf_ch)
+        {
+            // a是新构造的 dp[j-weight]+ch  b是原本的dp[j]
+            string ret;
+            int length_a = a.length(), length_b = b.length();
+            if (a.front() == inf_ch)
+            {
+                ret = b;
+            }
+            else if (length_a > length_b)
+            {
+                ret = a;
+            }
+            else if (length_a < length_b)
+            {
+                ret = b;
+            }
+            else
+            {
+                ret = a.compare(b) >= 0 ? a : b;
+            }
+            return ret;
+        }
+
+    public:
+        string largestNumber(vector<int> &cost, int target)
+        {
+            unordered_map<int, int> cost2digital;
+            for (auto i = 0; i < cost.size(); i++)
+            {
+                auto it = cost2digital.find(cost[i]);
+                if (it == cost2digital.end())
+                {
+                    cost2digital[cost[i]] = i + 1;
+                }
+                else
+                {
+                    cost2digital[cost[i]] = max(i + 1, cost2digital[cost[i]]);
+                }
+            }
+            vector<int> digital2cost(10, -1);
+            for (auto &&item : cost2digital)
+            {
+                digital2cost[item.second] = item.first;
+            }
+            // 设置inf_string 哨兵是为了背包恰好完全装满
+            char inf_ch = '0';
+            string inf_string{inf_ch};
+            vector<string> dp(target + 1, inf_string);
+            dp[0] = "";
+            for (int i = 9; i >= 0; --i)
+            {
+                if (digital2cost[i] != -1)
+                {
+                    char ch = (char)(i + '0');
+                    int weight = digital2cost[i];
+                    for (int j = weight; j <= target; j++)
+                    {
+                        string temp = dp[j - weight];
+                        temp.push_back(ch);
+                        dp[j] = max_string(temp, dp[j], inf_ch);
+                    }
+                }
+            }
+            string ret = dp.back();
+            if (ret.size() == 0)
+            {
+                ret.push_back('0');
+            }
+            return ret;
+        }
+    };
+	```
+
+- [1452. People Whose List of Favorite Companies Is Not a Subset of Another List](https://leetcode.com/problems/people-whose-list-of-favorite-companies-is-not-a-subset-of-another-list/)
+    
+    早cpp中判断set a是否为set b的子集，将a和b排序后处理，时间复杂度$O(kn^2)$，其中$n=favoriteCompanies.length,k=max_i(favoriteCompanies[i])$
+
+	```cpp
+    class Solution
+    {
+    private:
+        int cmp(vector<string> &a, vector<string> &b)
+        {
+            int m = a.size(), n = b.size();
+            int i = 0, j = 0;
+            if (m > n)
+            {
+                return 1;
+            }
+            else if (m == n && m == 0)
+            {
+                return 0;
+            }
+            else
+            {
+                // m == n 且不为0 或者m<n
+                int i = 0, j = 0;
+                while (i < m && j < n)
+                {
+                    if (a[i].compare(b[j]) == 0)
+                    {
+                        i++, j++;
+                    }
+                    else
+                    {
+                        j++;
+                    }
+                }
+                int ret;
+                if (i == m)
+                {
+                    ret = (j == n) ? 0 : -1;
+                }
+                else
+                {
+                    ret = 1;
+                }
+                return ret;
+            }
+            return -2; // unknown
+        }
+
+    public:
+        vector<int> peopleIndexes(vector<vector<string>> &favoriteCompanies)
+        {
+            for (auto &&item : favoriteCompanies)
+            {
+                sort(item.begin(), item.end());
+            }
+            const int count = favoriteCompanies.size();
+            vector<vector<int>> records(count, vector<int>(count, 0));
+            // -2 未知 -1 i<j 0 i=j 1 i>j
+            for (auto i = 0; i < count; i++)
+            {
+                records[i][i] = 0;
+                for (auto j = 0; j < count; j++)
+                {
+                    if (i != j)
+                    {
+                        records[i][j] = cmp(favoriteCompanies[i], favoriteCompanies[j]);
+                    }
+                }
+            }
+            vector<int> ret;
+            for (auto i = 0; i < count; i++)
+            {
+                auto j = 0;
+                while (j < count)
+                {
+                    (i == j || records[i][j] == 1) ? j++ : j = count + 1; // j=count+1 means break
+                }
+                if (j == count)
+                {
+                    ret.push_back(i);
+                }
+            }
+            return ret;
+        }
+    };
+	```
+
+- [1453. Maximum Number of Darts Inside of a Circular Dartboard](https://leetcode.com/problems/maximum-number-of-darts-inside-of-a-circular-dartboard/)
+    
+    任意两个点和半径r可以确定一个圆，然后遍历其它点在该圆内的数量，时间复杂度$O(n^3)$
+
+	```cpp
+    class Solution
+    {
+    private:
+        double eps = 1e-8;
+        double distance_square(vector<int> &a, vector<int> &b)
+        {
+            return (double)((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]));
+        }
+        double distance_square(vector<int> &a, vector<double> &b)
+        {
+            return (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]);
+        }
+
+    public:
+        int numPoints(vector<vector<int>> &points, int r)
+        {
+            // n^3做法，每两个点确定一个圆，统计在该圆中点的数量
+            int count = points.size();
+            int ret = 1, d_square = 4 * r * r, r_square = r * r;
+            if (count > 1)
+            {
+                for (auto i = 0; i < count; i++)
+                {
+                    for (auto j = i + 1; j < count; j++)
+                    {
+                        // 遍历每两个点构成的所有的圆
+                        double center_r_square = distance_square(points[i], points[j]);
+                        if (center_r_square <= d_square)
+                        {
+                            // 给定圆的半径r可以覆盖这两个点，判断其它点在这两个点构成的圆内有多少个
+                            int number_points = 0;
+                            double mid_ij_x = (points[i][0] + points[j][0]) / 2.0;
+                            double mid_ij_y = (points[i][1] + points[j][1]) / 2.0;
+                            vector<double> mid{mid_ij_x, mid_ij_y};
+                            double angle = atan2((double)(points[i][0] - points[j][0]), (double)(points[j][1] - points[i][1]));
+                            double d = sqrt(r * r - distance_square(points[i], mid));
+                            double center_x = mid_ij_x + d * cos(angle);
+                            double center_y = mid_ij_y + d * sin(angle);
+                            vector<double> center{center_x, center_y};
+                            for (auto &&item : points)
+                            {
+                                if (distance_square(item, center) <= r_square + eps)
+                                {
+                                    number_points++;
+                                }
+                            }
+                            ret = max(ret, number_points);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                ret = max(count, 1);
+            }
+            return ret;
+        }
+    };
+	```
+
+- [1458. Max Dot Product of Two Subsequences](https://leetcode.com/problems/max-dot-product-of-two-subsequences/)
+
+    最长公共子序列问题（LCS），DP，时间复杂度$O(n^2)$
+
+	```cpp
+	int maxDotProduct(vector<int> &nums1, vector<int> &nums2)
+	{
+		int m = nums1.size(), n = nums2.size();
+		vector<vector<int>> dp(m + 1, vector<int>(n + 1, numeric_limits<int>::min()));
+		for (int i = 0; i < m; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				vector<int> auxiliary = {max(0, dp[i][j]) + nums1[i] * nums2[j], dp[i + 1][j], dp[i][j + 1]};
+				dp[i + 1][j + 1] = *max_element(auxiliary.begin(), auxiliary.end());
+			}
+		}
+		return dp.back().back();
+	}
+	```
+
+- [1462. Course Schedule IV](https://leetcode.com/problems/course-schedule-iv/)
+
+    **相关题目**
+
+    - [207. Course Schedule](https://leetcode.com/problems/course-schedule/)
+    - [210. Course Schedule II](https://leetcode.com/problems/course-schedule-ii/)
+    - [630. Course Schedule III](https://leetcode.com/problems/course-schedule-iii/)
+
+    所有课程的前后依赖关系构成了directed graph/tree，DFS检查每一个查询对a/b在这个有向图中b是否是a的子节点，在check(a,b)的过程中memorization中间结果达到缩短后续查询对距离的剪枝效果，时间复杂度$O(V*E)$
+
+	```cpp
+    class Solution
+    {
+    private:
+        int dfs_helper(vector<vector<int>> &graph, int a, int b, int n)
+        {
+            if (graph[a][b] == -1)
+            {
+                // unknown, need to check
+                if (graph[b][a] == 1)
+                {
+                    // b是a的前继，a一定不是b的前继
+                    graph[a][b] = 0;
+                }
+                else
+                {
+                    // graph[b][a] == -1 ，b是否为a的前继未知，a是否为b的前继也未知
+                    // graph[b][a] == 0 ，b不是a的前继，a是否为b的前继不一定
+                    for (auto i = 0; i < n; i++)
+                    {
+                        if (graph[a][i] == 1 && dfs_helper(graph, i, b, n) == 1)
+                        {
+                            graph[a][b] = 1;
+                            break;
+                        }
+                    }
+                    if (graph[a][b] != 1)
+                    {
+                        graph[a][b] = 0;
+                    }
+                }
+            }
+            return graph[a][b]; // 此时返回值只有0/1两种状态，不再是未知-1
+        }
+
+    public:
+        vector<bool> checkIfPrerequisite(int n, vector<vector<int>> &prerequisites, vector<vector<int>> &queries)
+        {
+            // 建立邻接矩阵
+            vector<vector<int>> graph(n, vector<int>(n, -1));
+            for (auto &&edge : prerequisites)
+            {
+                graph[edge[0]][edge[1]] = 1;
+                /*
+                    1. graph[a][b] = 1 for one directed edge from a to b
+                    2. graph[a][b] = 0 for no one directed edge from a to b
+                    3. graph[a][b] = -1 unknown
+                */
+            }
+            vector<bool> ret;
+            for (auto &&q : queries)
+            {
+                ret.push_back(dfs_helper(graph, q[0], q[1], n) == 1);
+            }
+            return ret;
+        }
+    };
+	```
+
+- [1519. Number of Nodes in the Sub-Tree With the Same Label](https://leetcode.com/problems/number-of-nodes-in-the-sub-tree-with-the-same-label/)
+
+	DP + DFS-topdown，时间复杂度$O(n)$
+
+	```cpp
+	class Solution
+	{
+	private:
+		void dfs(vector<vector<int>> &graph, vector<vector<int>> &dp, vector<int> &ret, string &labels, int node, int parent)
+		{
+			int cur_label = static_cast<int>(labels[node] - 'a');
+			dp[node][cur_label] += 1;
+			if (!graph[node].empty())
+			{
+				for (auto &&subnode : graph[node])
+				{
+					if (subnode != parent)
+					{
+						dfs(graph, dp, ret, labels, subnode, node);
+						for (auto i = 0; i < 26; i++)
+						{
+							dp[node][i] += dp[subnode][i];
+						}
+					}
+				}
+			}
+			ret[node] = dp[node][cur_label];
+		}
+
+	public:
+		vector<int> countSubTrees(int n, vector<vector<int>> &edges, string labels)
+		{
+			// 建立邻接链表
+			vector<vector<int>> graph(n);
+			for (auto &&e : edges)
+			{
+				graph[e[0]].push_back(e[1]);
+				graph[e[1]].push_back(e[0]);
+			}
+			// dp[i][ch] 节点i及其子树上的字母ch数量
+			vector<vector<int>> dp(n, vector<int>(26, 0));
+			vector<int> ret(n, 0);
+			dfs(graph, dp, ret, labels, 0, -1);
+			return ret;
+		}
+	};
+	```
+
+	- some test case
+
+	```cpp
+	7
+	[[0,1],[0,2],[1,4],[1,5],[2,3],[2,6]]
+	"abaedcd"
+	4
+	[[0,1],[1,2],[0,3]]
+	"bbbb"
+	5
+	[[0,1],[0,2],[1,3],[0,4]]
+	"aabab"
+	6
+	[[0,1],[0,2],[1,3],[3,4],[4,5]]
+	"cbabaa"
+	7
+	[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]]
+	"aaabaaa"
+	4
+	[[0,2],[0,3],[1,2]]
+	"aeed"
+	```
+
+- [1524. Number of Sub-arrays With Odd Sum](https://leetcode.com/problems/number-of-sub-arrays-with-odd-sum/)
+
+	DP，时间复杂度$O(n)$
+
+	```cpp
+	int numOfSubarrays(vector<int> &arr)
+	{
+		const int n = arr.size(), mod = 1e9 + 7;
+		for (int i = 0; i < n; i++)
+		{
+			arr[i] %= 2; // 奇偶问题可以转化为0/1问题
+		}
+		vector<int> dp_zero(n + 1, 0), dp_one(n + 1, 0);
+		for (int i = n - 1; i >= 0; i--)
+		{
+			if (arr[i] == 1)
+			{
+				dp_zero[i] = dp_one[i + 1];
+				dp_one[i] = (dp_zero[i + 1] + 1) % mod;
+			}
+			else
+			{
+				dp_zero[i] = (dp_zero[i + 1] + 1) % mod;
+				dp_one[i] = dp_one[i + 1];
+			}
+		}
+		int ret = 0;
+		for (auto &&v : dp_one)
+		{
+			ret = (ret + v) % mod;
+		}
+		return ret;
+	}
+	```
+
+- [1553. Minimum Number of Days to Eat N Oranges](https://leetcode.com/problems/minimum-number-of-days-to-eat-n-oranges/)
+
+	- DP，时间复杂度$O(n)$，leetcode评测机$\color{red}{Out of memory}$
+
+	```cpp
+	int minDays(int n)
+	{
+		vector<int> dp(n + 1, 0);
+		for (int i = 1; i <= n; i++)
+		{
+			dp[i] = dp[i - 1] + 1;
+			if (i % 2 == 0)
+			{
+				dp[i] = min(dp[i], dp[i / 2] + 1);
+			}
+			if (i % 3 == 0)
+			{
+				dp[i] = min(dp[i], dp[i / 3] + 1);
+			}
+		}
+		return dp.back();
+	}
+	```
+
+	- hashmap优化，时间复杂度$O(n)$
+
+	```cpp
+	int minDays(int n)
+	{
+		unordered_map<int, int> n2v;
+		queue<int> bfs;
+		bfs.push(n);
+		n2v[n] = 0;
+		while (true)
+		{
+			int cur = bfs.front();
+			bfs.pop();
+			int a = cur - 1, v = n2v[cur] + 1;
+			if (n2v.find(a) == n2v.end())
+			{
+				n2v[a] = v;
+				bfs.push(a);
+			}
+			if (cur % 2 == 0)
+			{
+				int b = cur / 2;
+				if (n2v.find(b) == n2v.end())
+				{
+					n2v[b] = v;
+					bfs.push(b);
+				}
+			}
+			if (cur % 3 == 0)
+			{
+				int c = cur / 3;
+				if (n2v.find(c) == n2v.end())
+				{
+					n2v[c] = v;
+					bfs.push(c);
+				}
+			}
+			if (n2v.find(0) != n2v.end())
+			{
+				return n2v[0];
+			}
+		}
+		return 0;
+	}
+	```
+
+- [1559. Detect Cycles in 2D Grid](https://leetcode.com/problems/detect-cycles-in-2d-grid/)
+
+	- DFS搜索，时间复杂度$O(m*n)$
+
+	```cpp
+	class Solution
+	{
+	private:
+		vector<vector<char>> grid;
+		vector<vector<bool>> vis;
+		int m, n;
+		const vector<int> directions{1, 0, -1, 0, 1};
+		bool dfs(int r, int c, int x, int y, char ch)
+		{
+			bool ret = false;
+			if (r >= 0 && c >= 0 && r < m && c < n && grid[r][c] == ch)
+			{
+				if (vis[r][c])
+				{
+					return true; // 形成了环
+				}
+				vis[r][c] = true;
+				for (auto i = 0; !ret && i < 4; i++)
+				{
+					int ni = r + directions[i], nj = c + directions[i + 1];
+					if (ni != x || nj != y) // 不是aba式的环
+					{
+						ret = dfs(ni, nj, r, c, ch);
+					}
+				}
+			}
+			return ret;
+		}
+
+	public:
+		bool containsCycle(vector<vector<char>> &grid)
+		{
+			this->grid = grid;
+			bool ret = false;
+			if (grid.size() > 0 && grid[0].size() > 0)
+			{
+				m = grid.size(), n = grid[0].size();
+				vis.resize(m, vector<bool>(n, false));
+				for (auto i = 0; !ret && i < m; i++)
+				{
+					for (auto j = 0; !ret && j < n; j++)
+					{
+						if (!vis[i][j])
+						{
+							ret = dfs(i, j, -1, -1, grid[i][j]);
+						}
+					}
+				}
+			}
+			return ret;
+		}
+	};
+	```
+
+- [1560. Most Visited Sector in a Circular Track](https://leetcode.com/problems/most-visited-sector-in-a-circular-track/)
+
+	- 暴力模拟，时间复杂度$O(n^2)$
+
+	```cpp
+	vector<int> mostVisited(int n, vector<int> &rounds)
+	{
+		vector<int> visited(n + 1, 0), ret;
+		int m = rounds.size() - 1;
+		visited[rounds[0]]++; // 起点
+		for (int i = 0; i < m; i++)
+		{
+			int start = rounds[i], length = ((rounds[i + 1] - start) % n + n) % n;
+			for (auto j = 0; j < length; j++)
+			{
+				visited[(start + j) % n + 1]++;
+			}
+		}
+		int max_values = *max_element(visited.begin() + 1, visited.end());
+		for (int i = 1; i <= n; i++)
+		{
+			if (visited[i] == max_values)
+			{
+				ret.push_back(i);
+			}
+		}
+		return ret;
+	}
+	```
+
+	- 数学分析，时间复杂度$O(n)$
+
+	因为是在循环，因此只需要关注start和end，当$start <= end$的时候，结果为$[start,end]$，当$start > end$的时候，结果为$[1,end]+[start,n]$
+
+	```cpp
+	vector<int> mostVisited(int n, vector<int> &rounds)
+	{
+		vector<int> ret;
+		int start = rounds[0], end = rounds[rounds.size() - 1];
+		if (start <= end)
+		{
+			for (int i = start; i <= end; i++)
+			{
+				ret.push_back(i);
+			}
+		}
+		else
+		{
+			for (int i = 1; i <= end; i++)
+			{
+				ret.push_back(i);
+			}
+			for (int i = start; i <= n; i++)
+			{
+				ret.push_back(i);
+			}
+		}
+		return ret;
+	}
+	```
+
+- [1566. Detect Pattern of Length M Repeated K or More Times](https://leetcode.com/problems/detect-pattern-of-length-m-repeated-k-or-more-times/)
+
+	- 暴力模拟，时间复杂度$O(n^2)$
+
+	```cpp
+	bool containsPattern(vector<int> &arr, int m, int k)
+	{
+		// 检测长度为m重复次数为k的pattern
+		int n = arr.size(), length = m * (k - 1), right_bound = n - k * m;
+		for (auto left = 0; left <= right_bound; left++)
+		{
+			for (auto repeat = 1, i = left + m; i < left + k * m; i += m)
+			{
+				int j = 0;
+				while (j < m && arr[left + j] == arr[i + j])
+				{
+					j++;
+				}
+				if (j == m)
+				{
+					repeat++;
+				}
+				if (repeat == k)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	```
+
+	- one pass扫描，通过计数器cnt来记录当前匹配模式的长度，时间复杂度$O(n)$
+
+	```cpp
+	bool containsPattern(vector<int> &arr, int m, int k)
+	{
+		// 检测长度为m重复次数为k的pattern
+		int n = arr.size(), cnt = 0, expected_cnt = m * (k - 1), right_bound = n - m;
+		for (auto i = 0; i < right_bound; i++)
+		{
+			arr[i] == arr[i + m] ? cnt++ : cnt = 0;
+			if (cnt == expected_cnt)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	```
+
+- [...](123)
