@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-08-28 12:48:01
+ * @LastEditTime: 2020-09-03 10:50:39
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3555,6 +3555,72 @@
         return ret;
     }
     ```
+
+- [152. Maximum Product Subarray](https://leetcode.com/problems/maximum-product-subarray/)
+
+	**当nums中的元素均为正数的时候，本题可以通过取对数转化为[53. Maximum Subarray](https://leetcode.com/problems/maximum-subarray/)求连续子数组的最大和问题**
+
+	- dynamic plan，时间复杂度$O(n)，空间复杂度$O(n)$
+
+	```cpp
+	int maxProduct(vector<int> &nums)
+	{
+		/**
+		 * 朴素的DP解法，给定dp_min[i]和dp_max[i]表示以当前nums[i]结尾的subarray中乘积最小值和最大值
+		 * 状态转移方程：
+		 * 		dp_min[i] = min(dp_min[i-1]*nums[i],dp_max[i-1]*nums[i],nums[i])
+		 * 		dp_max[i] = max(dp_min[i-1]*nums[i],dp_max[i-1]*nums[i],nums[i])
+		 * 时间复杂度：O(n)
+		 * 空间复杂度：O(n)
+		*/
+		int ret = 0;
+		if (nums.size() > 0)
+		{
+			int n = nums.size();
+			vector<int> dp_min(n), dp_max(n);
+			dp_min[0] = nums[0], dp_max[0] = nums[0], ret = nums[0];
+			for (int i = 1; i < n; i++)
+			{
+				int a = dp_min[i - 1] * nums[i], b = dp_max[i - 1] * nums[i];
+				dp_min[i] = min(min(a, b), nums[i]), dp_max[i] = max(max(a, b), nums[i]);
+				ret = max(ret, dp_max[i]);
+			}
+		}
+		return ret;
+	}
+	```
+
+	- dynamic plan，时间复杂度$O(n)，空间复杂度优化到$O(1)$
+
+	```cpp
+	int maxProduct(vector<int> &nums)
+	{
+		/**
+		 * 朴素的DP解法，给定dp_min[i]和dp_max[i]表示以当前nums[i]结尾的subarray中乘积最小值和最大值
+		 * 状态转移方程：
+		 * 		dp_min[i] = min(dp_min[i-1]*nums[i],dp_max[i-1]*nums[i],nums[i])
+		 * 		dp_max[i] = max(dp_min[i-1]*nums[i],dp_max[i-1]*nums[i],nums[i])
+		 * 时间复杂度：O(n)
+		 * 空间复杂度：O(n)
+		 * 
+		 * 由于dynamic plan过程中的dp[i]只和上一个状态dp[i-1]有关，因此空间复杂度可以优化到O(1)
+		 * 
+		*/
+		int ret = 0;
+		if (nums.size() > 0)
+		{
+			int n = nums.size(), dp_min = nums[0], dp_max = nums[0];
+			ret = nums[0];
+			for (int i = 1; i < n; i++)
+			{
+				int a = dp_min * nums[i], b = dp_max * nums[i];
+				dp_min = min(min(a, b), nums[i]), dp_max = max(max(a, b), nums[i]);
+				ret = max(ret, dp_max);
+			}
+		}
+		return ret;
+	}
+	```
 
 - [155](https://leetcode.com/problems/min-stack/)
 
