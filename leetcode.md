@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-09-03 18:14:00
+ * @LastEditTime: 2020-09-04 17:56:42
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -3590,7 +3590,7 @@
 	}
 	```
 
-	- dynamic plan，时间复杂度$O(n)，空间复杂度优化到$O(1)$
+	- dynamic plan，时间复杂度$O(n)$，空间复杂度优化到$O(1)$
 
 	```cpp
 	int maxProduct(vector<int> &nums)
@@ -14464,6 +14464,77 @@
 				}
 			}
 			return static_cast<int>(left);
+		}
+	};
+	```
+
+- [1202. Smallest String With Swaps](https://leetcode.com/problems/smallest-string-with-swaps/)
+
+	并查集的建立与使用，时间复杂度$O(nlog(n)))$
+
+	```cpp
+	class Solution
+	{
+	private:
+		int find(vector<int> &father, int x)
+		{
+			// 包含路径压缩的并查集查找
+			return father[x] == x ? x : (father[x] = find(father, father[x]));
+		}
+		void union_insert(vector<int> &father, int x, int y)
+		{
+			father[find(father, x)] = father[find(father, y)];
+		}
+
+	public:
+		string smallestStringWithSwaps(string s, vector<vector<int>> &pairs)
+		{
+			/*
+			* 1. 在可交换的pair基础上使用并查集合并所有的连通index
+			* 2. 单个连通的index内所有字符直接排序，按字典序排序后放回该连通域内的所有下标位置
+			* 3. 返回构造的结果字符串
+			*/
+			int n = s.length();
+			vector<int> father(n);
+			// initialization of union find
+			for (auto i = 0; i < n; i++)
+			{
+				father[i] = i;
+			}
+			// update of the union find
+			for (auto &&p : pairs)
+			{
+				union_insert(father, p[0], p[1]);
+			}
+			// 单个连通域内排序
+			vector<char> chars(n);
+			unordered_map<int, vector<int>> map;
+			for (auto i = 0; i < n; i++)
+			{
+				map[find(father, i)].push_back(i); // 标记每个字符的直接代表
+			}
+			for (auto &&item : map)
+			{
+				string cur;
+				vector<int> indexs = item.second;
+				for (auto &&index : indexs)
+				{
+					cur.push_back(s[index]);
+				}
+				sort(cur.begin(), cur.end());
+				sort(indexs.begin(), indexs.end());
+				for (auto i = 0; i < cur.length(); i++)
+				{
+					chars[indexs[i]] = cur[i];
+				}
+			}
+			// 构造结果串
+			string ret;
+			for (auto &&ch : chars)
+			{
+				ret.push_back(ch);
+			}
+			return ret;
 		}
 	};
 	```
