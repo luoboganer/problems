@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2019-09-13 13:35:19
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-09-04 17:56:42
+ * @LastEditTime: 2020-09-04 18:06:06
  * @Software: Visual Studio Code
  * @Description:
  -->
@@ -12426,6 +12426,113 @@
         }
     };
     ```
+
+- [947. Most Stones Removed with Same Row or Column](https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/)
+
+	- 并查集的建立与使用，时间复杂度$O(nlog(n)))$
+
+	```cpp
+	class Solution
+	{
+	private:
+		int find(vector<int> &father, int x)
+		{
+			// 包含路径压缩的并查集查找
+			return father[x] == x ? x : (father[x] = find(father, father[x]));
+		}
+		void union_insert(vector<int> &father, int x, int y)
+		{
+			father[find(father, x)] = father[find(father, y)];
+		}
+
+	public:
+		int removeStones(vector<vector<int>> &stones)
+		{
+			// 总的石头数量
+			int total_stones = stones.size();
+			/***
+			* 1. 使用并查集将所有的石头分类为一个个的连通域，每个连通域可以move删除操作直到最后一个石头
+			* 2. 所以可以移除的石头数量 ret = total_stones - n_groups (连通域的数量)
+			*/
+			unordered_map<int, vector<int>> x2points, y2points;
+			vector<int> father(total_stones);
+			for (auto i = 0; i < total_stones; i++)
+			{
+				father[i] = i;
+				x2points[stones[i][0]].push_back(i);
+				y2points[stones[i][1]].push_back(i);
+			}
+			for (auto &&item : x2points)
+			{
+				vector<int> points = item.second;
+				int n = points.size();
+				for (auto i = 1; i < n; i++)
+				{
+					union_insert(father, points[0], points[i]);
+				}
+			}
+			for (auto &&item : y2points)
+			{
+				vector<int> points = item.second;
+				int n = points.size();
+				for (auto i = 1; i < n; i++)
+				{
+					union_insert(father, points[0], points[i]);
+				}
+			}
+			unordered_set<int> groups;
+			for (auto i = 0; i < total_stones; i++)
+			{
+				groups.insert(find(father, i));
+			}
+			return total_stones - groups.size();
+		}
+	};
+	```
+
+	- 优化的并查集
+
+	```cpp
+	class Solution
+	{
+	private:
+		unordered_map<int, int> uf; // 每个点的横坐标、纵坐标映射到其代表（并查集）
+		int island;
+		int find(int x)
+		{
+			if (!uf.count(x))
+			{
+				island++;
+				uf[x] = x;
+			}
+			if (uf[x] != x)
+			{
+				uf[x] = find(uf[x]);
+			}
+			return uf[x];
+		}
+		void union_insert(int x, int y)
+		{
+			x = find(x), y = find(y);
+			if (x != y)
+			{
+				uf[x] = y, island--;
+			}
+		}
+
+	public:
+		int removeStones(vector<vector<int>> &stones)
+		{
+			uf.clear();
+			island = 0;
+			for (auto &&p : stones)
+			{
+				union_insert(p[0], ~p[1]);
+			}
+			return stones.size() - island;
+		}
+	};
+	```
 
 - [950](https://leetcode.com/problems/reveal-cards-in-increasing-order/)
 
