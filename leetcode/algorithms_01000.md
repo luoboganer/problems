@@ -2,7 +2,6 @@
 
 - [901. Online Stock Span](https://leetcode.com/problems/online-stock-span/)
 
-    
     寻找prices数组中从右往左第一个大于当前price的价格下标，最坏情况下时间复杂度$O(n^2)$
 
 	```cpp
@@ -425,6 +424,69 @@
             return (int)*max_element(ans.begin(), ans.end());
         }
     };
+	```
+
+- [924. Minimize Malware Spread](https://leetcode.com/problems/minimize-malware-spread/)
+
+    - 并查集的建立与使用
+
+	```cpp
+	class Solution
+	{
+	private:
+		int find(vector<int> &uf, int x)
+		{
+			// 含有路径压缩的并查集
+			return uf[x] == x ? x : (uf[x] = find(uf, uf[x]));
+		}
+
+	public:
+		int minMalwareSpread(vector<vector<int>> &graph, vector<int> &initial)
+		{
+			// union find initialization for n nodes in the network
+			const int n = graph.size();
+			vector<int> uf(n);
+			for (auto i = 0; i < n; i++)
+			{
+				uf[i] = i;
+			}
+			// update of the un
+			for (auto i = 0; i < n; i++)
+			{
+				for (auto j = 0; j < i; j++)
+				{
+					if (graph[i][j])
+					{
+						uf[find(uf, uf[i])] = uf[find(uf, uf[j])];
+					}
+				}
+			}
+			// count for every inital infected node
+			unordered_map<int, int> groupID2nodeNum, groupID2cachedNum;
+			for (auto i = 0; i < n; i++)
+			{
+				groupID2nodeNum[find(uf, i)]++;
+			}
+			sort(initial.begin(), initial.end());
+			int count = initial.size();
+			for (auto i = 0; i < count; i++)
+			{
+				int group = find(uf, initial[i]);
+				groupID2cachedNum[group]++;
+			}
+			int ret = initial[0];
+			int cur_max_node_removed = (groupID2cachedNum[find(uf, ret)] == 1) ? groupID2nodeNum[find(uf, ret)] : 0;
+			for (auto i = 0; i < count; i++)
+			{
+				int node = initial[i], group = find(uf, node);
+				if (groupID2nodeNum[group] > cur_max_node_removed && groupID2cachedNum[group] == 1)
+				{
+					ret = node, cur_max_node_removed = groupID2nodeNum[group];
+				}
+			}
+			return ret;
+		}
+	};
 	```
 
 - [929](https://leetcode.com/problems/unique-email-addresses/)
