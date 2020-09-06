@@ -659,6 +659,181 @@
 	};
 	```
 
+- [684. Redundant Connection](https://leetcode.com/problems/redundant-connection/)
+
+	冗余连接查找的[684. Redundant Connection](https://leetcode.com/problems/redundant-connection/)和[685. Redundant Connection II](https://leetcode.com/problems/redundant-connection-ii/)基本原理相同，其中前者为无向图，后者为有向图，使用并查集来查找冗余的边即可
+
+	```cpp
+	class Solution
+	{
+	private:
+		struct UF
+		{
+			vector<int> uf;
+			int count;
+			UF(int n)
+			{
+				uf.resize(n);
+				for (auto i = 0; i < n; i++)
+				{
+					uf[i] = i;
+				}
+				count = n;
+			}
+			int find(int x)
+			{
+				return uf[x] == x ? x : (uf[x] = find(uf[x]));
+			}
+			bool union_merge(int x, int y)
+			{
+				x = find(x), y = find(y);
+				if (x != y)
+				{
+					uf[x] = y;
+                    count--;
+					return true;
+				}
+				return false;
+			}
+		};
+
+	public:
+		vector<int> findRedundantConnection(vector<vector<int>> &edges)
+		{
+			int n = edges.size();
+			UF uf(n);
+			vector<int> ret;
+			for (auto &&e : edges)
+			{
+				if (!uf.union_merge(e[0] - 1, e[1] - 1))
+				{
+					ret = e;
+				}
+			}
+			return ret;
+		}
+	};
+	```
+
+- [685. Redundant Connection II](https://leetcode.com/problems/redundant-connection-ii/)
+
+	在有向图中，N个节点形成树结构需要N-1条边，在冗余一条边的情况下，会存在两种情况：
+
+    - 所有节点的入度和出度均为1，此时退化为与无向图条件下[684. Redundant Connection](https://leetcode.com/problems/redundant-connection/)相同的问题
+    - 存在一个根节点入度为0，存在一个节点入度为2（**冗余出现了**），此时对这个入度为2的节点node又有两种情况：
+        - node的出度为0，则指向该节点的两条边任意删除一条即可
+        - node的出度为1，则需要在指向该节点的两条边中选择一条删除使其剩余的边构成一颗数，任意删除可能会造成全图不连通（**连通域的个数大于1**）的情况
+
+	冗余连接查找的[684. Redundant Connection](https://leetcode.com/problems/redundant-connection/)和[685. Redundant Connection II](https://leetcode.com/problems/redundant-connection-ii/)基本原理相同，其中前者为无向图，后者为有向图，使用并查集来查找冗余的边即可
+
+	```cpp
+	class Solution
+	{
+	private:
+		struct UF
+		{
+			vector<int> uf;
+			int count;
+			UF(int n)
+			{
+				uf.resize(n);
+				for (auto i = 0; i < n; i++)
+				{
+					uf[i] = i;
+				}
+				count = n;
+			}
+			int find(int x)
+			{
+				return uf[x] == x ? x : (uf[x] = find(uf[x]));
+			}
+			bool union_merge(int x, int y)
+			{
+				x = find(x), y = find(y);
+				if (x != y)
+				{
+					uf[x] = y;
+					count--;
+					return true;
+				}
+				return false;
+			}
+		};
+
+	public:
+		vector<int> findRedundantDirectedConnection(vector<vector<int>> &edges)
+		{
+			// 统计所有节点的入度与出度信息
+			int n = edges.size(), end_point = -1;
+			vector<int> indegrees(n, 0), outdegrees(n, 0);
+			for (auto &&e : edges)
+			{
+				outdegrees[e[0] - 1]++, indegrees[e[1] - 1]++;
+				if (indegrees[e[1] - 1] == 2)
+				{
+					end_point = e[1];
+				}
+			}
+			// initialization of UF(union find)
+			UF uf(n);
+			vector<int> ret;
+			if (end_point == -1)
+			{
+				// 没有入度为2的节点，此时全图成为一个环，删除任意一条边使得全图成为一棵树即可
+				// 并查集的应用
+				for (auto &&e : edges)
+				{
+					if (!uf.union_merge(e[0] - 1, e[1] - 1))
+					{
+						ret = e;
+					}
+				}
+			}
+			else
+			{
+				// 记录指向入度为2的节点end_point的两条边
+				vector<int> first_edge, second_edge;
+				/**
+				* 在这两条边中只合并第一条，检查最终全图是否联通
+				* 	1. 如果连通，则删除第二条即可
+				* 	2. 如果不连通，则需要删除第一条，此时一定是合并第二条的情况下全图连通
+				*/
+				bool is_first_edge = true;
+				for (auto &&e : edges)
+				{
+					if (e[1] == end_point)
+					{
+						if (is_first_edge)
+						{
+							first_edge = e, is_first_edge = false;
+							uf.union_merge(e[0] - 1, e[1] - 1);
+						}
+						else
+						{
+							second_edge = e;
+						}
+					}
+					else
+					{
+						// 其它的全部边均需合并
+						uf.union_merge(e[0] - 1, e[1] - 1);
+					}
+				}
+				ret = uf.count == 1 ? second_edge : first_edge;
+			}
+			return ret;
+		}
+	};
+	```
+    
+    - some test cases
+
+	```cpp
+	[[1,2],[1,3],[2,3]]
+	[[1,2], [2,3], [3,4], [4,1], [1,5]]
+	[[2,1],[3,1],[4,2],[1,4]]
+	```
+
 - [687. Longest Univalue Path](https://leetcode.com/problems/longest-univalue-path/)
 
     求给定二叉树中节点值相同的连续路径最大长度
