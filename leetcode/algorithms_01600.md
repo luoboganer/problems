@@ -298,7 +298,7 @@
 
 - [1566. Detect Pattern of Length M Repeated K or More Times](https://leetcode.com/problems/detect-pattern-of-length-m-repeated-k-or-more-times/)
 
-	- 暴力模拟，时间复杂度$O(n^2)$
+    - 暴力模拟，时间复杂度$O(n^2)$
 
 	```cpp
 	bool containsPattern(vector<int> &arr, int m, int k)
@@ -328,7 +328,7 @@
 	}
 	```
 
-	- one pass扫描，通过计数器cnt来记录当前匹配模式的长度，时间复杂度$O(n)$
+    - one pass扫描，通过计数器cnt来记录当前匹配模式的长度，时间复杂度$O(n)$
 
 	```cpp
 	bool containsPattern(vector<int> &arr, int m, int k)
@@ -345,6 +345,223 @@
 		}
 		return false;
 	}
+	```
+
+- [1579. Remove Max Number of Edges to Keep Graph Fully Traversable](https://leetcode.com/problems/remove-max-number-of-edges-to-keep-graph-fully-traversable/)
+
+	**本题与冗余连接查找的[684. Redundant Connection](https://leetcode.com/problems/redundant-connection/)和[685. Redundant Connection II](https://leetcode.com/problems/redundant-connection-ii/)基本原理相同**
+
+    - 使用并查集来确认Alice和Bob是否能够完全遍历全图（全连通图），leetcode评测机$\color{red}{TLE}$
+
+	```cpp
+	class Solution
+	{
+	private:
+		int find(vector<int> &uf, int x)
+		{
+			return uf[x] == x ? x : (uf[x] = find(uf, uf[x]));
+		}
+		int removeRedundant_type3(vector<vector<vector<int>>> &graph, int n)
+		{
+			int ret = 0;
+			vector<int> uf(n + 1);
+			for (auto i = 0; i <= n; i++)
+			{
+				uf[i] = i;
+			}
+			// 使用并查集扫描冗余的边
+			for (auto i = 1; i <= n; i++)
+			{
+				for (auto j = 1; j < i; j++)
+				{
+					if (graph[i][j][3] >= 1)
+					{
+						// 重复的边直接删除
+						ret += graph[i][j][3] - 1;
+						graph[i][j][3] = 1;
+						// 检查是否为冗余的边
+						int x = find(uf, i), y = find(uf, j);
+						if (x == y)
+						{
+							ret++, graph[i][j][3] = 0;
+						}
+						else
+						{
+							uf[x] = y;
+						}
+					}
+				}
+			}
+			return ret;
+		}
+		int checkConnected(vector<vector<vector<int>>> &graph, int n, int type)
+		{
+			int ret = 0;
+			vector<int> uf(n + 1);
+			for (auto i = 0; i <= n; i++)
+			{
+				uf[i] = i;
+			}
+			// 使用并查集扫描冗余的边
+			for (auto i = 1; i <= n; i++)
+			{
+				for (auto j = 1; j < i; j++)
+				{
+					if (graph[i][j][3])
+					{
+						// 存在type3时直接删除type1/2
+						ret += graph[i][j][type];
+						graph[i][j][type] = 0;
+						uf[find(uf, i)] = find(uf, j);
+					}
+				}
+			} // 检查专属类型type的边
+			for (auto i = 1; i <= n; i++)
+			{
+				for (auto j = 1; j < i; j++)
+				{
+					if (graph[i][j][type] > 0)
+					{
+						// 重复的边直接删除
+						ret += graph[i][j][type] - 1;
+						graph[i][j][type] = 1;
+						// 检查是否为冗余的边
+						int x = find(uf, i), y = find(uf, j);
+						if (x == y)
+						{
+							ret++, graph[i][j][type] = 0;
+						}
+						else
+						{
+							uf[x] = y;
+						}
+					}
+				}
+			}
+			// 检查全图连通性
+			int group = find(uf, 1);
+			for (auto i = 2; i <= n; i++)
+			{
+				if (group != find(uf, i))
+				{
+					return -1; // 无法实现全图遍历
+				}
+			}
+			return ret;
+		}
+
+	public:
+		int maxNumEdgesToRemove(int n, vector<vector<int>> &edges)
+		{
+			vector<vector<vector<int>>> graph(n + 1, vector<vector<int>>(n + 1, vector<int>(4, 0)));
+			// graph[a][b][t]表示节点a到b之间有类型为t的边的条数
+			for (auto &&e : edges)
+			{
+				// 无向图的对称性
+				graph[e[1]][e[2]][e[0]]++;
+				graph[e[2]][e[1]][e[0]]++;
+			}
+			int ret = 0;
+			/***
+			* 1. 首先删除冗余的3
+			* 2. 其次删除Alice冗余的1
+			* 3. 最后删除Bob冗余的2
+			*/
+			ret += removeRedundant_type3(graph, n);
+			// 在保证Alice和Bob连通性的前提下删除冗余的边
+			int Alice = checkConnected(graph, n, 1);
+			int Bob = checkConnected(graph, n, 2);
+			if (Alice == -1 || Bob == -1)
+			{
+				return -1;
+			}
+			else
+			{
+				ret += Alice + Bob;
+			}
+			return ret;
+		}
+	};
+	```
+
+    - 使用模板的并查集，对公共的type 3类型通道在前期处理后给Alice和Bob共用
+
+	```cpp
+	class Solution
+	{
+	private:
+		struct UF
+		{
+			vector<int> uf;
+			int count;
+			UF(int n)
+			{
+				uf.resize(n);
+				for (auto i = 0; i < n; i++)
+				{
+					uf[i] = i;
+				}
+				count = n;
+			}
+
+			int find(int x)
+			{
+				return uf[x] == x ? x : (uf[x] = find(uf[x]));
+			}
+
+			bool union_merge(int x, int y)
+			{
+				x = find(x), y = find(y);
+				if (x != y)
+				{
+					uf[x] = y, count--;
+					return true;
+				}
+				return false;
+			}
+		};
+
+		int checkConnected(vector<vector<int>> &edges, UF uf)
+		{
+			int ret = 0;
+			for (auto &&e : edges)
+			{
+				ret += (uf.union_merge(e[0], e[1])) ? 0 : 1;
+			}
+			if (uf.count > 1)
+			{
+				return -1; // 不是全部连通（完全可遍历）的
+			}
+			return ret;
+		}
+
+	public:
+		int maxNumEdgesToRemove(int n, vector<vector<int>> &edges)
+		{
+			int ret = 0;
+			// 建立不同类型边的集合，无需表示整个图结构
+			vector<vector<vector<int>>> graph(3);
+			for (auto &&e : edges)
+			{
+				graph[e[0] - 1].push_back({e[1] - 1, e[2] - 1}); // convert base-1 to base-0
+			}
+			// 建立并查集来表示图的连通性（是否可以完全遍历）
+			UF uf(n);
+			// 删除冗余的type 3的可以共用的边
+			for (auto &&e : graph[2])
+			{
+				ret += (uf.union_merge(e[0], e[1])) ? 0 : 1;
+			}
+			// 判断Alice和Bob是否可以完全遍历
+			int Alice = checkConnected(graph[0], uf), Bob = checkConnected(graph[1], uf);
+			if (Alice == -1 || Bob == -1)
+			{
+				return -1;
+			}
+			ret += Alice + Bob;
+			return ret;
+		}
+	};
 	```
 
 - [...](123)
