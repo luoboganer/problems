@@ -86,6 +86,95 @@
 	}
 	```
 
+- [835. Image Overlap](https://leetcode.com/problems/image-overlap/)
+    
+    - 枚举所有可能的偏移量offset(相当于图像A的平移向量)，可以选择只枚举A和B中至少存在一个1重合的offset，即遍历A和B中所有的1两两之间的offset（时间复杂度$O(n^2)$），然后计算这个offset下重合的1有多少个（时间复杂度($O(n^4)$)，通过hashset的$O(1)$查找可以将这个时间复杂度降低到$O(n^2)$），总的时间复杂度$O(n^6)$（通过hashset的$O(1)$查找降低到$O(n^4)$）
+
+	```cpp
+	int largestOverlap(vector<vector<int>> &A, vector<vector<int>> &B)
+	{
+		vector<int> A_points_1, B_points_1;
+		int n = A.size();
+		for (auto i = 0; i < n; i++)
+		{
+			for (auto j = 0; j < n; j++)
+			{
+				if (A[i][j])
+				{
+					A_points_1.push_back(i * 100 + j); // 将坐标编码为int整数
+				}
+				if (B[i][j])
+				{
+					B_points_1.push_back(i * 100 + j);
+				}
+			}
+		}
+		int ret = 0;
+		unordered_set<int> B_points_1_set(B_points_1.begin(), B_points_1.end());
+		unordered_set<int> offset_seen;
+		for (auto a : A_points_1)
+		{
+			for (auto b : B_points_1)
+			{
+				int offset = a - b;
+				if (offset_seen.find(offset) == offset_seen.end())
+				{
+					// 这个偏移量offset尚未出现过，第一次出现统计这种offset下重合的1有多少个
+					offset_seen.insert(offset);
+					int count = 0;
+					for (auto p : A_points_1)
+					{
+						if (B_points_1_set.find(p - offset) != B_points_1_set.end())
+						{
+							count++;
+						}
+					}
+					ret = max(ret, count);
+				}
+			}
+		}
+		return ret;
+	}
+	```
+
+    - 计算A和B中所有值为1的点之间的offset，统计每个offset出现的次数cnt，这个cnt的最大值即为所求，时间复杂度$O(n^2)$
+
+	```cpp
+	int largestOverlap(vector<vector<int>> &A, vector<vector<int>> &B)
+	{
+		vector<int> A_points_1, B_points_1;
+		int n = A.size();
+		for (auto i = 0; i < n; i++)
+		{
+			for (auto j = 0; j < n; j++)
+			{
+				if (A[i][j])
+				{
+					A_points_1.push_back(i * 100 + j); // 将坐标编码为int整数
+				}
+				if (B[i][j])
+				{
+					B_points_1.push_back(i * 100 + j);
+				}
+			}
+		}
+		unordered_map<int, int> offset_count;
+		for (auto a : A_points_1)
+		{
+			for (auto b : B_points_1)
+			{
+				offset_count[a - b]++;
+			}
+		}
+		int ret = 0;
+		for (auto &&[key, cnt] : offset_count)
+		{
+			ret = max(ret, cnt);
+		}
+		return ret;
+	}
+	```
+
 - [849](https://leetcode.com/problems/maximize-distance-to-closest-person/)
 
     给定一排座位，0表示空，1表示有人，新来一个人要安排到某个空的座位，使得新人到原来座位上的人(1)的距离尽可能的远，输出这最远距离。整体思路在于某一点到1的最远距离为该点到左边1的距离和到右边1的距离的较小值。
