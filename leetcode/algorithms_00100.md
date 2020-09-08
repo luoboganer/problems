@@ -762,6 +762,65 @@
     }
     ```
 
+- [34. Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
+    
+    - 使用库函数**lower_bound()/upper_bound()**
+
+	```cpp
+	vector<int> searchRange(vector<int> &nums, int target)
+	{
+		int left = lower_bound(nums.begin(), nums.end(), target) - nums.begin();
+		int right = upper_bound(nums.begin(), nums.end(), target) - nums.begin();
+		if (left != right)
+		{
+			return {left, right - 1};
+		}
+		return {-1, -1};
+	}
+	```
+
+    - 手写binary_search
+
+	```cpp
+	class Solution
+	{
+	private:
+		int binary_search(vector<int> &nums, int target, int mode)
+		{
+			/**
+			* mode = 0 'most_left', lower
+			* mode = 1 'most_right', upper
+			*/
+			int left = 0, right = nums.size();
+			while (left < right)
+			{
+				int mid = left + (right - left) / 2;
+				if (nums[mid] > target || (mode == 0 && nums[mid] == target))
+				{
+					right = mid;
+				}
+				else
+				{
+					left = mid + 1;
+				}
+			}
+			return left;
+		}
+
+	public:
+		vector<int> searchRange(vector<int> &nums, int target)
+		{
+			int left = binary_search(nums, target, 0);
+			int right = binary_search(nums, target, 1);
+			if (left != right)
+			{
+				return {left, right - 1};
+			}
+			return {-1, -1};
+		}
+	};
+	```
+
 - [37. Sudoku Solver](https://leetcode.com/problems/sudoku-solver/)
 
     填满一个数独表格，每一个格子有9中可能，用DFS的方式尝试、回溯即可，时间复杂度$O(9^k),k \le 81$，其中$k$是给定数独表中待填充空格的数量
