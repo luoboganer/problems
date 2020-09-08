@@ -1099,6 +1099,126 @@
     }
     ```
 
+- [232. Implement Queue using Stacks](https://leetcode.com/problems/implement-queue-using-stacks/)
+    
+    - 使用两个队列来模拟栈的先进后出操作，其中每一次的peek操作时间复杂度均为O(n)，其它操作时间复杂度为$O(1)$，因此总的时间复杂度是$O(n^2)$
+
+	```cpp
+	class MyQueue {
+	public:
+		/** Initialize your data structure here. */
+		stack<int> st1,st2;
+		MyQueue() {
+			while(!st1.empty()){
+				st1.pop();
+			}
+			while(!st2.empty()){
+				st2.pop();
+			}
+		}
+
+		/** Push element x to the back of queue. */
+		void push(int x) {
+			st1.push(x);
+		}
+
+		/** Removes the element from in front of queue and returns that element. */
+		int pop() {
+			while(!st1.empty()){
+				st2.push(st1.top());
+				st1.pop();
+			}
+			int val=st2.top();
+			st2.pop();
+			while(!st2.empty()){
+				st1.push(st2.top());
+				st2.pop();
+			}
+			return val;
+		}
+
+		/** Get the front element. */
+		int peek() {
+			while(!st1.empty()){
+				st2.push(st1.top());
+				st1.pop();
+			}
+			int val=st2.top();
+			while(!st2.empty()){
+				st1.push(st2.top());
+				st2.pop();
+			}
+			return val;
+		}
+
+		/** Returns whether the queue is empty. */
+		bool empty() {
+			return st1.empty();
+		}
+	};
+	```
+
+    - 降低peek操作时间复杂度到$O(1)$，其它操作时间复杂度为$O(1)$，因此总的时间复杂度是$O(n)$
+
+	```cpp
+	class MyQueue
+	{
+	public:
+		/** Initialize your data structure here. */
+		stack<int> st1, st2;
+		int count;
+		MyQueue()
+		{
+			while (!st1.empty())
+			{
+				st1.pop();
+			}
+			while (!st2.empty())
+			{
+				st2.pop();
+			}
+			count = 0;
+		}
+
+		/** Push element x to the back of queue. */
+		void push(int x)
+		{
+			st1.push(x);
+			count++;
+		}
+
+		/** Removes the element from in front of queue and returns that element. */
+		int pop()
+		{
+			int ret = peek();
+			count--;
+			st2.pop();
+			return ret;
+		}
+
+		/** Get the front element. */
+		int peek()
+		{
+			// 这里看起来是O(n)，实际上每个元素在st2种最多push一次，pop一次，因此peek的时间复杂度为O(1)
+			if (st2.empty())
+			{
+				while (!st1.empty())
+				{
+					st2.push(st1.top());
+					st1.pop();
+				}
+			}
+			return st2.top();
+		}
+
+		/** Returns whether the queue is empty. */
+		bool empty()
+		{
+			return count == 0;
+		}
+	};
+	```
+
 - [234](https://leetcode.com/problems/palindrome-linked-list/)
 
     判断一个链表是否回文
