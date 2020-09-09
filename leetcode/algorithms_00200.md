@@ -704,7 +704,7 @@
 
 	**当nums中的元素均为正数的时候，本题可以通过取对数转化为[53. Maximum Subarray](https://leetcode.com/problems/maximum-subarray/)求连续子数组的最大和问题**
 
-	- dynamic plan，时间复杂度$O(n)，空间复杂度$O(n)$
+    - dynamic plan，时间复杂度$O(n)，空间复杂度$O(n)$
 
 	```cpp
 	int maxProduct(vector<int> &nums)
@@ -734,7 +734,7 @@
 	}
 	```
 
-	- dynamic plan，时间复杂度$O(n)$，空间复杂度优化到$O(1)$
+    - dynamic plan，时间复杂度$O(n)$，空间复杂度优化到$O(1)$
 
 	```cpp
 	int maxProduct(vector<int> &nums)
@@ -746,9 +746,9 @@
 		 * 		dp_max[i] = max(dp_min[i-1]*nums[i],dp_max[i-1]*nums[i],nums[i])
 		 * 时间复杂度：O(n)
 		 * 空间复杂度：O(n)
-		 * 
+		 *
 		 * 由于dynamic plan过程中的dp[i]只和上一个状态dp[i-1]有关，因此空间复杂度可以优化到O(1)
-		 * 
+		 *
 		*/
 		int ret = 0;
 		if (nums.size() > 0)
@@ -919,6 +919,79 @@
         return ret;
     }
     ```
+
+- [165. Compare Version Numbers](https://leetcode.com/problems/compare-version-numbers/)
+
+	将两个版本号转化为同级位置下标相同的两个int型向量，用默认的小版本号0补齐两个向量到一样长，对比两个向量即可，时间复杂度$O(n)$
+
+	```cpp
+	class Solution
+	{
+	private:
+		vector<int> stringVersion2Vector(string s)
+		{
+			vector<int> ret;
+			s.push_back('.');
+			int v = 0;
+			for (auto &&ch : s)
+			{
+				if (ch == '.')
+				{
+					ret.push_back(v);
+					v = 0;
+				}
+				else
+				{
+					v = v * 10 + (int)(ch - '0');
+				}
+			}
+			return ret;
+		}
+
+	public:
+		int compareVersion(string version1, string version2)
+		{
+			vector<int> v1 = stringVersion2Vector(version1);
+			vector<int> v2 = stringVersion2Vector(version2);
+			int length = max(v1.size(), v2.size());
+			while (v1.size() < length)
+			{
+				v1.push_back(0); // 默认的小版本号为0
+			}
+			while (v2.size() < length)
+			{
+				v2.push_back(0);
+			}
+			for (auto i = 0; i < length; i++)
+			{
+				if (v1[i] > v2[i])
+				{
+					return 1;
+				}
+				else if (v1[i] < v2[i])
+				{
+					return -1;
+				}
+			}
+			return 0;
+		}
+	};
+	```
+
+    - some test cases
+
+	```cpp
+	"0.1"
+	"1.1"
+	"1.0.1"
+	"1"
+	"7.5.2.4"
+	"7.5.3"
+	"1.01"
+	"1.001"
+	"1.0"
+	"1.0.0"
+	```
 
 - [166. Fraction to Recurring Decimal](https://leetcode.com/problems/fraction-to-recurring-decimal/)
 
