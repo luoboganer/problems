@@ -5,12 +5,80 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-09-09 11:03:51
+ * @LastEditTime: 2020-09-09 20:23:55
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
 
 # 程序员面试金典
+
+- [面试题 01.05. 一次编辑](https://leetcode-cn.com/problems/one-away-lcci/)
+
+    - 动态规划dynamic plan计算编辑距离（edit distance），判断是否$edit_distance \le 1$即可，时间复杂度$O(n^2)$
+
+	```cpp
+	bool oneEditAway(string first, string second)
+	{
+		int m = first.size(), n = second.size();
+		vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+		for (auto i = 1; i <= m; i++)
+		{
+			dp[i][0] = i;
+		}
+		for (auto j = 1; j <= n; j++)
+		{
+			dp[0][j] = j;
+		}
+		for (auto i = 0; i < m; i++)
+		{
+			for (auto j = 0; j < n; j++)
+			{
+				if (first[i] == second[j])
+				{
+					dp[i + 1][j + 1] = dp[i][j];
+				}
+				else
+				{
+					dp[i + 1][j + 1] = min(min(dp[i][j + 1], dp[i + 1][j]), dp[i][j]) + 1;
+				}
+			}
+		}
+		return dp.back().back() <= 1;
+	}
+	```
+
+    - 事实上不需要完全计算出编辑距离，只要双指针从两端向中间扫描，判断编辑距离和1之间的大小即可，时间复杂度$O(n)$
+
+	```cpp
+	bool oneEditAway(string first, string second)
+	{
+		/**
+		 * 编辑距离为0，则两个字符串完全相同
+		 * 编辑距离为1，则：
+		 * 			1. 两个字符串长度想同且只有一个字符不同
+		 * 			2. 两个字符串长度相差为1且剩余字符串完全相同
+		*/
+		if (first.compare(second) == 0)
+		{
+			return true;
+		}
+		int length_first = first.length(), length_second = second.length();
+		if (abs(length_first - length_second) > 1)
+		{
+			return false;
+		}
+		int i = 0, j = length_first - 1, k = length_second - 1;
+		while (i < length_first && i < length_second && first[i] == second[i])
+		{
+			i++;
+		}
+		while (j >= 0 && k >= 0 && first[j] == second[k])
+		{
+			j--, k--;
+		}
+		return j - i < 1 && k - i < 1;
+	}
+	```
 
 - [面试题 01.06. 字符串压缩](https://leetcode-cn.com/problems/compress-string-lcci/)
 
@@ -42,6 +110,35 @@
 		return ret.length() < S.length() ? ret : S;
 	}
     ```
+
+- [面试题 01.07. 旋转矩阵](https://leetcode-cn.com/problems/rotate-matrix-lcci/)
+
+	首先沿着主对角线交换，然后左右交换即可实现右旋90度，时间复杂度$O(n^2)$
+
+	```cpp
+	void rotate(vector<vector<int>> &matrix)
+	{
+		int n = matrix.size();
+		if (n > 0)
+		{
+			for (auto i = 0; i < n; i++)
+			{
+				for (auto j = 0; j < i; j++)
+				{
+					swap(matrix[i][j], matrix[j][i]);
+				}
+			}
+			for (auto i = 0; i < n; i++)
+			{
+				int left = 0, right = n - 1;
+				while (left < right)
+				{
+					swap(matrix[i][left++], matrix[i][right--]);
+				}
+			}
+		}
+	}
+	```
 
 - [面试题 02.06. 回文链表](https://leetcode-cn.com/problems/palindrome-linked-list-lcci/)
 

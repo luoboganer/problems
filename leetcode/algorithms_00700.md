@@ -66,6 +66,110 @@
     }
     ```
 
+- [621. Task Scheduler](https://leetcode.com/problems/task-scheduler/)
+    
+    - 两个相同任务之间的冷却时间为n，则每一轮排入n+1个不同的任务即可(剩余任务不足n+1个时用待命状态来代替)，同时为了保证总的时间最少，优先排入重复次数最多的任务（贪心思想），时间复杂度$O(time)$
+    
+        - 排序实现贪心思想
+
+    	```cpp
+    	int leastInterval(vector<char> &tasks, int n)
+    	{
+    		int const length = 26;
+    		vector<int> count(length, 0);
+    		int total_time = 0, total_task = 0;
+    		for (auto &&ch : tasks)
+    		{
+    			total_task++;
+    			count[static_cast<int>(ch - 'A')]++;
+    		}
+    		while (total_task)
+    		{
+    			// 每一轮选择n+1个任务安排
+    			sort(count.rbegin(), count.rend());
+    			int i = 0;
+    			while (i <= n && total_task > 0)
+    			{
+    				if (i < length && count[i] > 0)
+    				{
+    					count[i]--, total_task--; // 安排一个任务
+    				}
+    				total_time++, i++; // 无论是否安排任务，这一个时间片都要消耗掉
+    			}
+    		}
+    		return total_time;
+    	}
+    	```
+
+        - 优先队列实现贪心思想
+
+    	```cpp
+		int leastInterval(vector<char> &tasks, int n)
+		{
+			int const length = 26;
+			vector<int> count(length, 0);
+			for (auto &&ch : tasks)
+			{
+				count[static_cast<int>(ch - 'A')]++;
+			}
+			priority_queue<int> qe; // 大顶推
+			for (auto v : count)
+			{
+				if (v > 0)
+				{
+					qe.push(v);
+				}
+			}
+			int total_time = 0;
+			while (!qe.empty())
+			{
+				// 每一轮选择n+1个任务安排
+				int i = 0;
+				vector<int> temp;
+				while (i <= n && (!qe.empty() || !temp.empty()))
+				{
+					if (!qe.empty())
+					{
+						int v = qe.top() - 1;
+						qe.pop();
+						if (v > 0)
+						{
+							temp.push_back(v);
+						}
+						// 某个任务安排一个时间片之后，还有未安排次数，重新加入优先队列
+					}
+					total_time++, i++;
+				}
+				for (auto v : temp)
+				{
+					qe.push(v); // 现在才重新将未安排完的任务加入优先度列，是防止在一个eopch(n+1)内安排重复的同一个任务，破坏冷却时间的约定
+				}
+			}
+			return total_time;
+		}
+    	```
+
+    - 首先安排重复次数最多的任务，然后在产生的空闲时间内安排其他任务，时间复杂度$O(n)$
+
+	```cpp
+	int leastInterval(vector<char> &tasks, int n)
+	{
+		int const length = 26;
+		vector<int> count(length, 0);
+		for (auto &&ch : tasks)
+		{
+			count[static_cast<int>(ch - 'A')]++;
+		}
+		sort(count.rbegin(), count.rend());
+		int max_value = count[0] - 1, idle_slots = max_value * n;
+		for (auto i = 1; i < length && count[i] > 0; i++)
+		{
+			idle_slots -= min(count[i], max_value);
+		}
+		return tasks.size() + max(0, idle_slots);
+	}
+	```
+
 - [622](https://leetcode.com/problems/design-circular-queue/)
 
     设计实现一个队列类，主要是队列为空或者队列为满的判断，设置front和tail两个指针，实现入队、出队、判满、判空等操作

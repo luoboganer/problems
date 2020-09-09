@@ -766,6 +766,77 @@
 	}
 	```
 
+- [153. Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/)
+
+	寻找排序数组(**没有重复值，unique**)旋转后的基准点(最小值)，binary search，时间复杂度$O(log(n))$
+
+	```cpp
+	int findMin(vector<int> &nums)
+	{
+		int left = 0, right = nums.size() - 1;
+		while (left < right)
+		{
+			int mid = left + ((right - left) >> 1);
+			if (nums[mid] > nums[right])
+			{
+				left = mid + 1;
+			}
+			else
+			{
+				right = mid;
+			}
+		}
+		return nums[left];
+	}
+	```
+
+- [154. Find Minimum in Rotated Sorted Array II](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array-ii/)
+
+	寻找排序数组(**有重复值，duplicated**)旋转后的基准点(最小值)，binary search，平均时间复杂度$O(log(n))$，在最坏的情况下(整个数组所有数字全部相同)，会退化到$O(nlog(n))$，
+
+	```cpp
+	class Solution
+	{
+	private:
+		int binary_search(vector<int> &nums, int left, int right)
+		{
+			int ret = nums[left];
+			if (left < right)
+			{
+				int mid = left + ((right - left) >> 1);
+				if (nums[mid] > nums[right])
+				{
+					ret = binary_search(nums, mid + 1, right);
+				}
+				else if (nums[mid] == nums[right])
+				{
+					ret = min(binary_search(nums, left, mid), binary_search(nums, mid + 1, right));
+				}
+				else
+				{
+					ret = binary_search(nums, left, mid);
+				}
+			}
+			return ret;
+		}
+
+	public:
+		int findMin(vector<int> &nums)
+		{
+			return binary_search(nums, 0, nums.size() - 1);
+		}
+	};
+	```
+
+    - some test cases
+
+	```cpp
+	[1,3,5]
+	[3,3,1,3]
+	[2,2,2,0,1]
+	[4,5,6,7,7,7,0,0,1,1,2,2,3,3,3]
+	```
+
 - [155](https://leetcode.com/problems/min-stack/)
 
     设计实现一个最小栈，即除正常的压栈、弹栈操作外，可以随时返回栈中元素的最小值，因此使用一个int型数组st来保存元素，在数组尾部操作实现压栈与弹栈操作，另外使用一个int型数组min_index，在每次压栈时用min_index[i]到记录st中从栈底到栈顶(st[0]到st[i])的最小值元素位置下标，即可随时返回栈中最小值元素，这样压栈、弹栈、返回最小值的操作均为$O(1)$时间
