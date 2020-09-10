@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-09-09 20:23:55
+ * @LastEditTime: 2020-09-10 12:03:07
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -140,6 +140,149 @@
 	}
 	```
 
+- [面试题 02.03. 删除中间节点](https://leetcode-cn.com/problems/delete-middle-node-lcci/)
+
+    - 当node存在下一个节点时，node的值等于下一个节点的值，然后又下下个节点，择node等于下一个节点继续删除，否则node的下一个节点指向空即可，时间复杂度$O(n)$
+
+	```cpp
+	void deleteNode(ListNode *node)
+	{
+		while (node->next)
+		{
+			node->val = node->next->val;
+			if (node->next->next)
+			{
+				node = node->next;
+			}
+			else
+			{
+				node->next = nullptr;
+			}
+		}
+	}
+	```
+
+    - 因为node不是最后一个节点，因此node->next必然存在，只需要将node->next的值保存到当前节点，然后删除node->next这个节点即可，时间复杂度$(O(1))$
+
+	```cpp
+	void deleteNode(ListNode *node)
+	{
+		node->val = node->next->val;
+		node->next = node->next->next;
+	}
+	```
+
+    - some test cases
+
+	```cpp
+	[4,5,1,9]
+	5
+	[4,5,1,9]
+	1
+	[4,3,5,1,9]
+	5
+	[4,3,5,1,9]
+	3
+	```
+
+- [面试题 02.04. 分割链表](https://leetcode-cn.com/problems/partition-list-lcci/)
+
+    - 归并排序的思想，先分割再合并，时间复杂度$O(n)$
+
+	```cpp
+	ListNode *partition(ListNode *head, int x)
+	{
+		ListNode *first = new ListNode(0), *second = new ListNode(0);
+		ListNode *cur_first = first, *cur_second = second;
+		while (head)
+		{
+			if (head->val < x)
+			{
+				cur_first->next = head;
+				cur_first = head;
+			}
+			else
+			{
+				cur_second->next = head;
+				cur_second = head;
+			}
+			head = head->next;
+		}
+		cur_first->next = second->next, cur_second->next = nullptr;
+		return first->next;
+	}
+	```
+
+    - 逐个扫描，遇到小于基准的节点放到头结点去即可，时间复杂度$(O(n))$
+
+	```cpp
+	ListNode *partition(ListNode *head, int x)
+	{
+		ListNode *auxiliary = new ListNode(0);
+		auxiliary->next = head;
+		ListNode *cur = auxiliary;
+		while (cur->next)
+		{
+			if (cur->next->val < x)
+			{
+				ListNode *temp = cur->next;
+				cur->next = cur->next->next;
+				temp->next = auxiliary->next;
+				auxiliary->next = temp;
+				if (cur == auxiliary)
+				{
+					cur = cur->next; // 避免在头结点值小于基准x的时候死循环
+				}
+			}
+			else
+			{
+				cur = cur->next;
+			}
+		}
+		return auxiliary->next;
+	}
+	```
+
+- [面试题 02.05. 链表求和](https://leetcode-cn.com/problems/sum-lists-lcci/)
+
+    模拟竖式求和，时间复杂度$O(n)$
+
+    ```cpp
+	ListNode *addTwoNumbers(ListNode *l1, ListNode *l2)
+	{
+		int carry = 0;
+		ListNode *cur_l1 = new ListNode(0), *cur_l2 = new ListNode(0);
+		cur_l1->next = l1, cur_l2->next = l2;
+		while (cur_l1->next && cur_l2->next)
+		{
+			int v = carry + cur_l1->next->val + cur_l2->next->val;
+			cur_l1->next->val = v % 10;
+			carry = v / 10;
+			cur_l1 = cur_l1->next, cur_l2 = cur_l2->next;
+		}
+		if (cur_l2->next)
+		{
+			cur_l1->next = cur_l2->next; // l2剩余的尾部
+		}
+		while (carry)
+		{
+			if (cur_l1->next)
+			{
+				int v = cur_l1->next->val + carry;
+				cur_l1->next->val = v % 10;
+				carry = v / 10;
+			}
+			else
+			{
+				cur_l1->next = new ListNode(carry % 10);
+				carry = carry / 10;
+			}
+			cur_l1 = cur_l1->next;
+		}
+		return l1;
+	}
+    ```
+
 - [面试题 02.06. 回文链表](https://leetcode-cn.com/problems/palindrome-linked-list-lcci/)
 
     - 转化为数组或者使用栈，然后检查是否回味，时间复杂度$O(n)$，空间复杂度$O(n)$
@@ -233,6 +376,44 @@
     []
     [1]
     ```
+
+- [面试题 04.04. 检查平衡性](https://leetcode-cn.com/problems/check-balance-lcci/)
+    
+    递归的检查左右子树是否平衡，如果不平衡返回-1，平衡则返回子树的深度，然后当左右子树均平衡且深度差不超过1时该树是平衡的
+
+	```cpp
+	class Solution
+	{
+	private:
+		int dfs(TreeNode *root)
+		{
+			/**
+			* balance : return depth
+			* not balance : return -1
+			*/
+			int depth = 0;
+			if (root)
+			{
+				int left = dfs(root->left), right = dfs(root->right);
+				if (left != -1 && right != -1 && abs(left - right) <= 1)
+				{
+					depth = max(left, right) + 1;
+				}
+				else
+				{
+					depth = -1;
+				}
+			}
+			return depth;
+		}
+
+	public:
+		bool isBalanced(TreeNode *root)
+		{
+			return dfs(root) != -1;
+		}
+	};
+	```
 
 - [面试题 04.05. 合法二叉搜索树](https://leetcode-cn.com/problems/legal-binary-search-tree-lcci/)
 
