@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-09-10 12:03:07
+ * @LastEditTime: 2020-09-10 15:54:57
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -441,5 +441,63 @@
         }
     };
     ```
+
+- [面试题 08.03. 魔术索引](https://leetcode-cn.com/problems/magic-index-lcci/)
+
+	难点：给定的**有序**数组中存在**重复的数值(duplicated)**，当没有重复数值的时候可以直接在$O(log(n))$复杂度下进行二分查找即可
+
+    - 线性扫描，时间复杂度$O(n)$
+
+	```cpp
+	int findMagicIndex(vector<int> &nums)
+	{
+		int count = nums.size();
+		for (auto i = 0; i < count; i++)
+		{
+			if (nums[i] == i)
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+	```
+
+    - 二分查找剪枝，平均时间复杂度$O(log(n))$，在最坏的情况下时间复杂度会退化到$O(n)$
+
+	```cpp
+	class Solution
+	{
+	private:
+		int divided_conqer(vector<int> &nums, int left, int right)
+		{
+			int ret = -1;
+			if (left <= right)
+			{
+				int mid = left + ((right - left) >> 1);
+				int leftAnswer = divided_conqer(nums, left, mid - 1);
+				if (leftAnswer != -1)
+				{
+					ret = leftAnswer;
+				}
+				else if (nums[mid] == mid)
+				{
+					ret = mid;
+				}
+				else
+				{
+					ret = divided_conqer(nums, mid + 1, right);
+				}
+			}
+			return ret;
+		}
+
+	public:
+		int findMagicIndex(vector<int> &nums)
+		{
+			return divided_conqer(nums, 0, nums.size() - 1);
+		}
+	};
+	```
 
 - [...](123)
