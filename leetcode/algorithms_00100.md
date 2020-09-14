@@ -2737,6 +2737,66 @@
     }
     ```
 
+- [94. Binary Tree Inorder Traversal](https://leetcode.com/problems/binary-tree-inorder-traversal/)
+
+    **二叉树的中序遍历**
+
+    - 递归写法
+
+    ```cpp
+    class Solution
+    {
+    private:
+        void dfs(TreeNode *root, vector<int> &ret)
+        {
+            if (root)
+            {
+                dfs(root->left, ret);
+                ret.push_back(root->val);
+                dfs(root->right, ret);
+            }
+        }
+
+    public:
+        vector<int> inorderTraversal(TreeNode *root)
+        {
+            vector<int> ret;
+            dfs(root, ret);
+            return ret;
+        }
+    };
+    ```
+
+    - 迭代写法
+
+    ```cpp
+	vector<int> inorderTraversal(TreeNode *root)
+	{
+		vector<int> ret;
+		if (root)
+		{
+			stack<TreeNode *> st;
+			TreeNode *cur = root;
+			while (cur || !st.empty())
+			{
+				if (cur)
+				{
+					st.push(cur);
+					cur = cur->left;
+				}
+				else
+				{
+					cur = st.top();
+					st.pop();
+					ret.push_back(cur->val);
+					cur = cur->right;
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [95. Unique Binary Search Trees II](https://leetcode.com/problems/unique-binary-search-trees-ii/)
 
     - 递归生成从1到n的二叉搜索树
