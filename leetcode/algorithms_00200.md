@@ -486,6 +486,131 @@
 
     链表、树、图等指针操作千千万万要注意空指针甚至是输入根节点为空的情况。
 
+- [144. 二叉树的前序遍历](https://leetcode-cn.com/problems/binary-tree-preorder-traversal/)
+
+    二叉树的前序遍历
+
+    - 递归写法
+
+    ```cpp
+    class Solution
+    {
+    private:
+        void dfs(TreeNode *root, vector<int> &ret)
+        {
+            if (root)
+            {
+                ret.push_back(root->val);
+                dfs(root->left, ret);
+                dfs(root->right, ret);
+            }
+        }
+
+    public:
+        vector<int> preorderTraversal(TreeNode *root)
+        {
+            vector<int> ret;
+            dfs(root, ret);
+            return ret;
+        }
+    };
+    ```
+
+    - 迭代写法
+
+    ```cpp
+	vector<int> preorderTraversal(TreeNode *root)
+	{
+		vector<int> ret;
+		if (root)
+		{
+			stack<TreeNode *> st;
+			TreeNode *cur = root;
+			while (cur || !st.empty())
+			{
+				if (cur)
+				{
+					ret.push_back(cur->val);
+					st.push(cur->right);
+					cur = cur->left;
+				}
+				else
+				{
+					cur = st.top();
+					st.pop();
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
+- [145. 二叉树的后序遍历](https://leetcode-cn.com/problems/binary-tree-postorder-traversal/)
+
+    二叉树的后序遍历
+
+    - 递归写法
+
+    ```cpp
+    class Solution
+    {
+    private:
+        void dfs(TreeNode *root, vector<int> &ret)
+        {
+            if (root)
+            {
+                dfs(root->left, ret);
+                dfs(root->right, ret);
+                ret.push_back(root->val);
+            }
+        }
+
+    public:
+        vector<int> postorderTraversal(TreeNode* root)
+        {
+            vector<int> ret;
+            dfs(root, ret);
+            return ret;
+        }
+    };
+    ```
+
+    - 迭代写法
+
+    ```cpp
+	vector<int> postorderTraversal(TreeNode *root)
+	{
+		vector<int> ret;
+		if (root)
+		{
+			TreeNode *cur = root;
+			stack<TreeNode *> st;
+			while (cur || !st.empty())
+			{
+				// 首先找到未访问部分的最左下子节点
+				while (cur)
+				{
+					st.push(cur);
+					cur = cur->left ? cur->left : cur->right;
+				}
+				// 当前栈顶即为下一个需要访问的节点
+				cur = st.top();
+				st.pop();
+				ret.push_back(cur->val);
+				if (!st.empty() && cur == st.top()->left)
+				{
+					cur = st.top()->right;
+				}
+				else
+				{
+					cur = nullptr; // 强制弹栈回到上一层
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [146. LRU Cache](https://leetcode.com/problems/lru-cache/)
 
     - hashmap + double linked list，get与put操作时间复杂度均为$O(1)$

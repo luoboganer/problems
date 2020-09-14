@@ -302,11 +302,77 @@
     }
     ```
 
+- [530. 二叉搜索树的最小绝对差](https://leetcode-cn.com/problems/minimum-absolute-difference-in-bst/)
+
+    本题与[783. 二叉搜索树节点最小距离](https://leetcode-cn.com/problems/minimum-distance-between-bst-nodes/)完全相同，对二叉搜索树BST进行中序遍历即可
+
+    ```cpp
+    int getMinimumDifference(TreeNode* root) {
+		int ret = numeric_limits<int>::max();
+		if (root)
+		{
+			// 中序遍历BST，然后计算前后两个数的差值的绝对值，取最小值
+			int pre_val = numeric_limits<int>::min();
+			TreeNode *cur = root;
+			stack<TreeNode *> st;
+			while (cur || !st.empty())
+			{
+				if (cur)
+				{
+					st.push(cur);
+					cur = cur->left;
+				}
+				else
+				{
+					cur = st.top();
+					st.pop();
+					if (pre_val == numeric_limits<int>::min())
+					{
+						pre_val = cur->val;
+					}
+					else
+					{
+						ret = min(ret, cur->val - pre_val);
+						pre_val = cur->val;
+					}
+					cur = cur->right;
+				}
+			}
+		}
+		return ret;
+    }
+    ```
+
 - [535](https://leetcode.com/problems/encode-and-decode-tinyurl/)
 
     tinyURL的encode与decode算法
 
     整体思路：采用hashmap或者字符串数组存储<key,value>对，key是个全局唯一的ID，value是其longURL。而shortURL则是key的64进制表示，这64个字符一般是[0-9a-zA-Z+-]。这里之所以是64进制是因为64为2的6次幂，进制转换效率高。
+
+- [537. Complex Number Multiplication](https://leetcode-cn.com/problems/complex-number-multiplication/)
+
+    模拟竖式相乘即可，重点在输入输出的格式处理(字符串处理)
+
+    ```cpp
+    class Solution
+    {
+        vector<int> stringToComplex(string s)
+        {
+            int pos = s.find_first_of('+');
+            string s1 = s.substr(0, pos + 1), s2 = s.substr(pos + 1, s.length() - 2 - pos);
+            return {stoi(s1), stoi(s2)};
+        }
+
+    public:
+        string complexNumberMultiply(string a, string b)
+        {
+            vector<int> a_value = stringToComplex(a), b_value = stringToComplex(b);
+            int x = a_value[0] * b_value[0] - a_value[1] * b_value[1];
+            int y = a_value[0] * b_value[1] + a_value[1] * b_value[0];
+            return to_string(x) + "+" + to_string(y) + "i";
+        }
+    };
+    ```
 
 - [539](https://leetcode.com/problems/minimum-time-difference/)
 

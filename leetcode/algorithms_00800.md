@@ -691,6 +691,48 @@
     }
     ```
 
+- [783. 二叉搜索树节点最小距离](https://leetcode-cn.com/problems/minimum-distance-between-bst-nodes/)
+
+    本题与[530. 二叉搜索树的最小绝对差](https://leetcode-cn.com/problems/minimum-absolute-difference-in-bst/)完全相同，对二叉搜索树BST进行中序遍历即可
+
+    ```cpp
+	int minDiffInBST(TreeNode *root)
+	{
+		int ret = numeric_limits<int>::max();
+		if (root)
+		{
+			// 中序遍历BST，然后计算前后两个数的差值的绝对值，取最小值
+			int pre_val = numeric_limits<int>::min();
+			TreeNode *cur = root;
+			stack<TreeNode *> st;
+			while (cur || !st.empty())
+			{
+				if (cur)
+				{
+					st.push(cur);
+					cur = cur->left;
+				}
+				else
+				{
+					cur = st.top();
+					st.pop();
+					if (pre_val == numeric_limits<int>::min())
+					{
+						pre_val = cur->val;
+					}
+					else
+					{
+						ret = min(ret, cur->val - pre_val);
+						pre_val = cur->val;
+					}
+					cur = cur->right;
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [784](https://leetcode.com/problems/letter-case-permutation/)
 
     对给定的字符串中的字母做大小写的全排列
