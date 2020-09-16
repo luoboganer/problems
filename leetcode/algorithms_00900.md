@@ -785,6 +785,77 @@
     - two pass，第一遍扫描判断是否全部 <= ，第二遍扫描判断是否全部 >=，两次结果取或关系
     - one pass，一遍扫描过程中用${-1,0,1}$分别表示<,=,>三种状态，然后在第二次出现非零元素的情况下，如果和第一次非零元素不同，即可返回false
 
+- [897. Increasing Order Search Tree](https://leetcode.com/problems/increasing-order-search-tree/)
+
+    - 中序遍历(inorder traversal)然后重新排列，时间复杂度$O(n)$，空间复杂度$O(n)$
+
+    ```cpp
+	TreeNode *increasingBST(TreeNode *root)
+	{
+		if (root)
+		{
+			vector<TreeNode *> inorder;
+			stack<TreeNode *> st;
+			TreeNode *cur = root;
+			while (cur || !st.empty())
+			{
+				if (cur)
+				{
+					st.push(cur);
+					cur = cur->left;
+				}
+				else
+				{
+					cur = st.top();
+					st.pop();
+					inorder.push_back(cur);
+					cur = cur->right;
+				}
+			}
+			const int n = inorder.size();
+			root = inorder[0];
+			cur = root;
+			for (auto i = 1; i < n; i++)
+			{
+				cur->left = nullptr, cur->right = inorder[i];
+				cur = cur->right;
+			}
+			cur->left = nullptr, cur->right = nullptr;
+		}
+		return root;
+	}
+    ```
+
+    - 在中序遍历的过程中直接调整树节点之间的链接关系，时间复杂度$O(n)$，空间复杂度可以从树节点个数降低到树的高度$O(h)$(主要是递归调用栈的空间开销)
+
+    ```cpp
+    class Solution
+    {
+    private:
+        TreeNode *cur; // 用来保存当前节点的上一个节点，辅助变量
+        void inorder(TreeNode *root)
+        {
+            if (root)
+            {
+                inorder(root->left);
+                root->left = nullptr;
+                cur->right = root;
+                cur = root;
+                inorder(root->right);
+            }
+        }
+
+    public:
+        TreeNode *increasingBST(TreeNode *root)
+        {
+            TreeNode *ret = new TreeNode(0);
+            cur = ret;
+            inorder(root);
+            return ret->right;
+        }
+    };
+    ```
+
 - [900. RLE Iterator](https://leetcode.com/problems/rle-iterator/)
 
     稀疏编码数组的迭代器iterator
