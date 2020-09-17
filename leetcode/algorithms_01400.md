@@ -604,6 +604,33 @@
     }
     ```
 
+    - 进阶问题，即在original树中存在值重复的节点，此时不能通过值比较确定是否同一个节点，只能通过引用地址的比较来确定
+
+    ```cpp
+	TreeNode *getTargetCopy(TreeNode *original, TreeNode *cloned, TreeNode *target)
+	{
+		TreeNode *ret = nullptr;
+		if (original == target)
+		{
+			ret = cloned;
+		}
+		else if(cloned)
+		{
+			TreeNode *left = getTargetCopy(original->left, cloned->left, target);
+			if (left)
+			{
+				return left;
+			}
+			TreeNode *right = getTargetCopy(original->right, cloned->right, target);
+			if (right)
+			{
+				return right;
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [1381. Design a Stack With Increment Operation](https://leetcode.com/problems/design-a-stack-with-increment-operation/)
 
     - 每次inc操作都给所有的数字加val值，时间复杂度$O(k)$
