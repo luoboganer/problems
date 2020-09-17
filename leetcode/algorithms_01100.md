@@ -397,6 +397,47 @@
 
     类似于LCS最长公共子序列的问题，二维dp或者一维dp均可，注意问题中隐藏的dp思维。
 
+- [1041. Robot Bounded In Circle](https://leetcode.com/problems/robot-bounded-in-circle/)
+
+    ```cpp
+	bool isRobotBounded(string instructions)
+	{
+		/**
+		 * 因为robot只能左右转动90度或者前进一步，因此如果要在重复执行指令的过程中回到原点，只需在执行一次指令后回到原点或者改变方向（连续四次改变方向一定会回到原点）
+		*/
+		vector<int> directions{1, 0, -1, 0, 1};
+		int direction = 3; // 初始方向为north，右转direction++，左转direction--
+		int x = 0, y = 0;
+		for (auto &&ch : instructions)
+		{
+			switch (ch)
+			{
+			case 'L':
+				direction = (direction + 3) % 4;
+				break;
+			case 'R':
+				direction = (direction + 1) % 4;
+				break;
+			case 'G':
+				x += directions[direction], y += directions[direction + 1];
+				break;
+			default:
+				break;
+			}
+		}
+		return (direction != 3) || (x == 0 && y == 0);
+	}
+    ```
+
+    - some test cases
+
+    ```cpp
+    "GGLLGG"
+    "GG"
+    "GL"
+    "GLGLGGLGL"
+    ```
+
 - [1042](https://leetcode.com/problems/flower-planting-with-no-adjacent/)
 
     贪心思想，时间复杂度$O(n)$：经典的染色问题，在给定四种颜色且保证有满足条件的答案时可以确保每个节点的连通节点小于等于三个，因此外层循环遍历每个节点i，内层循环遍历该节点链接的所有节点j，使用j尚未使用的颜色染给i即可。
