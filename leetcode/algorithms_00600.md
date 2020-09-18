@@ -678,6 +678,64 @@
 
     删除最少数量的字符使得两个字符串相等即可，因为删除完成之后要保证相等，因此保留下来的是最长公共子串(LCS)，递归求解LCS会TLE，需要二维DP或者一维DP。
 
+- [590. N-ary Tree Postorder Traversal](https://leetcode.com/problems/n-ary-tree-postorder-traversal/)
+
+    N叉树的后续遍历(post-order traversal)
+
+    - 递归写法
+
+    ```cpp
+    class Solution
+    {
+    private:
+        void recursive_postorder(Node *root, vector<int> &ret)
+        {
+            if (root)
+            {
+                for (auto &&node : root->children)
+                {
+                    recursive_postorder(node, ret);
+                }
+                ret.push_back(root->val);
+            }
+        }
+
+    public:
+        vector<int> postorder(Node *root)
+        {
+            vector<int> ret;
+            recursive_postorder(root, ret);
+            return ret;
+        }
+    };
+    ```
+
+    - 迭代写法
+
+    ```cpp
+	vector<int> postorder(Node *root)
+	{
+		vector<int> ret;
+		stack<Node *> st{{root}};
+		Node *cur;
+		while (!st.empty())
+		{
+			cur = st.top();
+			st.pop();
+			if (cur)
+			{
+				ret.push_back(cur->val);
+				for (auto &node : cur->children)
+				{
+					st.push(node);
+				}
+			}
+		}
+		reverse(ret.begin(), ret.end());
+		return ret;
+	}
+    ```
+
 - [593](https://leetcode.com/problems/valid-square/)
 
     验证给定的任意四个点是否可以组成一个正方形，思路如下：
