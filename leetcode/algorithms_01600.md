@@ -564,4 +564,41 @@
 	};
 	```
 
+- [1590. Make Sum Divisible by P](https://leetcode.com/problems/make-sum-divisible-by-p/)
+
+	本题类似于[974. Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k/)，用前缀和于哈希表记录同余的位置解决
+
+	```cpp
+	int minSubarray(vector<int> &nums, int p)
+	{
+		int n = nums.size();
+		long long total_sum = 0;
+		for (auto &&v : nums)
+		{
+			total_sum += v;
+		}
+		int remainder = total_sum % p;
+		if (remainder == 0)
+		{
+			return 0; // 恰好可以被整除
+		}
+		unordered_map<int, int> ids;
+		ids[0] = 0;
+		int ret = n;
+		total_sum = 0;
+		for (int j = 1; j <= n; j++)
+		{
+			total_sum += nums[j - 1];
+			int index_j = total_sum % p;
+			int index_i = (index_j - remainder + p) % p;
+			if (ids.find(index_i) != ids.end())
+			{
+				ret = min(j - ids[index_i], ret);
+			}
+			ids[index_j] = j;
+		}
+		return ret == n ? -1 : ret;
+	}
+	```
+
 - [...](123)
