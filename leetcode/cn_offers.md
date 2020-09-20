@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-09-09 10:27:31
+ * @LastEditTime: 2020-09-20 16:53:40
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -59,6 +59,49 @@
             int left = binary_search(nums, target, 0);
             int right = binary_search(nums, target, 1);
             return right - left;
+        }
+    };
+    ```
+
+- [剑指 Offer 54. 二叉搜索树的第k大节点](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof/)
+
+    中序遍历将二叉搜索树转化为排序树组，按照下标找出第k大的节点
+    
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<int> inorder_traversal_iter(TreeNode *root)
+        {
+            vector<int> ret;
+            if (root)
+            {
+                TreeNode *cur = root;
+                stack<TreeNode *> st;
+                while (cur || !st.empty())
+                {
+                    if (cur)
+                    {
+                        st.push(cur);
+                        cur = cur->left;
+                    }
+                    else
+                    {
+                        cur = st.top();
+                        st.pop();
+                        ret.push_back(cur->val);
+                        cur = cur->right;
+                    }
+                }
+            }
+            return ret;
+        }
+
+    public:
+        int kthLargest(TreeNode *root, int k)
+        {
+            vector<int> nums = inorder_traversal_iter(root);
+            return nums[nums.size() - k];
         }
     };
     ```
