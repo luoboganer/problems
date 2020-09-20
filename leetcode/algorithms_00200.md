@@ -50,6 +50,118 @@
 
     判断二叉树是否是平衡二叉树（任何节点左右子树的高度差小于等于1），在递归求二叉树最大深度的过程中维护一个全局变量balanced，随时比较任意节点的左右子树高度差即可。
 
+- [114. Flatten Binary Tree to Linked List](https://leetcode.com/problems/flatten-binary-tree-to-linked-list/)
+
+    将二叉树转换为左子树永远为空的单向链表
+
+    - 先序遍历将所有节点存储到一个数组中，然后顺序连接，时间复杂度$O(n)$，空间复杂度$O(n)$
+
+    ```cpp
+	void flatten(TreeNode *root)
+	{
+		vector<TreeNode *> nodes;
+		TreeNode *cur = root;
+		stack<TreeNode *> st;
+		while (cur || !st.empty())
+		{
+			if (cur)
+			{
+				nodes.push_back(cur);
+				if (cur->right)
+				{
+					st.push(cur->right);
+				}
+				cur = cur->left;
+			}
+			else
+			{
+				cur = st.top();
+				st.pop();
+			}
+		}
+		cur = new TreeNode(0);
+		root = cur;
+		for (auto node : nodes)
+		{
+			cur->right = node;
+			node->left = nullptr;
+			cur = cur->right;
+		}
+		root = root->right;
+	}
+    ```
+
+    - 在先序遍历的过程中直接转换二叉树节点间的链接关系，将空间复杂度优化到$O(1)$
+
+    ```cpp
+	void flatten(TreeNode *root)
+	{
+		TreeNode *cur = root;
+		stack<TreeNode *> st;
+		while (cur)
+		{
+			if (cur->left)
+			{
+				if (cur->right)
+				{
+					st.push(cur->right);
+				}
+				cur->right = cur->left;
+				cur->left = nullptr;
+				cur = cur->right;
+			}
+			else
+			{
+				if (cur->right)
+				{
+					cur = cur->right;
+				}
+				else if (!st.empty())
+				{
+					cur->right = st.top();
+					st.pop();
+					cur = cur->right;
+				}
+				else
+				{
+					cur = nullptr;
+				}
+			}
+		}
+	}
+    ```
+
+    - 递归写法
+
+    ```cpp
+    TreeNode* flattenHelper(TreeNode *root)
+    {
+        // root must not be NULL, flatten root and return its right most not NULL node
+        if(!root->left && !root->right){
+            return root;
+        }else if(!root->left && root->right){
+            return flattenHelper(root->right);
+        }else if(root->left && !root->right){
+            root->right = root->left;
+            root->left = nullptr;
+            return flattenHelper(root->right);
+        }else{
+            TreeNode* temp = flattenHelper(root->left);
+            temp->right = root->right;
+            root->right = root->left;
+            root->left = nullptr;
+            return flattenHelper(temp->right);
+        }
+    }
+    void flatten(TreeNode* root){
+        // O(N), one pass for all nodes
+        if(root){
+            TreeNode *temp = root;
+            temp = flattenHelper(temp);
+        }
+    }
+    ```
+
 - [116](https://leetcode.com/problems/populating-next-right-pointers-in-each-node/)
 
     更一般化的问题是如题[117](https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/)所示的条件，给定一个二叉树，将每一个节点的next指针指向他的同深度的右侧兄弟节点，简单BFS(Breadth-First-Search)，即层序遍历然后将同层的节点扫描一遍将每个节点的next指针指向同层下一个节点即可。
