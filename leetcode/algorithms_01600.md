@@ -601,4 +601,48 @@
 	}
 	```
 
+- [1594. Maximum Non Negative Product in a Matrix](https://leetcode.com/problems/maximum-non-negative-product-in-a-matrix/)
+
+	动态规划，与[152. Maximum Product Subarray](https://leetcode.com/problems/maximum-product-subarray/)相似，注意在乘法操作中超出int表示范围，要用long long数组来DP
+
+	```cpp
+		int maxProductPath(vector<vector<int>> &grid)
+	{
+		int ret = -1;
+		if (grid.size() > 0 && grid[0].size() > 0)
+		{
+			int rows = grid.size(), cols = grid[0].size();
+			int mod = 1e9 + 7;
+			// 0 - min  v.s.  1 - max
+			vector<vector<vector<long long>>> dp(rows, vector<vector<long long>>(cols, vector<long long>(2)));
+			dp[0][0][0] = dp[0][0][1] = grid[0][0];
+			for (int i = 1; i < rows; i++)
+			{
+				long long v = static_cast<int>(grid[i][0]);
+				long long a = v * dp[i - 1][0][0], b = v * dp[i - 1][0][1];
+				dp[i][0][0] = min(a, b), dp[i][0][1] = max(a, b);
+			}
+			for (int j = 1; j < cols; j++)
+			{
+				long long v = static_cast<long long>(grid[0][j]);
+				long long a = v * dp[0][j - 1][0], b = v * dp[0][j - 1][1];
+				dp[0][j][0] = min(a, b), dp[0][j][1] = max(a, b);
+			}
+			for (int i = 1; i < rows; i++)
+			{
+				for (int j = 1; j < cols; j++)
+				{
+					int v = static_cast<long long>(grid[i][j]);
+					long long a = v * dp[i - 1][j][0], b = v * dp[i - 1][j][1], c = v * dp[i][j - 1][0], d = v * dp[i][j - 1][1];
+					dp[i][j][0] = min(min(a, b), min(c, d));
+					dp[i][j][1] = max(max(a, b), max(c, d));
+				}
+			}
+			ret = dp[rows - 1][cols - 1][1] % mod;
+			ret = ret < 0 ? -1 : ret;
+		}
+		return ret;
+	}
+	```
+
 - [...](123)
