@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-09-10 15:54:57
+ * @LastEditTime: 2020-09-21 17:04:56
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -498,6 +498,23 @@
 			return divided_conqer(nums, 0, nums.size() - 1);
 		}
 	};
+	```
+
+- [面试题 17.01. 不用加号的加法](https://leetcode-cn.com/problems/add-without-plus-lcci/)
+
+	使用位运算求和，注意求进位在左移的过程中一定使用无符号整数防止溢出
+
+	```cpp
+	int add(int a, int b)
+	{
+		while (b)
+		{
+			auto carry = (unsigned int)(a & b) << 1;
+			a ^= b;
+			b = carry;
+		}
+		return a;
+	}
 	```
 
 - [...](123)
