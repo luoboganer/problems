@@ -444,6 +444,59 @@
     }
     ```
 
+- [134. Gas Station](https://leetcode.com/problems/gas-station/)
+
+    - 遍历每个station检测其是否可以到达终点，即从该station出发到达每一个站点时拥有的油料值cur($cur=cur+gas[i]-cost[i]$)都足够到达下一个站点($cur>=0$)，时间复杂度$O(n^2)$
+
+    ```cpp
+    int canCompleteCircuit(vector<int> &gas, vector<int> &cost)
+	{
+		int n = gas.size(), ret = -1;
+		if (n > 0)
+		{
+			for (auto station = 0; station < n; station++)
+			{
+				int cur = 0;
+				for (auto i = 0; cur >= 0 && i < n; i++)
+				{
+					int index = (i + station) % n;
+					cur += (gas[index] - cost[index]);
+				}
+				if (cur >= 0)
+				{
+					ret = station;
+					break;
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - 贪心原则，时间复杂度$O(n)$
+
+    ```cpp
+	int canCompleteCircuit(vector<int> &gas, vector<int> &cost)
+	{
+		int n = gas.size(), total_tank = 0, cur_tank = 0, start_station = 0;
+		for (auto i = 0; i < n; i++)
+		{
+			total_tank += gas[i] - cost[i];
+			cur_tank += gas[i] - cost[i];
+			if (cur_tank < 0)
+			{
+				start_station = i + 1;
+				/**
+				 * 从start_station出发无法到达i+1(具体是从i无法到达i+1)，则从[start_staion,i]任一站点出发都无法到达i+1
+				 * 则以i+1为起点重新开始
+				*/
+				cur_tank = 0;
+			}
+		}
+		return total_tank >= 0 ? start_station : -1;
+	}
+    ```
+
 - [136](https://leetcode.com/problems/single-number/)
 
     一个数组中只有一个数落单、其他数均成对出现，采用异或的按位操作一遍扫描找到那个落单的数。
