@@ -1,5 +1,61 @@
 # 501-600
 
+- [501. Find Mode in Binary Search Tree](https://leetcode.com/problems/find-mode-in-binary-search-tree/)
+
+    搜索二叉树的中序遍历，在中序遍历的过程中维护cur_val,cur_count,max_count,ret三个变量的值即可
+
+    ```cpp
+    class Solution
+    {
+    private:
+        void dfs(TreeNode *root, int *cur_val, int *cur_freq, int *max_freq, vector<int> &ret)
+        {
+            // recursive search for left/right subtree
+            if (root->left)
+            {
+                dfs(root->left, cur_val, cur_freq, max_freq, ret);
+            }
+            // update frequency of the current value
+            if (root->val == *cur_val)
+            {
+                (*cur_freq)++;
+            }
+            else
+            {
+                (*cur_freq) = 1;
+            }
+            if (*cur_freq > *max_freq)
+            {
+                *max_freq = *cur_freq;
+                ret.clear();
+                ret.push_back(root->val);
+            }
+            else if (*cur_freq == *max_freq)
+            {
+                ret.push_back(root->val);
+            }
+            *cur_val = root->val;
+            // recursive search for left/right subtree
+            if (root->right)
+            {
+                dfs(root->right, cur_val, cur_freq, max_freq, ret);
+            }
+        }
+
+    public:
+        vector<int> findMode(TreeNode *root)
+        {
+            vector<int> ret;
+            int cur_val = 0, cur_freq = 0, max_freq = 0;
+            if (root)
+            {
+                dfs(root, &cur_val, &cur_freq, &max_freq, ret);
+            }
+            return ret;
+        }
+    };
+    ```
+
 - [508. Most Frequent Subtree Sum](https://leetcode.com/problems/most-frequent-subtree-sum/)
 
     递归地或者非递归自底向上的求所有节点的和，然后用hashmap统计每个值出现的频率，求频率最大的值
