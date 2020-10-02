@@ -1244,6 +1244,59 @@
     };
     ```
 
+- [389. Find the Difference](https://leetcode.com/problems/find-the-difference/)
+
+    - 分别统计s和t中每个字符出现的次数，比较找到s中比t中多出现的那个字符
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<int> count_letters(string s)
+        {
+            const int length = 26;
+            vector<int> ret(length, 0);
+            for (auto &ch : s)
+            {
+                ret[static_cast<int>(ch - 'a')]++;
+            }
+            return ret;
+        }
+
+    public:
+        char findTheDifference(string s, string t)
+        {
+            vector<int> letters_s = count_letters(s), letters_t = count_letters(t);
+            for (auto i = 0; i < 26; i++)
+            {
+                if (letters_t[i] == letters_s[i] + 1)
+                {
+                    return static_cast<char>(i + 'a');
+                }
+            }
+            return ' '; // 题目保证有答案，不会执行到这里
+        }
+    };
+    ```
+
+    - 合并两个字符串，则相当于新字符串中每个字符都出现了两次，只有一个字符（t中多出来的那个）出现了一次，因此可以用异或的办法找到这个字符
+
+    ```cpp
+	char findTheDifference(string s, string t)
+	{
+		char ret = 0;
+		for (auto &ch : s)
+		{
+			ret ^= ch;
+		}
+		for (auto &ch : t)
+		{
+			ret ^= ch;
+		}
+		return ret;
+	}
+    ```
+
 - [394](https://leetcode.com/problems/decode-string/)
 
     关于括号中嵌套的问题，可以用递归的方法解决
