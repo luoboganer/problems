@@ -69,6 +69,66 @@
     }
     ```
 
+- [1004. Max Consecutive Ones III](https://leetcode.com/problems/max-consecutive-ones-iii/)
+
+    - 动态规划，时间复杂度$O(n*K)$，LeetCode评测机$\color{red}{TLE}$
+
+    ```cpp
+	int longestOnes(vector<int> &A, int K)
+	{
+		vector<int> dp(K + 1, 0);
+		int ret = 0;
+		for (auto &v : A)
+		{
+			if (v == 1)
+			{
+				for (int i = 0; i <= K; i++)
+				{
+					dp[i] = dp[i] + 1;
+					ret = max(ret, dp[i]);
+				}
+			}
+			else
+			{
+				for (int i = K; i > 0; i--)
+				{
+					dp[i] = dp[i - 1] + 1;
+					ret = max(dp[i], ret);
+				}
+				dp[0] = 0;
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - 滑动窗口，时间复杂度$O(n)$
+
+    ```cpp
+    	int longestOnes(vector<int> &A, int K)
+	{
+		int ret = 0, left = -1, right = 0, n = A.size();
+		while (right < n)
+		{
+			if (A[right] == 0)
+			{
+				if (K > 0)
+				{
+					K--;
+				}
+				else
+				{
+					while (A[++left] != 0)
+						;
+				}
+			}
+			ret = max(right - left, ret);
+			right++;
+		}
+		return ret;
+	
+    ```
+
 - [1008](https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/)
 
     从二叉搜索树BST的先序遍历preorder开始重建BST
