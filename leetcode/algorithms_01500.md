@@ -671,3 +671,71 @@
         }
     };
 	```
+
+- [1476. Subrectangle Queries](https://leetcode.com/problems/subrectangle-queries/)
+    
+    - 暴力更新矩阵元素，时间复杂度$O(r*c)$
+
+	```cpp
+	class SubrectangleQueries
+	{
+	private:
+		vector<vector<int>> matrix;
+
+	public:
+		SubrectangleQueries(vector<vector<int>> &rectangle)
+		{
+			this->matrix = rectangle;
+		}
+
+		void updateSubrectangle(int row1, int col1, int row2, int col2, int newValue)
+		{
+			for (auto i = row1; i <= row2; i++)
+			{
+				for (auto j = col1; j <= col2; j++)
+				{
+					this->matrix[i][j] = newValue;
+				}
+			}
+		}
+
+		int getValue(int row, int col)
+		{
+			return this->matrix[row][col];
+		}
+	};
+	```
+
+    - 记录矩阵update的更新操作，时间复杂度$O(k)$，其中k是update的操作调用次数
+
+	```cpp
+	class SubrectangleQueries
+	{
+	private:
+		vector<vector<int>> matrix, history;
+
+	public:
+		SubrectangleQueries(vector<vector<int>> &rectangle)
+		{
+			this->matrix = rectangle;
+			this->history.clear();
+		}
+
+		void updateSubrectangle(int row1, int col1, int row2, int col2, int newValue)
+		{
+			history.push_back({row1, col1, row2, col2, newValue});
+		}
+
+		int getValue(int row, int col)
+		{
+			for (int i = history.size() - 1; i >= 0; i--)
+			{
+				if (history[i][0] <= row && row <= history[i][2] && history[i][1] <= col && col <= history[i][3])
+				{
+					return history[i][4];
+				}
+			}
+			return this->matrix[row][col];
+		}
+	};
+	```
