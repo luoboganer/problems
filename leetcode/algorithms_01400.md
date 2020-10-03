@@ -537,6 +537,96 @@
 		}
 	};
 
+- [1365. 有多少小于当前数字的数字](https://leetcode-cn.com/problems/how-many-numbers-are-smaller-than-the-current-number/)
+    
+    - 暴力枚举，时间复杂度$O(n^2)$
+
+    ```cpp
+	vector<int> smallerNumbersThanCurrent(vector<int> &nums)
+	{
+		const int n = nums.size();
+		vector<int> ret(n, 0);
+		for (auto i = 0; i < n; i++)
+		{
+			for (auto j = 0; j < n; j++)
+			{
+				if (j != i && nums[j] < nums[i])
+				{
+					ret[i]++;
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - 对每个数字排序后，统计每个数字v左侧和v值不相同的数字个数即可，时间复杂度$O(nlog(n))$
+
+  	```cpp
+	vector<int> smallerNumbersThanCurrent(vector<int> &nums)
+	{
+		const int n = nums.size();
+		vector<vector<int>> numsANDindex(n);
+		for (int i = 0; i < n; i++)
+		{
+			numsANDindex[i] = {nums[i], i};
+		}
+		sort(numsANDindex.begin(), numsANDindex.end());
+		for (int i = 0; i < n;)
+		{
+			int j = i;
+			while (j < n && numsANDindex[j][0] == numsANDindex[i][0])
+			{
+				j++;
+			}
+			for (int k = i; k < j; k++)
+			{
+				int index = numsANDindex[k][1], v = i;
+				nums[index] = v;
+			}
+			i = j;
+		}
+		return nums;
+	}
+  	```
+
+    - 桶排序与hashmap的思想，在题目限定的$0<=val<=100$范围内统计每个数出现的次数，时间复杂$O(n)$
+
+	```cpp
+	vector<int> smallerNumbersThanCurrent(vector<int> &nums)
+	{
+		vector<int> count(101, 0);
+		for (auto &v : nums)
+		{
+			count[v]++;
+		}
+		for (int i = 0, cur = 0; i <= 100; i++)
+		{
+			int temp = count[i];
+			count[i] = cur;
+			cur += temp;
+		}
+		const int n = nums.size();
+		for (int i = 0; i < n; i++)
+		{
+			nums[i] = count[nums[i]];
+		}
+		return nums;
+	}
+	```
+
+    - some test cases
+
+	```cpp
+	[8,1,2,2,3]
+	[6,5,4,8]
+	[7,7,7,7]
+	[2,5,3,4,1]
+	[2,1,3]
+	[1,2,3,4]
+	[3,6,7,5,1]
+	```
+
 - [1379. Find a Corresponding Node of a Binary Tree in a Clone of That Tree](https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/)
 
     - 递归方法，DFS，时间效率$\color{red}{688 ms, 53.45\%}$
