@@ -672,6 +672,43 @@
     };
 	```
 
+- [1470. 重新排列数组](https://leetcode-cn.com/problems/shuffle-the-array/)
+    
+    - 在新的数组空间内直接按照新的顺序输出数组，时间复杂度$O(n)$，空间复杂度$O(n)$
+
+	```cpp
+	vector<int> shuffle(vector<int> &nums, int n)
+	{
+		vector<int> ret(2 * n);
+		for (int i = 0, k = 0; i < n; i++)
+		{
+			ret[k++] = nums[i];
+			ret[k++] = nums[i + n];
+		}
+		return ret;
+	}
+	```
+
+    - 因为数值被限制在$[1,1000]$，因此用10个bit位即可表达($2^10=1024$)，因此可以在原数组中每个数的低10位表示原值，高10位表示重排后的值，时间复杂度$O(n)$，空间复杂度$O(1)$
+
+	```cpp
+	vector<int> shuffle(vector<int> &nums, int n)
+	{
+		for (int i = 0, k = 0; i < n; i++)
+		{
+			nums[k] = ((nums[i] & 1023) << 10) ^ (nums[k] & 1023);
+			k++;
+			nums[k] = ((nums[i + n] & 1023) << 10) ^ (nums[k] & 1023);
+			k++;
+		}
+		for (int i = 0; i < 2 * n; i++)
+		{
+			nums[i] = (nums[i] >> 10);
+		}
+		return nums;
+	}
+	```
+
 - [1476. Subrectangle Queries](https://leetcode.com/problems/subrectangle-queries/)
     
     - 暴力更新矩阵元素，时间复杂度$O(r*c)$
