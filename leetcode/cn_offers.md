@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-09-20 16:53:40
+ * @LastEditTime: 2020-10-04 15:04:50
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -104,6 +104,36 @@
             return nums[nums.size() - k];
         }
     };
+    ```
+
+- [剑指 Offer 57 - II. 和为s的连续正数序列](https://leetcode-cn.com/problems/he-wei-sde-lian-xu-zheng-shu-xu-lie-lcof/)
+
+    由题意每个可能的序列为[a,a+1,a+2,...,a+b]且其和为target，按照高斯求和的方式确定两个端点[a,b]即可
+
+    ```cpp
+	vector<vector<int>> findContinuousSequence(int target)
+	{
+		vector<vector<int>> ret;
+		if (target >= 2)
+		{
+			// [a,a+1,a+2,a+3,...,a+b]
+			int max_b = floor(sqrt(target * 2));
+			for (int b = 1; b <= max_b; b++)
+			{
+				int a = (target * 2 / (b + 1) - b) / 2;
+				if ((b + 1) * (2 * a + b) == 2 * target)
+				{
+					vector<int> cur(b + 1);
+					for (int i = 0; i <= b; i++)
+					{
+						cur[i] = a + i;
+					}
+					ret.push_back(cur);
+				}
+			}
+		}
+		return ret;
+	}
     ```
 
 - [...](123)
