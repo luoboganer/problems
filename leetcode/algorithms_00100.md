@@ -374,6 +374,123 @@
 
     罗马数字转阿拉伯数字，主要是思想是对罗马数字字符序列从右到左扫描，注意IXC的位置和表示的数字有关即可。
 
+- [18. 四数之和](https://leetcode-cn.com/problems/4sum/)
+
+    - 两两组（在此过程中用hashmap记录两个数的idx），规约到两数之和为target的问题（注意去重操作），时间复杂度为$O(n^2)$，但是涉及到诸多hash操作，实际运行效率低
+
+    ```cpp
+	vector<vector<int>> fourSum(vector<int> &nums, int target)
+	{
+		unordered_map<int, vector<vector<int>>> twoSum2elements;
+		const int n = nums.size();
+		sort(nums.begin(), nums.end());
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = i + 1; j < n; j++)
+			{
+				twoSum2elements[nums[i] + nums[j]].push_back({i, j});
+			}
+		}
+		vector<int> twoSum;
+		for (auto &item : twoSum2elements)
+		{
+			twoSum.emplace_back(item.first);
+		}
+		sort(twoSum.begin(), twoSum.end());
+		int i = 0, j = twoSum.size() - 1;
+		set<vector<int>> ret_set;
+		vector<vector<int>> ret;
+		while (i <= j)
+		{
+			int v = twoSum[i] + twoSum[j];
+			if (v < target)
+			{
+				i++;
+			}
+			else if (v > target)
+			{
+				j--;
+			}
+			else
+			{
+				for (auto &a : twoSum2elements[twoSum[i]])
+				{
+					for (auto &b : twoSum2elements[twoSum[j]])
+					{
+						unordered_set<int> idx{a[0], a[1], b[0], b[1]};
+						if (idx.size() == 4)
+						{
+							vector<int> cur{nums[a[0]], nums[a[1]], nums[b[0]], nums[b[1]]};
+							sort(cur.begin(), cur.end());
+							ret_set.insert(cur);
+						}
+					}
+				}
+				i++, j--;
+			}
+		}
+		for (auto &v : ret_set)
+		{
+			ret.emplace_back(v);
+		}
+		return ret;
+	}
+    ```
+
+    - 排序加双指针，时间复杂度$O(n^3)$
+
+    ```cpp
+    vector<vector<int>> fourSum(vector<int> &nums, int target)
+	{
+		vector<vector<int>> ret;
+		sort(nums.begin(), nums.end());
+		const int n = nums.size();
+		for (int a = 0; a < n; a++)
+		{
+			if (a > 0 && nums[a] == nums[a - 1])
+			{
+				continue; // 去重
+			}
+			for (int b = a + 1; b < n; b++)
+			{
+				if (b > a + 1 && nums[b] == nums[b - 1])
+				{
+					continue;
+				}
+				int c = b + 1, d = n - 1;
+				while (c < d)
+				{
+					// 排序+双指针减少一重循环
+					int v = nums[a] + nums[b] + nums[c] + nums[d];
+					if (v == target)
+					{
+						vector<int> cur{nums[a], nums[b], nums[c], nums[d]};
+						ret.emplace_back(cur);
+						c++, d--;
+						while (c < d && nums[c] == nums[c - 1])
+						{
+							c++;
+						}
+						while (c < d && nums[d] == nums[d + 1])
+						{
+							d--;
+						}
+					}
+					else if (v < target)
+					{
+						c++;
+					}
+					else if (v > target)
+					{
+						d--;
+					}
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [22](https://leetcode.com/problems/generate-parentheses/)
 
     本题给定左右括号对数量n，生成所有符合条件的括号数
