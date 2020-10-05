@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-10-05 16:58:19
+ * @LastEditTime: 2020-10-05 17:49:30
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -112,6 +112,41 @@
             return st[min_index.back()];
         }
     };
+    ```
+
+- [剑指 Offer 31. 栈的压入、弹出序列](https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/)
+
+    模拟压栈和弹栈的操作直到可以按给定顺序弹栈且栈为空，时间复杂度$O(n)$
+
+    ```cpp
+	bool validateStackSequences(vector<int> &pushed, vector<int> &popped)
+	{
+		const int n = pushed.size();
+		bool ret = true;
+		if (n > 0)
+		{
+			int i = 0, j = 0;
+			stack<int> st;
+			while (j < n)
+			{
+				if (!st.empty() && st.top() == popped[j])
+				{
+					j++;
+					st.pop();
+				}
+				else if (i < n)
+				{
+					st.push(pushed[i++]);
+				}
+				else
+				{
+					ret = false;
+					break;
+				}
+			}
+		}
+		return ret;
+	}
     ```
 
 - [剑指 Offer 52. 两个链表的第一个公共节点](https://leetcode-cn.com/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/)
