@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-10-05 16:31:11
+ * @LastEditTime: 2020-10-05 16:58:19
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -63,6 +63,53 @@
                 }
             }
             return false;
+        }
+    };
+    ```
+
+- [剑指 Offer 30. 包含min函数的栈](https://leetcode-cn.com/problems/bao-han-minhan-shu-de-zhan-lcof/)
+
+    使用单独的数组来记录当前最小值的idx即可实现全$O(1)$的操作
+
+    ```cpp
+    class MinStack
+    {
+    private:
+        vector<int> st, min_index;
+
+    public:
+        /** initialize your data structure here. */
+        MinStack()
+        {
+            st.clear(), min_index.clear();
+        }
+
+        void push(int x)
+        {
+            if (!min_index.empty() && st[min_index.back()] < x)
+            {
+                min_index.emplace_back(min_index.back());
+            }
+            else
+            {
+                min_index.emplace_back(st.size());
+            }
+            st.emplace_back(x);
+        }
+
+        void pop()
+        {
+            min_index.pop_back(), st.pop_back();
+        }
+
+        int top()
+        {
+            return st.back();
+        }
+
+        int min()
+        {
+            return st[min_index.back()];
         }
     };
     ```
