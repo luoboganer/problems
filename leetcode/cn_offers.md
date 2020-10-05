@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-10-04 15:04:50
+ * @LastEditTime: 2020-10-05 11:01:15
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -131,6 +131,40 @@
 					ret.push_back(cur);
 				}
 			}
+		}
+		return ret;
+	}
+    ```
+
+- [剑指 Offer 60. n个骰子的点数](https://leetcode-cn.com/problems/nge-tou-zi-de-dian-shu-lcof/)
+
+    从骰子数为1开始递归/迭代计算骰子数为n的情况，注意double数的精度问题
+
+    ```cpp
+    	vector<double> twoSum(int n)
+	{
+		if (n < 1)
+		{
+			return {};
+		}
+		else if (n == 1)
+		{
+			return {1.0 / 6, 1.0 / 6, 1.0 / 6, 1.0 / 6, 1.0 / 6, 1.0 / 6};
+		}
+		vector<double> ret{1.0 / 6, 1.0 / 6, 1.0 / 6, 1.0 / 6, 1.0 / 6, 1.0 / 6};
+		vector<double> base{1.0 / 6, 1.0 / 6, 1.0 / 6, 1.0 / 6, 1.0 / 6, 1.0 / 6};
+		for (int v = 2; v <= n; v++)
+		{
+			const int count = 5 * v + 1, ret_length = ret.size();
+			vector<double> cur(count, 0.0);
+			for (int i = 0; i < ret.size(); i++)
+			{
+				for (int j = 0; j < 6; j++)
+				{
+					cur[i + j] += ret[i] * base[j];
+				}
+			}
+			ret = cur;
 		}
 		return ret;
 	}
