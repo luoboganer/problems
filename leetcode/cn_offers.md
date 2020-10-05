@@ -5,12 +5,67 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-10-05 11:25:46
+ * @LastEditTime: 2020-10-05 16:31:11
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
 
 # 剑指Offer:名企面试官精讲典型编程题
+
+- [剑指 Offer 12. 矩阵中的路径](https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/)
+
+    经典的DFS搜索+递归回溯问题
+
+    ```cpp
+    class Solution
+    {
+        bool dfs(vector<vector<char>> &board, string &word, int r, int c, int k)
+        {
+            if (k == word.size())
+            {
+                return true;
+            }
+            else if (r >= 0 && c >= 0 && r < board.size() && c < board[0].size() && board[r][c] == word[k])
+            {
+                board[r][c] = '#'; // flag for visited
+                vector<int> directions{1, 0, -1, 0, 1};
+                for (int i = 0; i < 4; i++)
+                {
+                    if (dfs(board, word, r + directions[i], c + directions[i + 1], k + 1))
+                    {
+                        return true;
+                    }
+                }
+                board[r][c] = word[k]; // backtracking
+            }
+            return false;
+        }
+
+    public:
+        bool exist(vector<vector<char>> &board, string word)
+        {
+            if (word.length() == 0)
+            {
+                return true;
+            }
+            else if (board.size() > 0 && board[0].size() > 0)
+            {
+                const int rows = board.size(), cols = board[0].size();
+                for (int i = 0; i < rows; i++)
+                {
+                    for (int j = 0; j < cols; j++)
+                    {
+                        if (dfs(board, word, i, j, 0))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+    };
+    ```
 
 - [剑指 Offer 52. 两个链表的第一个公共节点](https://leetcode-cn.com/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/)
 
