@@ -5,12 +5,29 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-10-05 11:01:15
+ * @LastEditTime: 2020-10-05 11:25:46
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
 
 # 剑指Offer:名企面试官精讲典型编程题
+
+- [剑指 Offer 52. 两个链表的第一个公共节点](https://leetcode-cn.com/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/)
+
+    寻找两个链表的第一个公共节点，与检测一个链表中是否有环/寻找环节点类似，双指针遍历即可
+
+    ```cpp
+	ListNode *getIntersectionNode(ListNode *headA, ListNode *headB)
+	{
+		ListNode *a = headA, *b = headB;
+		while (a != b)
+		{
+			a = a ? a->next : headB;
+			b = b ? b->next : headA;
+		}
+		return a;
+	}
+    ```
 
 - [剑指 Offer 53 - I. 在排序数组中查找数字 I](https://leetcode-cn.com/problems/zai-pai-xu-shu-zu-zhong-cha-zhao-shu-zi-lcof/)
 
