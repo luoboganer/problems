@@ -1190,6 +1190,48 @@
     }
     ```
 
+- [973. 最接近原点的 K 个点](https://leetcode-cn.com/problems/k-closest-points-to-origin/)
+
+    特别注意优先队列实现的语法，即优先队列中元素的构造(定义，构造方法，比较运算符的重载)，时间复杂度$O(nlog(n))$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        struct Point
+        {
+            int x, y;
+            Point(vector<int> p)
+            {
+                x = p[0], y = p[1];
+            }
+            bool operator<(const Point &t) const
+            {
+                return x *x + y *y > t.x *t.x + t.y *t.y;
+            }
+        };
+
+    public:
+        vector<vector<int>> kClosest(vector<vector<int>> &points, int K)
+        {
+            priority_queue<Point> qe;
+            for (auto &&v : points)
+            {
+                Point cur = Point(v);
+                qe.push(cur);
+            }
+            vector<vector<int>> ret(K);
+            for (int i = 0; i < K; i++)
+            {
+                Point cur = qe.top();
+                ret[i] = {cur.x, cur.y};
+                qe.pop();
+            }
+            return ret;
+        }
+    };
+    ```
+
 - [974. Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k/)
 
     此类连续子数组和差之类的问题，大多使用prefix sum的方式解决
