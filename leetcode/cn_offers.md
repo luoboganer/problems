@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-10-06 14:20:58
+ * @LastEditTime: 2020-10-06 15:56:33
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -239,6 +239,28 @@
             return auxiliary->right;
         }
     };
+    ```
+
+- [剑指 Offer 40. 最小的k个数](https://leetcode-cn.com/problems/zui-xiao-de-kge-shu-lcof/)
+
+    cpp中优先队列的使用
+
+    ```cpp
+	vector<int> getLeastNumbers(vector<int> &arr, int k)
+	{
+        /**
+         * priority_queue<int, vector<int>, greater<int>>
+         * priority_queue<int, vector<int>, less<int>>
+        */
+        priority_queue<int, vector<int>, greater<int>> qe(arr.begin(), arr.end());
+		vector<int> ret(k);
+		for (int i = 0; i < k; i++)
+		{
+			ret[i] = qe.top();
+			qe.pop();
+		}
+		return ret;
+	}
     ```
 
 - [剑指 Offer 52. 两个链表的第一个公共节点](https://leetcode-cn.com/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/)
