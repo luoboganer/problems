@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-09-21 17:04:56
+ * @LastEditTime: 2020-10-06 15:36:34
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -514,6 +514,41 @@
 			b = carry;
 		}
 		return a;
+	}
+	```
+
+- [面试题 17.10. 主要元素](https://leetcode-cn.com/problems/find-majority-element-lcci/)
+
+	摩尔投票法则（赞成票与否定票互相抵消的思想），寻找占比超过一般的元素
+
+	```cpp
+	int majorityElement(vector<int> &nums)
+	{
+		const int n = nums.size();
+		if (n > 0)
+		{
+			int count = 0, key = nums[0];
+			for (auto &v : nums)
+			{
+				if (key == v)
+				{
+					count++;
+				}
+				else
+				{
+					if (count > 0)
+					{
+						count--;
+					}
+					else
+					{
+						key = v, count = 1;
+					}
+				}
+			}
+			return count > 0 ? key : -1;
+		}
+		return -1;
 	}
 	```
 
