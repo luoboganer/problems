@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-10-05 17:49:30
+ * @LastEditTime: 2020-10-06 14:20:58
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -147,6 +147,98 @@
 		}
 		return ret;
 	}
+    ```
+
+- [剑指 Offer 37. 序列化二叉树](https://leetcode-cn.com/problems/xu-lie-hua-er-cha-shu-lcof/)
+
+    二叉树的序列化与反序列化，主要是队列(Queue)的运用
+
+    ```cpp
+    class Codec
+    {
+    public:
+        // Encodes a tree to a single string.
+        string serialize(TreeNode *root)
+        {
+            string ret;
+            // 按照层序遍历的原则输出每个节点，叶子节点的两个子节点输出null
+            if (root)
+            {
+                queue<TreeNode *> bfs{{root}};
+                vector<TreeNode *> nodes;
+                while (!bfs.empty())
+                {
+                    TreeNode *cur = bfs.front();
+                    bfs.pop();
+                    nodes.emplace_back(cur);
+                    if (cur)
+                    {
+                        bfs.push(cur->left);
+                        bfs.push(cur->right);
+                    }
+                }
+                while (!nodes.empty() && nodes.back() == nullptr)
+                {
+                    nodes.pop_back();
+                }
+                for (auto &node : nodes)
+                {
+                    ret += node ? to_string(node->val) : "null";
+                    ret += ',';
+                }
+            }
+            return '[' + ret + ']';
+        }
+
+        // Decodes your encoded data to tree.
+        TreeNode *deserialize(string data)
+        {
+            TreeNode *auxiliary = new TreeNode(0);
+            data = data.substr(1, data.length() - 2);
+            if (data.length() > 0)
+            {
+                vector<string> tokens;
+                string token;
+                for (auto ch : data)
+                {
+                    if (ch == ',')
+                    {
+                        tokens.emplace_back(token);
+                        token.clear();
+                    }
+                    else
+                    {
+                        token += ch;
+                    }
+                }
+                queue<TreeNode *> bfs{{auxiliary}};
+                bool left = false;
+                for (auto t : tokens)
+                {
+                    TreeNode *cur = bfs.front();
+                    if (!left)
+                    {
+                        bfs.pop(); // 当前填充cur的右子树，则cur可以出队
+                    }
+                    if (t.compare("null") != 0)
+                    {
+                        if (left)
+                        {
+                            cur->left = new TreeNode(stoi(t));
+                            bfs.push(cur->left);
+                        }
+                        else
+                        {
+                            cur->right = new TreeNode(stoi(t));
+                            bfs.push(cur->right);
+                        }
+                    }
+                    left = !left;
+                }
+            }
+            return auxiliary->right;
+        }
+    };
     ```
 
 - [剑指 Offer 52. 两个链表的第一个公共节点](https://leetcode-cn.com/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/)
