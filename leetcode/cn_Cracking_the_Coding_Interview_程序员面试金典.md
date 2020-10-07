@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-10-06 15:36:34
+ * @LastEditTime: 2020-10-07 14:11:46
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -496,6 +496,94 @@
 		int findMagicIndex(vector<int> &nums)
 		{
 			return divided_conqer(nums, 0, nums.size() - 1);
+		}
+	};
+	```
+
+- [面试题 16.02. 单词频率](https://leetcode-cn.com/problems/words-frequency-lcci/)
+
+    - hashmap统计单词数量
+
+	```cpp
+	class WordsFrequency
+	{
+	private:
+		unordered_map<string, int> count;
+
+	public:
+		WordsFrequency(vector<string> &book)
+		{
+			count.clear();
+			for (auto &s : book)
+			{
+				count[s]++;
+			}
+		}
+
+		int get(string word)
+		{
+			auto it = count.find(word);
+			return it == count.end() ? 0 : it->second;
+		}
+	};
+	```
+
+    - TrieTree字典树实现
+
+	```cpp
+	class WordsFrequency
+	{
+	private:
+		struct TrieNode
+		{
+			int is_word;
+			TrieNode *next[26];
+			TrieNode()
+			{
+				is_word = 0;
+				for (int i = 0; i < 26; i++)
+				{
+					next[i] = nullptr;
+				}
+			}
+		};
+		TrieNode *root = new TrieNode();
+
+	public:
+		WordsFrequency(vector<string> &book)
+		{
+			for (auto &s : book)
+			{
+				TrieNode *cur = root;
+				for (auto &ch : s)
+				{
+					int index = static_cast<int>(ch - 'a');
+					if (cur->next[index] == nullptr)
+					{
+						cur->next[index] = new TrieNode();
+					}
+					cur = cur->next[index];
+				}
+				cur->is_word++;
+			}
+		}
+
+		int get(string word)
+		{
+			TrieNode *cur = root;
+			for (auto &ch : word)
+			{
+				int index = static_cast<int>(ch - 'a');
+				if (cur->next[index])
+				{
+					cur = cur->next[index];
+				}
+				else
+				{
+					return 0;
+				}
+			}
+			return cur->is_word;
 		}
 	};
 	```
