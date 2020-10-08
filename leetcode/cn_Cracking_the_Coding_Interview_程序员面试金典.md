@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-10-07 14:11:46
+ * @LastEditTime: 2020-10-08 19:15:23
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -496,6 +496,38 @@
 		int findMagicIndex(vector<int> &nums)
 		{
 			return divided_conqer(nums, 0, nums.size() - 1);
+		}
+	};
+	```
+
+- [面试题 08.06. 汉诺塔问题](https://leetcode-cn.com/problems/hanota-lcci/)
+
+	经典的递归问题
+
+	```cpp
+	class Solution
+	{
+	private:
+		void recursive_move(vector<int> &A, int count, vector<int> &B, vector<int> &C)
+		{
+			if (count == 1)
+			{
+				C.push_back(A.back());
+				A.pop_back();
+			}
+			else if (count > 1)
+			{
+				recursive_move(A, count - 1, C, B);
+				C.push_back(A.back());
+				A.pop_back();
+				recursive_move(B, count - 1, A, C);
+			}
+		}
+
+	public:
+		void hanota(vector<int> &A, vector<int> &B, vector<int> &C)
+		{
+			recursive_move(A, A.size(), B, C);
 		}
 	};
 	```
