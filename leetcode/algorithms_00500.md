@@ -50,6 +50,82 @@
     }
     ```
 
+- [416. 分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
+
+    - 求出总和的一半以后part_sum，dfs递归搜索该数组中选择部分数字的和是否可以构成这个半和part_sum，时间复杂度$O(2^n)$，LeetCode评测机$\color{red}{TLE}$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        bool dfs(vector<int> &nums, int sum, int idx)
+        {
+            if (idx >= 0 && idx < nums.size())
+            {
+                if (sum == nums[idx])
+                {
+                    return true;
+                }
+                else if (sum > nums[idx])
+                {
+                    return dfs(nums, sum - nums[idx], idx + 1) || dfs(nums, sum, idx + 1);
+                }
+                else
+                {
+                    return dfs(nums, sum, idx + 1);
+                }
+            }
+            return false;
+        }
+
+    public:
+        bool canPartition(vector<int> &nums)
+        {
+            int total_sum = 0, part_sum = 0;
+            for (auto &v : nums)
+            {
+                total_sum += v;
+            }
+            if (total_sum & 0x1)
+            {
+                return false; // 总和是奇数不可能分成两部分
+            }
+            part_sum = total_sum / 2;
+            return dfs(nums, part_sum, 0);
+        }
+    };
+    ```
+
+    - 转化为0/1背包问题，动态规划
+    
+    ```cpp
+	bool canPartition(vector<int> &nums)
+	{
+		int n = nums.size(), total_sum = 0, max_v = numeric_limits<int>::min(), part_sum = 0;
+		for (auto &v : nums)
+		{
+			total_sum += v;
+			max_v = max(max_v, v);
+		}
+		part_sum = total_sum / 2;
+		if ((n < 2) || (total_sum & 0x1) || (max_v > part_sum))
+		{
+			return false;
+			// 数组中元素总数小于2是不可能分成两个非空子数组的，总和是奇数不可能分成两部分，最大元素的值超过半和也是不可能的
+		}
+		vector<bool> dp(part_sum + 1, false);
+		dp[0] = true; // 不选择任何数字的情况下只能组成0
+		for (int &v : nums)
+		{
+			for (int j = part_sum; j >= v; j--)
+			{
+				dp[j] = dp[j] || dp[j - v];
+			}
+		}
+		return dp.back();
+	}
+    ```
+
 - [419. Battleships in a Board](https://leetcode.com/problems/battleships-in-a-board/)
 
     - 每次发现battleship则统计值count自增，并DFS标记其周边所有相连的X均为同一个battleship，LeetCode时间效率$\color{red}{12ms,12.8\%}$
