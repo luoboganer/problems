@@ -844,6 +844,43 @@
     }
     ```
 
+- [1089. 复写零](https://leetcode-cn.com/problems/duplicate-zeros/)
+
+    题目简单，两遍扫描，但是要特别注意末尾0的处理(边界情况)
+
+    ```cpp
+	void duplicateZeros(vector<int> &arr)
+	{
+		int duplicated_zeros = 0, right_bound = arr.size() - 1;
+		for (int i = 0; i <= right_bound - duplicated_zeros; i++)
+		{
+			if (arr[i] == 0)
+			{
+				if (i == right_bound - duplicated_zeros)
+				{
+					// 这个零不复制两次，因为没有足够的空间
+					arr[right_bound--] = 0;
+					break;
+				}
+				duplicated_zeros++;
+			}
+		}
+		for (int i = right_bound - duplicated_zeros; i >= 0; i--)
+		{
+			if (arr[i] == 0)
+			{
+				arr[i + duplicated_zeros] = 0;
+				duplicated_zeros--;
+				arr[i + duplicated_zeros] = 0;
+			}
+			else
+			{
+				arr[i + duplicated_zeros] = arr[i];
+			}
+		}
+	}
+    ```
+
 - [1090. Largest Values From Labels](https://leetcode.com/problems/largest-values-from-labels/)
 
     贪心算法，将所有值values从大到小排序，然后在不超出限制的情况下优先选择更大的value，在此过程中用hashmap记录每个label的使用情况以备查询是否超出限制，时间复杂度$O(nlog(n))$
