@@ -210,6 +210,61 @@
     }
     ```
 
+- [117. 填充每个节点的下一个右侧节点指针 II](https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/)
+
+    在$O(n)$时间和$O(1)$空间下的非递归实现
+
+    ```cpp
+    class Solution
+    {
+    private:
+        void process(Node *&last, Node *&p, Node *&nextStart)
+        {
+            if (last)
+            {
+                // 当前last非空，则last的next指针指向p
+                last->next = p;
+            }
+            if (!nextStart)
+            {
+                nextStart = p;
+            }
+            last = p; // 当前p为新的本层最后一个节点
+        }
+
+    public:
+        Node *connect(Node *root)
+        {
+            if (root)
+            {
+                Node *start = root; // 根节点只有一个节点，从该节点开始遍历
+                while (start)
+                {
+                    /**
+                     * 维护当前的末尾last和下一层可能的最左端开始节点nextStart两个指针对
+                     * 然后遍历当前层通过next指针形成的链表
+                     */
+                    Node *last = nullptr, *nextStart = nullptr;
+                    for (Node *p = start; p != nullptr; p = p->next)
+                    {
+                        // 遍历当前层，为下一层标记next指针
+                        if (p->left)
+                        {
+                            process(last, p->left, nextStart);
+                        }
+                        if (p->right)
+                        {
+                            process(last, p->right, nextStart);
+                        }
+                    }
+                    start = nextStart;
+                }
+            }
+            return root;
+        }
+    };
+    ```
+
 - [122](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/)
 
     不限交易次数的股票交易
