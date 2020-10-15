@@ -1853,6 +1853,55 @@
 	}
 	```
 
+- [189. 旋转数组](https://leetcode-cn.com/problems/rotate-array/)
+
+    - 建立新数组ret，按照循环右移$k\%n$后的顺序填充新数组，时间复杂度$O(n)$，空间复杂度$O(1)$
+
+    ```cpp
+	void rotate(vector<int> &nums, int k)
+	{
+		const int n = nums.size();
+		if (k > 0)
+		{
+			k %= n;
+			vector<int> ret(n);
+			for (int i = 0; i < n; i++)
+			{
+				ret[(k + i + 1) % n] = nums[i];
+			}
+			nums = ret;
+		}
+	}
+    ```
+
+    - 通过三次翻转在$O(n)$时间和$O(1)$时间内实现
+
+    ```cpp
+	void rotate(vector<int> &nums, int k)
+	{
+		const int n = nums.size();
+		if (k > 0)
+		{
+			k %= n;
+			int left = 0, right = n - k - 1;
+			while (left < right)
+			{
+				swap(nums[left++], nums[right--]);
+			}
+			left = n - k, right = n - 1;
+			while (left < right)
+			{
+				swap(nums[left++], nums[right--]);
+			}
+			left = 0, right = n - 1;
+			while (left < right)
+			{
+				swap(nums[left++], nums[right--]);
+			}
+		}
+	}
+    ```
+
 - [200](https://leetcode.com/problems/number-of-islands/submissions/)
 
     统计岛屿数量，典型的DFS应用，每当发现一个unvisited陆地标记('1')的时候，岛屿数量加1，递归地将其四个方向的陆地('1')全部标记为visited即可。
