@@ -491,6 +491,58 @@
 	}
     ```
 
+- [19. 删除链表的倒数第N个节点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
+
+    - 首先遍历链表计算总的节点数count，然后第二趟从head开始前进count-n步即为倒数第n个节点
+
+    ```cpp
+    ListNode *removeNthFromEnd(ListNode *head, int n)
+	{
+		int count = 0;
+		ListNode *cur = head;
+		while (cur)
+		{
+			count++, cur = cur->next;
+		}
+		if (n == count)
+		{
+			head = nullptr;
+		}
+		else if (n < count)
+		{
+			cur = head;
+			int step = count - n - 1;
+			while (step--)
+			{
+				cur = cur->next;
+			}
+			cur->next = cur->next->next;
+		}
+		return head;
+	}
+    ```
+
+    - 双指针方法，first前进n步，然后second从头结点开始同时前进，则first到尾结点时second指向倒数第二个节点
+
+    ```cpp
+	ListNode *removeNthFromEnd(ListNode *head, int n)
+	{
+		ListNode *auxiliary = new ListNode(0);
+		auxiliary->next = head;
+		ListNode *slow = auxiliary, *fast = auxiliary;
+		while (n--)
+		{
+			fast = fast->next;
+		}
+		while (fast->next)
+		{
+			slow = slow->next, fast = fast->next;
+		}
+		slow->next = slow->next->next;
+		return auxiliary->next;
+	}
+    ```
+
 - [22](https://leetcode.com/problems/generate-parentheses/)
 
     本题给定左右括号对数量n，生成所有符合条件的括号数
