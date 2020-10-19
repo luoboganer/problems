@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-10-06 15:56:33
+ * @LastEditTime: 2020-10-19 12:00:41
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -258,6 +258,32 @@
 		{
 			ret[i] = qe.top();
 			qe.pop();
+		}
+		return ret;
+	}
+    ```
+
+- [剑指 Offer 45. 把数组排成最小的数](https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/)
+
+    注意字符串排序的规则，xy最小的标准是字典序$xy<yx$
+
+    ```cpp
+    string minNumber(vector<int> &nums)
+	{
+		vector<string> items;
+		for (auto &v : nums)
+		{
+			items.emplace_back(to_string(v));
+		}
+		sort(items.begin(), items.end(), [](const auto &a, const auto &b) -> bool {
+			// 字符串排序规则
+			string xy = a + b, yx = b + a;
+			return xy.compare(yx) < 0;
+		});
+		string ret;
+		for (auto &item : items)
+		{
+			ret += item;
 		}
 		return ret;
 	}
