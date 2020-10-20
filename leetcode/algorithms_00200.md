@@ -499,6 +499,48 @@
     }
     ```
 
+- [133. 克隆图](https://leetcode-cn.com/problems/clone-graph/)
+
+    从给定的根节点开始，复制每个节点node后，bfs搜索复制所有与node连接的节点，在这个过程中国为一个hashmap存储已经复制过的节点，与已经复制过的节点则直接在node的neighbors中插入节点指针即可
+
+    ```cpp
+	Node *cloneGraph(Node *node)
+	{
+		if (node)
+		{
+			Node *ret = new Node(node->val);
+			if (!node->neighbors.empty())
+			{
+				unordered_map<int, Node *> valToNode;
+				valToNode[ret->val] = ret;
+				queue<pair<Node *, Node *>> bfs{{make_pair(ret, node)}}; // copyed,old
+				while (!bfs.empty())
+				{
+					Node *cur_copyed = bfs.front().first, *cur_old = bfs.front().second;
+					bfs.pop();
+					for (auto &next_node : cur_old->neighbors)
+					{
+						auto it = valToNode.find(next_node->val);
+						if (it != valToNode.end())
+						{
+							cur_copyed->neighbors.emplace_back(it->second);
+						}
+						else
+						{
+							Node *temp = new Node(next_node->val);
+							valToNode[next_node->val] = temp;
+							cur_copyed->neighbors.emplace_back(temp);
+							bfs.push(make_pair(temp, next_node));
+						}
+					}
+				}
+			}
+			return ret;
+		}
+		return nullptr; // 空节点仍然返回空
+	}
+    ```
+
 - [134. Gas Station](https://leetcode.com/problems/gas-station/)
 
     - 遍历每个station检测其是否可以到达终点，即从该station出发到达每一个站点时拥有的油料值cur($cur=cur+gas[i]-cost[i]$)都足够到达下一个站点($cur>=0$)，时间复杂度$O(n^2)$
