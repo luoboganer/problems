@@ -704,7 +704,53 @@
 
 - [143](https://leetcode.com/problems/reorder-list/)
 
-    链表、树、图等指针操作千千万万要注意空指针甚至是输入根节点为空的情况。
+    **链表、树、图等指针操作千千万万要注意空指针甚至是输入根节点为空的情**
+
+    首先发现链表head的中点，将链表分为前后两段a和b，翻转后半段b，而后在a、b中交替取一个连接起来，时间复杂度$O(n)$
+
+    ```cpp
+    class Solution
+    {
+        ListNode *reverse_list(ListNode *head)
+        {
+            ListNode *pre = nullptr, *cur = head, *temp = nullptr;
+            while (cur)
+            {
+                temp = cur->next;
+                cur->next = pre;
+                pre = cur;
+                cur = temp;
+            }
+            return pre;
+        }
+
+    public:
+        void reorderList(ListNode *head)
+        {
+            ListNode *slow = head, *fast = head;
+            while (fast && fast->next)
+            {
+                slow = slow->next, fast = fast->next->next;
+            }
+            ListNode *auxiliary = new ListNode(0), *a = head, *b = reverse_list(slow);
+            ListNode *cur = auxiliary;
+            while (a != slow)
+            {
+                cur->next = a;
+                a = a->next;
+                cur = cur->next;
+                if (b)
+                {
+                    cur->next = b;
+                    b = b->next;
+                    cur = cur->next;
+                }
+            }
+            head = auxiliary->next;
+        }
+    };
+    ```
+    
 
 - [144. 二叉树的前序遍历](https://leetcode-cn.com/problems/binary-tree-preorder-traversal/)
 
