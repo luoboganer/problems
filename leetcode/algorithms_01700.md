@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-10-04 13:34:25
+ * @LastEditTime: 2020-11-06 15:36:20
  * @Software: Visual Studio Code
  * @Description: 1601-1700
 -->
@@ -125,6 +125,42 @@
 			}
 		}
 		return ret + original;
+	}
+    ```
+
+- [1642. 可以到达的最远建筑](https://leetcode-cn.com/problems/furthest-building-you-can-reach/)
+
+    顺序遍历两个建筑之间的差距，并使用优先队列来存储需要梯子的差值（堆顶为最小值），当梯子不够用的时候在差值最小的地方使用砖块
+
+    ```cpp
+	int furthestBuilding(vector<int> &heights, int bricks, int ladders)
+	{
+		priority_queue<int, vector<int>, greater<int>> qe;
+		const int n = heights.size();
+		for (int i = 1; i < n; i++)
+		{
+			int diff = heights[i] - heights[i - 1];
+			if (diff <= 0)
+			{
+				// 可以直接从高到底
+				continue;
+			}
+			qe.push(diff);
+			if (qe.size() <= ladders)
+			{
+				// 可以通过梯子到达
+				continue;
+			}
+			if (qe.top() <= bricks)
+			{
+				bricks -= qe.top();
+				qe.pop();
+				// 可以通过垒砖块到达
+				continue;
+			}
+			return i - 1; // 无法到达i
+		}
+		return n - 1; //可以到达最后一栋建筑
 	}
     ```
 
