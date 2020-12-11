@@ -364,6 +364,29 @@
     };
     ```
 
+- [649. Dota2 参议院](https://leetcode-cn.com/problems/dota2-senate/)
+
+    用两个队列分别存储R和D的位置下标（投票顺序），然后从队首取值，值小的禁值大的权利，然后进入下一轮投票，直到有一方团灭
+
+    ```cpp
+	string predictPartyVictory(string senate)
+	{
+		queue<int> r_qe, d_qe;
+		int length = senate.length();
+		for (int i = 0; i < length; i++)
+		{
+			senate[i] == 'R' ? r_qe.push(i) : d_qe.push(i);
+		}
+		while (!r_qe.empty() && !d_qe.empty())
+		{
+			int r = r_qe.front(), d = d_qe.front();
+			r_qe.pop(), d_qe.pop();
+			r < d ? r_qe.push(r + length) : d_qe.push(d + length);
+		}
+		return r_qe.empty() ? "Dire" : "Radiant";
+	}
+    ```
+
 - [662. Maximum Width of Binary Tree](https://leetcode.com/problems/maximum-width-of-binary-tree/)
 
     - BFS遍历所有非空节点，在cur_level去除两端的nullptr后计算长度，时间复杂度$O(n)$，其中n为给定树的节点数量，LeetCode提交$\color{red}{48ms,5.22\%}$
