@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-10-08 19:15:23
+ * @LastEditTime: 2020-12-21 00:18:50
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -137,6 +137,67 @@
 				}
 			}
 		}
+	}
+	```
+
+- [面试题 02.01. 移除重复节点](https://leetcode-cn.com/problems/remove-duplicate-node-lcci/)
+
+    - 哈希表记录出现过的数值，时间复杂度$O(n)$，空间复杂度$O(n)$
+
+	```cpp
+	ListNode *removeDuplicateNodes(ListNode *head)
+	{
+		unordered_set<int> seen_number;
+		ListNode *auxiliary = new ListNode(0);
+		auxiliary->next = head;
+		ListNode *cur = auxiliary;
+		while (cur->next)
+		{
+			if (seen_number.find(cur->next->val) != seen_number.end())
+			{
+				cur->next = cur->next->next;
+			}
+			else
+			{
+				seen_number.insert(cur->next->val);
+				cur = cur->next;
+			}
+		}
+		return auxiliary->next;
+	}
+	```
+
+    - 在当前节点之前的节点中查找当前节点的值是否出现过， 时间复杂度$O(n^2)$，空间复杂度$O(1)$
+
+	```cpp
+	ListNode *removeDuplicateNodes(ListNode *head)
+	{
+		unordered_set<int> seen_number;
+		ListNode *auxiliary = new ListNode(0);
+		auxiliary->next = head;
+		ListNode *cur = auxiliary;
+		while (cur->next)
+		{
+			ListNode *prev = auxiliary;
+			bool found_repeat = false;
+			while (!found_repeat && prev->next != cur->next)
+			{
+				if (prev->next->val == cur->next->val)
+				{
+					cur->next = cur->next->next;
+					found_repeat = true;
+				}
+				else
+				{
+					prev = prev->next;
+				}
+			}
+			if (!found_repeat)
+			{
+				cur = cur->next;
+			}
+		}
+		return auxiliary->next;
 	}
 	```
 
