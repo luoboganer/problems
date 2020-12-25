@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-10-19 12:00:41
+ * @LastEditTime: 2020-12-25 11:36:30
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -286,6 +286,30 @@
 			ret += item;
 		}
 		return ret;
+	}
+    ```
+
+- [剑指 Offer 46. 把数字翻译成字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
+
+    一维动态规划，从数字的最低位开始每次表示一位或者两位，时间复杂度$O(n)$
+
+    ```cpp
+	int translateNum(int num)
+	{
+		vector<int> reversed_bits;
+		do
+		{
+			reversed_bits.emplace_back(num % 10);
+			num /= 10;
+		} while (num);
+		const int n = reversed_bits.size();
+		vector<int> dp(n + 1, 0);
+		for (int i = 1; i < n; i++)
+		{
+			int temp = reversed_bits[i] * 10 + reversed_bits[i - 1];
+			(temp >= 10 && temp <= 25) ? dp[i + 1] = dp[i] + dp[i - 1] : dp[i + 1] = dp[i];
+		}
+		return dp.back();
 	}
     ```
 
