@@ -1,5 +1,55 @@
 # 601-700
 
+- [605. 种花问题](https://leetcode-cn.com/problems/can-place-flowers/)
+    
+    - 逐个下标位置检查是否可以种花，条件为本身位置没有花且左右相邻位置也没有花或相邻位置为边界
+
+	```cpp
+	bool canPlaceFlowers(vector<int> &flowerbed, int n)
+	{
+		const int size = flowerbed.size();
+		for (int i = 0; i < size && n > 0; i++)
+		{
+			if (flowerbed[i] == 0 && (i == 0 || flowerbed[i - 1] == 0) && (i + 1 == size || flowerbed[i + 1] == 0))
+			{
+				n--;
+				flowerbed[i] = 1;
+			}
+		}
+		return n == 0;
+	}
+	```
+
+    - 【优化思路】对于当前位置已经有花儿的，下一个位置也不可能种花，i下标直接+2，当前位置为0且无法种花的，才跳到下一个位置检查
+
+    ```cpp
+	bool canPlaceFlowers(vector<int> &flowerbed, int n)
+	{
+		const int size = flowerbed.size();
+		for (int i = 0; i < size && n > 0; i++)
+		{
+			if (flowerbed[i] == 0)
+			{
+				if ((i == 0 || flowerbed[i - 1] == 0) && (i + 1 == size || flowerbed[i + 1] == 0))
+				{
+					n--;
+					flowerbed[i] = 1;
+					i += 2;
+				}
+				else
+				{
+					i++;
+				}
+			}
+			else
+			{
+				i += 2;
+			}
+		}
+		return n == 0;
+	}
+    ```
+
 - [606](https://leetcode.com/problems/construct-string-from-binary-tree/)
 
     重点是二叉树的非递归先序遍历 preorder
