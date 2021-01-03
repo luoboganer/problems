@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-03 15:43:09
+ * @LastEditTime: 2021-01-03 16:29:30
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -449,6 +449,63 @@
     []
     [1]
     ```
+
+- [面试题 03.01. 三合一](https://leetcode-cn.com/problems/three-in-one-lcci/)
+
+	一个数组分为三段模拟三个栈，每一段左端为栈底右端为栈顶即可
+
+	```cpp
+	class TripleInOne
+	{
+	private:
+		vector<int> st;
+		vector<int> sp;
+		int size;
+
+	public:
+		TripleInOne(int stackSize)
+		{
+			size = stackSize;
+			st.resize(stackSize * 3);
+			// 三个栈在一个数组中，区间范围为[0,size-1] [size,2*szie-1] [2*size,3*szie-1]
+			sp.resize(3);
+			sp[0] = -1;
+			sp[1] = stackSize - 1;
+			sp[2] = 2 * stackSize - 1;
+		}
+
+		void push(int stackNum, int value)
+		{
+			if (sp[stackNum] != (1 + stackNum) * size - 1)
+			{
+				st[++sp[stackNum]] = value;
+			}
+		}
+
+		int pop(int stackNum)
+		{
+			if (sp[stackNum] == stackNum * size - 1)
+			{
+				return -1;
+			}
+			return st[sp[stackNum]--];
+		}
+
+		int peek(int stackNum)
+		{
+			if (sp[stackNum] == stackNum * size - 1)
+			{
+				return -1;
+			}
+			return st[sp[stackNum]];
+		}
+
+		bool isEmpty(int stackNum)
+		{
+			return sp[stackNum] == stackNum * size - 1;
+		}
+	};
+	```
 
 - [面试题 04.04. 检查平衡性](https://leetcode-cn.com/problems/check-balance-lcci/)
     
