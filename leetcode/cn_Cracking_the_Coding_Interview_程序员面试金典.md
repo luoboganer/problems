@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-12-21 00:18:50
+ * @LastEditTime: 2021-01-03 15:43:09
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -137,6 +137,18 @@
 				}
 			}
 		}
+	}
+	```
+
+- [面试题 01.09. 字符串轮转](https://leetcode-cn.com/problems/string-rotation-lcci/)
+
+	注意s1和s2中有空串时的边界条件处理，而当两个字符串均为非空时，利用s1旋转会形成的周期性，在s1+s1中检查是否存在子串s2即可
+
+	```cpp
+	bool isFlipedString(string s1, string s2)
+	{
+		s1 += s1;
+		return (s1.empty() && s2.empty()) || (!s2.empty() && s1.find(s2) != string::npos);
 	}
 	```
 
