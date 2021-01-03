@@ -1434,27 +1434,61 @@
 
 - [239](https://leetcode.com/problems/sliding-window-maximum/)
 
-    给定数组nums和窗口大小k，求数组在窗口滑动过程中的最大值，这里主要是双端队列的使用。
+    - 根据求最大值自然想到优先队列，在优先队列的每个节点存储数字和下标以确保及时删除左侧滑出窗口的部分，时间复杂度$O(nlog(n))$，空间复杂度$O(k)$
 
     ```cpp
-    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
-		vector<int> ans;
-		deque<int> dq;
-		for (int i = 0; i < nums.size(); i++)
+	vector<int> maxSlidingWindow(vector<int> &nums, int k)
+	{
+		const int n = nums.size();
+		priority_queue<pair<int, int>> qe; // 默认为大顶堆
+		vector<int> ret;
+		// 首先将前k-1个元素放入优先队列
+		for (int i = 0; i < k - 1; i++)
 		{
-			while(!dq.empty()&&nums[dq.back()]<nums[i]){
+			qe.push(make_pair(nums[i], i));
+		}
+		for (int i = k - 1; i < n; i++)
+		{
+			while (!qe.empty() && qe.top().second + k <= i)
+			{
+				qe.pop();
+			}
+			qe.push(make_pair(nums[i], i));
+			ret.emplace_back(qe.top().first);
+		}
+		return ret;
+	}
+    ```
+
+    - 给定数组nums和窗口大小k，求数组在窗口滑动过程中的最大值，这里主要是双端队列的使用，即以一个双端队列来实现一个递减的单调队列，时间复杂度与空间复杂度均为$O(n)$。
+
+    ```cpp
+	vector<int> maxSlidingWindow(vector<int> &nums, int k)
+	{
+		const int n = nums.size();
+		vector<int> ret;
+		deque<int> dq; // 双端队列
+		for (int i = 0; i < n; i++)
+		{
+			// 保证单调递减的队列，从而保证队首下标对应的元素一定是滑动窗口内最大的
+			while (!dq.empty() && nums[dq.back()] <= nums[i])
+			{
 				dq.pop_back();
 			}
-			dq.push_back(i); // 记录当前最大值的下标
-			if(dq.back()-dq.front()>k-1){
+			dq.push_back(i);
+			// 从队首扔掉超出滑动窗口左端的部分
+			while (!dq.empty() && dq.front() + k <= i)
+			{
 				dq.pop_front();
 			}
-			if(i>=k-1){
-				ans.push_back(nums[dq.front()]);
+			if (i >= k - 1)
+			{
+				// 每一个滑动窗口放入当前最大值
+				ret.emplace_back(nums[dq.front()]);
 			}
 		}
-		return ans;
-    }
+		return ret;
+	}
     ```
 
 - [240](https://leetcode.com/problems/search-a-2d-matrix-ii/)
