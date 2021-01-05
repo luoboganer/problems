@@ -86,6 +86,37 @@
 	}
 	```
 
+- [830. 较大分组的位置](https://leetcode-cn.com/problems/positions-of-large-groups/)
+
+    顺序遍历给定字符串s，统计所有连续重复出现的字符重复数量，记录重复数量repeat大于等于3即可，时间复杂度$O(n)$
+
+    ```cpp
+	vector<vector<int>> largeGroupPositions(string s)
+	{
+		s.push_back(' '); // 加入一个截止符号，用于s中最后一段字符可能是较大分组的情况
+		int left = 0, cur = 0, repeat = 0, n = s.length();
+		vector<vector<int>> ret;
+		while (cur < n)
+		{
+			if (s[cur] != s[left])
+			{
+				if (repeat >= 3)
+				{
+					vector<int> temp{left, left + repeat - 1};
+					ret.emplace_back(temp);
+				}
+				left = cur, repeat = 1;
+			}
+			else
+			{
+				repeat++;
+			}
+			cur++;
+		}
+		return ret;
+	}
+    ```
+
 - [835. Image Overlap](https://leetcode.com/problems/image-overlap/)
     
     - 枚举所有可能的偏移量offset(相当于图像A的平移向量)，可以选择只枚举A和B中至少存在一个1重合的offset，即遍历A和B中所有的1两两之间的offset（时间复杂度$O(n^2)$），然后计算这个offset下重合的1有多少个（时间复杂度($O(n^4)$)，通过hashset的$O(1)$查找可以将这个时间复杂度降低到$O(n^2)$），总的时间复杂度$O(n^6)$（通过hashset的$O(1)$查找降低到$O(n^4)$）

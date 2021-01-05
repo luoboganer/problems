@@ -641,6 +641,81 @@
     }
     ```
 
+- [23. 合并K个升序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
+
+    - 两两合并，时间复杂度$O(n^2)$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        ListNode *mergerTwoLists(ListNode *a, ListNode *b)
+        {
+            ListNode *auxiliary = new ListNode(0);
+            ListNode *cur = auxiliary;
+            while (a && b)
+            {
+                if (a->val < b->val)
+                {
+                    cur->next = a;
+                    a = a->next;
+                }
+                else
+                {
+                    cur->next = b;
+                    b = b->next;
+                }
+                cur = cur->next;
+            }
+            while (a)
+            {
+                cur->next = a;
+                cur = cur->next;
+                a = a->next;
+            }
+            while (b)
+            {
+                cur->next = b;
+                cur = cur->next;
+                b = b->next;
+            }
+            return auxiliary->next;
+        }
+
+    public:
+        ListNode *mergeKLists(vector<ListNode *> &lists)
+        {
+            queue<ListNode *> qe;
+            for (auto &head : lists)
+            {
+                qe.push(head);
+            }
+            while (qe.size() > 0)
+            {
+                if (qe.size() >= 2)
+                {
+                    ListNode *a = qe.front();
+                    qe.pop();
+                    ListNode *b = qe.front();
+                    qe.pop();
+                    qe.push(mergerTwoLists(a, b));
+                }
+                else if (qe.size() == 1)
+                {
+                    return qe.front();
+                }
+            }
+            return nullptr;
+        }
+    };
+    ```
+
+    - 优先队列（小顶堆）实现一次合并，时间复杂度$O(nlog(n))$
+
+    ```cpp
+
+    ```
+
 - [25. Reverse Nodes in k-Group](https://leetcode.com/problems/reverse-nodes-in-k-group/)
 
     翻转链表的进化版，考察链表操作的基本功
