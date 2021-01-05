@@ -305,6 +305,46 @@
     }
     ```
 
+- [441. 排列硬币](https://leetcode-cn.com/problems/arranging-coins/)
+
+    - 从第一行还是逐行排列，直到无法满足当前行时为止
+
+    ```cpp
+	int arrangeCoins(int n)
+	{
+		int ret = 0;
+		if (n > 0)
+		{
+			while (ret < n)
+			{
+				ret++;
+				n -= ret;
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - 采用数学方法计算
+
+    ```cpp
+	int arrangeCoins(int n)
+	{
+		int ret = 0;
+		if (n > 0)
+		{
+			long long n_long = n;
+			long long k = floor(sqrt(n_long * 2));
+			while ((((k + 1) * k) >> 1) <= n)
+			{
+				k++;
+			}
+			ret = k - 1;
+		}
+		return ret;
+	}
+    ```
+
 - [442](https://leetcode.com/problems/find-all-duplicates-in-an-array/)
     
     在一个数组$a_n,1 \le a_i \le n$中找出出现了两次的数字（其他数字只出现了一次），要求不占用额外的内存空间、$O(n)$时间复杂度
