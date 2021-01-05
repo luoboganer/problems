@@ -367,6 +367,57 @@
 	}
     ```
 
+- [8. 字符串转换整数 (atoi)](https://leetcode-cn.com/problems/string-to-integer-atoi/)
+
+    字符串处理问题，时间复杂度$O(n)$，主要是各种边界问题的处理
+
+    ```cpp
+	int myAtoi(string s)
+	{
+		long long ret = 0;
+		int i = 0, n = s.size();
+		bool negative = false;
+		while (s[i] == ' ')
+		{
+			i++;
+		}
+		if (s[i] == '-' || s[i] == '+' || (s[i] >= '0' && s[i] <= '9'))
+		{
+			if (s[i] == '-')
+			{
+				i++;
+				negative = true;
+			}
+			else if (s[i] == '+')
+			{
+				i++;
+			}
+			while (s[i] == '0')
+			{
+				i++;
+				// 过滤所有可能存在的前导0
+			}
+			// 开始转换连续剩余数字
+			int width = 0; // 10进制宽度达到11位必然超出signed int类型32bit的表示范围
+			while (width <= 11 && i < n && s[i] >= '0' && s[i] <= '9')
+			{
+				ret = ret * 10 + static_cast<int>(s[i++] - '0');
+				width++;
+			}
+			if (negative && (-ret) <= numeric_limits<int>::min())
+			{
+				return numeric_limits<int>::min();
+			}
+			else if (!negative && ret >= numeric_limits<int>::max())
+			{
+				return numeric_limits<int>::max();
+			}
+		}
+		// 其它情况无法转换直接返回0
+		return static_cast<int>(negative ? -ret : ret);
+	}
+    ```
+
 - [10. Regular Expression Matching](https://leetcode.com/problems/regular-expression-matching/)
 
 	- 递归回溯
