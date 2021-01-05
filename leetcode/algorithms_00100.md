@@ -276,6 +276,97 @@
     }
     ```
 
+- [6. Z 字形变换](https://leetcode-cn.com/problems/zigzag-conversion/)
+
+    - 按照Z字形的一竖一拐为一组，将字符串分组后填充到矩阵中，然后逐行读取组成新的结果字符串，时间效率$\color{red}{5.4\%,124ms}$
+    
+        **注意字符总数小于给定行数或者自由一行的特殊边界情况处理**
+
+    ```cpp
+	string convert(string s, int numRows)
+	{
+		const int n = s.length();
+		if (n <= numRows || numRows == 1)
+		{
+			return s;
+		}
+		int sizeOfCharPerGroup = 2 * numRows - 2;
+		int numOfGroups = (int)ceil(s.length() * 1.0 / sizeOfCharPerGroup);
+		int numCols = numOfGroups * (numRows - 1);
+		vector<vector<char>> matrix(numRows, vector<char>(numCols, ' '));
+		for (int group = 0, r = 0; group < numOfGroups; group++)
+		{
+			int i = 0, j = group * (numRows - 1);
+			while (r < n && i < numRows)
+			{
+				matrix[i++][j] = s[r++];
+			}
+			i -= 2, j += 1;
+			while (r < n && i > 0)
+			{
+				matrix[i--][j++] = s[r++];
+			}
+		}
+		string ret;
+		for (int i = 0; i < numRows; i++)
+		{
+			for (int j = 0; j < numCols; j++)
+			{
+				if (matrix[i][j] != ' ')
+				{
+					ret.push_back(matrix[i][j]);
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - 直接确定新字符串中每个位置该是原字符串中的下标，时间效率$\color{red}{96\%,8ms}$
+
+    ```cpp
+	string convert(string s, int numRows)
+	{
+		const int n = s.length();
+		string ret;
+        ret.resize(n);
+		if (n <= numRows || numRows == 1)
+		{
+			ret = s;
+		}
+		else
+		{
+			int sizeOfPerGroup = 2 * numRows - 2;
+			int numGroups = (int)(ceil(1.0 * n / sizeOfPerGroup));
+			int r = 0;
+			// 第一行
+			for (int idx = 0; idx < n; idx += sizeOfPerGroup)
+			{
+				ret[r++] = s[idx];
+			}
+			// 中间行
+			for (int row = 1; row <= numRows - 2; row++)
+			{
+				for (int idx = row; idx < n; idx += sizeOfPerGroup)
+				{
+					ret[r++] = s[idx];
+					int next_idx = 2 * (numRows - row - 1) + idx;
+					if (next_idx < n)
+					{
+						ret[r++] = s[next_idx];
+					}
+				}
+			}
+			// 最后一行
+			for (int idx = numRows - 1; idx < n; idx += sizeOfPerGroup)
+			{
+				ret[r++] = s[idx];
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [10. Regular Expression Matching](https://leetcode.com/problems/regular-expression-matching/)
 
 	- 递归回溯
