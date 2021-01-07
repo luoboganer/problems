@@ -810,11 +810,69 @@
     };
     ```
 
+- [496. 下一个更大元素 I](https://leetcode-cn.com/problems/next-greater-element-i/)
+
+    - 暴力遍历两个数组，时间复杂度$O(m*n)$，其中m/n分别为两个数组的长度
+
+    ```cpp
+	vector<int> nextGreaterElement(vector<int> &nums1, vector<int> &nums2)
+	{
+		const int m = nums1.size(), n = nums2.size();
+		vector<int> ret(m, -1);
+		for (int i = 0; i < m; i++)
+		{
+			// nums2中找到nums1[i]这个数字
+			int j = 0;
+			while (j < n && nums2[j] != nums1[i])
+			{
+				j++;
+			}
+			for (j = j + 1; j < n; j++)
+			{
+				if (nums2[j] > nums1[i])
+				{
+					ret[i] = nums2[j];
+                    break;
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - 单调栈预处理数组nums2并用hashmap存储其中每个数字的下一个更大值，时间复杂度$O(m+n)$，其中m/n分别为两个数组的长度
+
+    ```cpp
+	vector<int> nextGreaterElement(vector<int> &nums1, vector<int> &nums2)
+	{
+		const int m = nums1.size(), n = nums2.size();
+		vector<int> ret(m, -1);
+        // 对于nums2中每个数字，通过从右往左遍历nums2构造一个单调递增栈来找到其中每个数字的下一个更大值并存储在hashmap中
+        unordered_map<int, int> v2nextGreater;
+        stack<int> st;
+        for (int i = n - 1; i >= 0; i--)
+        {
+            while (!st.empty() && st.top() < nums2[i])
+            {
+                st.pop();
+            }
+            v2nextGreater[nums2[i]] = st.empty() ? -1 : st.top();
+            st.push(nums2[i]);
+        }
+        // 遍历nums1，从hashmap中取出每个值的下一个更大值
+        for (int i = 0; i < m; i++)
+        {
+            ret[i] = v2nextGreater[nums1[i]];
+        }
+		return ret;
+	}
+    ```
+
 - [497. Random Point in Non-overlapping Rectangles](https://leetcode.com/problems/random-point-in-non-overlapping-rectangles/)
 
-	- 借用概率密度函数的特性，solution时间复杂度$O(n)$，pick时间复杂度$O(log(n))$
+    - 借用概率密度函数的特性，solution时间复杂度$O(n)$，pick时间复杂度$O(log(n))$
 
-	**注意uppter_bound()函数的使用**
+        **注意uppter_bound()函数的使用**
 
 	```cpp
 	class Solution

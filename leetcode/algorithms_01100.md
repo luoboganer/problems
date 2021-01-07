@@ -322,11 +322,11 @@
     }
     ```
 
--   [1022. 从根到叶的二进制数之和](https://leetcode-cn.com/problems/sum-of-root-to-leaf-binary-numbers/)
+- [1022. 从根到叶的二进制数之和](https://leetcode-cn.com/problems/sum-of-root-to-leaf-binary-numbers/)
 
     二叉树类题目，应该尽量用递归的方式解决 / 或者明显的可以非递归遍历式的题目
 
-    ``` {.cpp}
+    ```cpp
     class Solution
     {
     private:
