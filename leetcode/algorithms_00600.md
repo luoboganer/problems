@@ -56,6 +56,72 @@
     };
     ```
 
+- [503. 下一个更大元素 II](https://leetcode-cn.com/problems/next-greater-element-ii/)
+
+    - 从右向左遍历数组元素，维护一个单调不降栈（栈顶元素最大）来实现寻找每个元素的下一个最大值，时间复杂度$O(n)$
+
+        **Tricks:通过在数组nums后接一个相同的nums来实现循环搜索**
+
+    ```cpp
+	vector<int> nextGreaterElements(vector<int> &nums)
+	{
+		stack<int> st;
+		int n = nums.size();
+		vector<int> ret(n);
+		for (int i = 0; i < n; i++)
+		{
+			nums.emplace_back(nums[i]);
+		}
+		for (int i = 2 * n - 1; i >= n; i--)
+		{
+			while (!st.empty() && st.top() <= nums[i])
+			{
+				st.pop();
+			}
+			st.push(nums[i]);
+		}
+		for (int i = n - 1; i >= 0; i--)
+		{
+			while (!st.empty() && st.top() <= nums[i])
+			{
+				st.pop();
+			}
+			ret[i] = st.empty() ? -1 : st.top();
+			st.push(nums[i]);
+		}
+		return ret;
+	}
+    ```
+
+    - 通过数组下标的循环实现空间优化
+
+    ```cpp
+    vector<int> nextGreaterElements(vector<int> &nums)
+	{
+		stack<int> st;
+		int n = nums.size();
+		vector<int> ret(n);
+		for (int i = n - 1; i >= 0; i--)
+		{
+			while (!st.empty() && st.top() <= nums[i])
+			{
+				st.pop();
+			}
+			st.push(nums[i]);
+		}
+		for (int i = n - 1; i >= 0; i--)
+		{
+			while (!st.empty() && st.top() <= nums[i])
+			{
+				st.pop();
+			}
+			ret[i] = st.empty() ? -1 : st.top();
+			st.push(nums[i]);
+		}
+		return ret;
+	}
+    ```    
+
 - [508. Most Frequent Subtree Sum](https://leetcode.com/problems/most-frequent-subtree-sum/)
 
     递归地或者非递归自底向上的求所有节点的和，然后用hashmap统计每个值出现的频率，求频率最大的值
