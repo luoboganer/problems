@@ -365,6 +365,26 @@
 	}
 	```
 
+- [1143. 最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence/)
+
+    动态规划，时间复杂度与空间复杂度均为$O(m*n)$
+
+    ```cpp
+	int longestCommonSubsequence(string text1, string text2)
+	{
+		const int m = text1.length(), n = text2.length();
+		vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+		for (int i = 0; i < m; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				dp[i + 1][j + 1] = text1[i] == text2[j] ? dp[i][j] + 1 : max(dp[i + 1][j], dp[i][j + 1]);
+			}
+		}
+		return dp[m][n];
+	}
+    ```
+
 - [1169](https://leetcode.com/problems/invalid-transactions/)
 
     在一个transaction列表中通过两条规则过滤掉invalid的transaction，规则如下：
