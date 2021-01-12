@@ -915,3 +915,43 @@
 	* vector<int> param_1 = obj->pick();
 	*/
 	```
+
+- [498. 对角线遍历](https://leetcode-cn.com/problems/diagonal-traverse/)
+
+    每一条对角线上横纵坐标的和ij是固定的，可以由此确定每条对角线的起始坐标，再由ij的奇偶性确定方向即可，时间复杂度$O(m*n)$
+
+    ```cpp
+	vector<int> findDiagonalOrder(vector<vector<int>> &matrix)
+	{
+		vector<int> ret;
+		if (matrix.size() > 0 && matrix[0].size() > 0)
+		{
+			int m = matrix.size(), n = matrix[0].size();
+			ret.resize(m * n);
+			int k = 0, ij = 0, max_ij = m - 1 + n - 1;
+			while (ij <= max_ij)
+			{
+				if (ij & 0x1)
+				{
+					int j = min(ij, n - 1);
+					int i = ij - j;
+					while (i < m && j >= 0)
+					{
+						ret[k++] = matrix[i++][j--];
+					}
+				}
+				else
+				{
+					int i = min(ij, m - 1);
+					int j = ij - i;
+					while (i >= 0 && j < n)
+					{
+						ret[k++] = matrix[i--][j++];
+					}
+				}
+				ij++;
+			}
+		}
+		return ret;
+	}
+    ```

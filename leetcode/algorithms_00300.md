@@ -39,7 +39,7 @@
     - [630. Course Schedule III](https://leetcode.com/problems/course-schedule-iii/)
     - [1462. Course Schedule IV](https://leetcode.com/problems/course-schedule-iv/)
 
-    **拓扑排序问题-BFS/DFS**
+        **拓扑排序问题-BFS/DFS**
     
     所有课程的前后依赖关系构成了directed graph/tree，递归/迭代式的检查所有入度为0（没有先修依赖）的课程，然后首先安排这些课程，然后将其子节点的入度减1，最后比较安排了的课程数和总的课程数是否相同即可
 
