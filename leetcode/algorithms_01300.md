@@ -150,6 +150,111 @@
 	};
 	```
 
+- [1203. 项目管理](https://leetcode-cn.com/problems/sort-items-by-groups-respecting-dependencies/)
+
+    拓扑排序问题，首先对所有小组排序，然后每个小组组内进行排序，时间复杂度$O(n+m)$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<int> topSort(vector<int> &indegrees, vector<vector<int>> &graph, vector<int> &items)
+        {
+            vector<int> bfs;
+            for (auto &item : items)
+            {
+                if (indegrees[item] == 0)
+                {
+                    // 入度为0的节点直接安排
+                    bfs.emplace_back(item);
+                }
+            }
+            for (int i = 0; i < bfs.size(); i++)
+            {
+                for (auto node : graph[bfs[i]])
+                {
+                    if (--indegrees[node] == 0)
+                    {
+                        bfs.emplace_back(node);
+                    }
+                }
+            }
+            return bfs.size() == items.size() ? bfs : vector<int>{};
+        }
+
+    public:
+        vector<int> sortItems(int n, int m, vector<int> &group, vector<vector<int>> &beforeItems)
+        {
+            // 每组可能的项目(无人接手的从m开始递增编号，因为已有的组编号是从[0,m-1])
+            vector<vector<int>> groupToItems(n + m);
+            // 组间和组内依赖图，全部可能n+m个组编号，n个项目
+            vector<vector<int>> groupGraph(n + m), itemGraph(n);
+            // 组间和组内入度数组
+            vector<int> groupInDegrees(n + m, 0), itemInDegrees(n, 0);
+            vector<int> id(n + m);
+            for (int i = 0; i < n + m; i++)
+            {
+                id[i] = i;
+            }
+            // 无人接手的项目分配ID
+            for (int leftID = m, i = 0; i < n; i++)
+            {
+                if (group[i] == -1)
+                {
+                    group[i] = leftID++;
+                }
+                groupToItems[group[i]].emplace_back(i);
+            }
+            // 前后依赖关系建立邻接链表的图表示
+            for (int i = 0; i < n; i++)
+            {
+                int curGroupID = group[i];
+                for (auto &item : beforeItems[i])
+                {
+                    int beforeGroupId = group[item];
+                    if (beforeGroupId == curGroupID)
+                    {
+                        // 项目item和i在同一组且item为i的前置条件
+                        itemInDegrees[i] += 1;
+                        itemGraph[item].emplace_back(i);
+                    }
+                    else
+                    {
+                        // 项目item和i不在同一组，则其所在的beforeGroupID为curGroupID前置条件
+                        groupInDegrees[curGroupID]++;
+                        groupGraph[beforeGroupId].emplace_back(curGroupID);
+                    }
+                }
+            }
+            // 组间拓扑排序
+            vector<int> groupTopSort = topSort(groupInDegrees, groupGraph, id);
+            if (groupTopSort.size() == 0)
+            {
+                return vector<int>{}; // 组间排序失败
+            }
+            // 组内拓扑排序
+            vector<int> ans;
+            for (auto &curGroupID : groupTopSort)
+            {
+                int size = groupToItems[curGroupID].size();
+                if (size > 0)
+                {
+                    vector<int> ret = topSort(itemInDegrees, itemGraph, groupToItems[curGroupID]);
+                    if (ret.size() == 0)
+                    {
+                        return vector<int>{}; // 这一组组内无法排序
+                    }
+                    for (auto &item : ret)
+                    {
+                        ans.emplace_back(item);
+                    }
+                }
+            }
+            return ans;
+        }
+    };
+    ```
+
 - [1209. Remove All Adjacent Duplicates in String II](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/)
 
     删除一个字符串s中重复次数为k的串，可以使用栈的方式来存储每个字符及其出现的次数，每个字符至多被访问两次，时间复杂度$O(n)$
