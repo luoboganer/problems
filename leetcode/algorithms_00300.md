@@ -94,7 +94,7 @@
 	}
 	```
 
-	- BFS邻接链表写法，时间复杂度$O(V+E)$
+    - BFS邻接链表写法，时间复杂度$O(V+E)$
 
 	```cpp
 	bool canFinish(int numCourses, vector<vector<int>> &prerequisites)
@@ -294,6 +294,46 @@
         ret = (ret == numeric_limits<int>::max()) ? 0 : ret;
         return ret;
     }
+    ```
+
+- [210. 课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
+
+    类似于[207. Course Schedule](https://leetcode.com/problems/course-schedule/)，输出拓扑排序的结果即可
+
+    ```cpp
+	vector<int> findOrder(int numCourses, vector<vector<int>> &prerequisites)
+	{
+		vector<int> indegrees(numCourses, 0); // 统计每个节点的入度
+		vector<vector<int>> graph(numCourses);
+		for (auto &e : prerequisites)
+		{
+			indegrees[e[0]]++;
+			graph[e[1]].emplace_back(e[0]);
+		}
+		vector<int> bfs;
+		for (int i = 0; i < numCourses; i++)
+		{
+			if (indegrees[i] == 0)
+			{
+				//没有先决条件的课程
+				bfs.emplace_back(i);
+			}
+		}
+		for (int i = 0; i < bfs.size(); i++)
+		{
+			for (auto &node : graph[bfs[i]])
+			{
+				if (indegrees[node] > 0)
+				{
+					if (--indegrees[node] == 0)
+					{
+						bfs.emplace_back(node);
+					}
+				}
+			}
+		}
+		return bfs.size() == numCourses ? bfs : vector<int>{};
+	}
     ```
 
 - [211. Add and Search Word - Data structure design](https://leetcode.com/problems/add-and-search-word-data-structure-design/)
