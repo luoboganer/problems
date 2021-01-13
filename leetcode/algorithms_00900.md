@@ -34,6 +34,74 @@
     }
     ```
 
+- [824. Goat Latin](https://leetcode-cn.com/problems/goat-latin/)
+
+    题目本身简单，注意函数式编程的函数解耦复用思想
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<string> stringToTokens(string &s, char delim)
+        {
+            vector<string> tokens;
+            s.push_back(delim);
+            string token;
+            for (auto ch : s)
+            {
+                if (ch == delim)
+                {
+                    if (token.length() > 0)
+                    {
+                        tokens.emplace_back(token);
+                        token.clear();
+                    }
+                }
+                else
+                {
+                    token.push_back(ch);
+                }
+            }
+            return tokens;
+        }
+        vector<string> convertToGoatLatin(vector<string> &words)
+        {
+            unordered_set<char> vowels{{'a', 'o', 'e', 'i', 'u', 'A', 'O', 'E', 'I', 'U'}};
+            const int n = words.size();
+            string base = "maa";
+            for (int i = 0; i < n; ++i)
+            {
+                string cur = words[i];
+                if (vowels.find(cur[0]) == vowels.end())
+                {
+                    cur = cur.substr(1, cur.length() - 1) + cur[0];
+                }
+                cur += base;
+                base += 'a';
+                words[i] = cur;
+            }
+            return words;
+        }
+        string tokensToString(vector<string> &words)
+        {
+            string ret;
+            for (auto &word : words)
+            {
+                ret += word + ' ';
+            }
+            return ret.substr(0, ret.length() - 1);
+        }
+
+    public:
+        string toGoatLatin(string S)
+        {
+            vector<string> words = stringToTokens(S, ' ');
+            words = convertToGoatLatin(words);
+            return tokensToString(words);
+        }
+    };
+    ```
+
 - [825. Friends Of Appropriate Ages](https://leetcode.com/problems/friends-of-appropriate-ages/)
 
     - 二重循环暴力遍历，时间复杂度$O(n^2)$，leetcode评测机$\color{red}{TLE}$
