@@ -689,6 +689,41 @@
     "Quebec"
     ```
 
+- [1260. 二维网格迁移](https://leetcode-cn.com/problems/shift-2d-grid/)
+
+    将二维数组拉平flatten之后即转化为数组向右平移k位问题，可以通过三次翻转在$O(n)$时间内解决
+
+    ```cpp
+	vector<vector<int>> shiftGrid(vector<vector<int>> &grid, int k)
+	{
+		if (grid.size() > 0 && grid[0].size() > 0 && k > 0)
+		{
+			int rows = grid.size(), cols = grid[0].size();
+			int n = rows * cols;
+			k %= n; // 防止向右平移位置数超过数组本身的大小
+			if (k != 0)
+			{
+				// first conversion, [0,n-k-1]
+				for (int left = 0, right = n - k - 1; left < right; left++, right--)
+				{
+					swap(grid[left / cols][left % cols], grid[right / cols][right % cols]);
+				}
+				// second conversion, [n-k,n-1]
+				for (int left = n - k, right = n - 1; left < right; left++, right--)
+				{
+					swap(grid[left / cols][left % cols], grid[right / cols][right % cols]);
+				}
+				// third conversion, [0,n-1]
+				for (int left = 0, right = n - 1; left < right; left++, right--)
+				{
+					swap(grid[left / cols][left % cols], grid[right / cols][right % cols]);
+				}
+			}
+		}
+		return grid;
+	}
+    ```
+
 - [1268. Search Suggestions System](https://leetcode.com/problems/search-suggestions-system/)
 
     做出类似于现代编辑器中代码提示、自动补全的功能，即在给定的所有字符串中，搜索符合当前已经键入的字符的串，按字典序排序只要前3个
