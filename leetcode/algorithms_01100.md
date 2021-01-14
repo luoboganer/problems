@@ -267,6 +267,27 @@
     }
     ```
 
+- [1018. 可被 5 整除的二进制前缀](https://leetcode-cn.com/problems/binary-prefix-divisible-by-5/)
+
+    在模拟二进制转化十进制的过程中考察同余定理，时间复杂度$O(n)$
+
+    ```cpp
+	vector<bool> prefixesDivBy5(vector<int> &A)
+	{
+		int v = 0, n = A.size();
+		vector<bool> ret(n, false);
+		for (int i = 0; i < n; i++)
+		{
+			v = ((v << 1) + A[i]) % 5;
+			if (v % 5 == 0)
+			{
+				ret[i] = true;
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [1019](https://leetcode.com/problems/next-greater-node-in-linked-list/)
 
     用栈可以实现$O(n)$时间复杂度，即对数组从右往左遍历的过程中保持栈顶$st[i]<st[i-1]$，从栈底到栈顶是严格递增的顺序
