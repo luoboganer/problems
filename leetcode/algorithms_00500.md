@@ -4,6 +4,34 @@
 
     有些问题要用逆向思维来解决，本题本来是要用给定二进制位中1的个数来拼凑出可能的时间表示，组合数过程不好写，可以反过来写所有$00:00 - 23:59$中所有可能的时间中二进制位中1的个数符合题目要求的时间点。
 
+    ```cpp
+	vector<string> readBinaryWatch(int num)
+	{
+		vector<string> ret;
+		if (num >= 0 && num <= 8)
+		{
+			// num超出这个范围没有正确解
+			for (int hour = 0; hour < 12; hour++)
+			{
+				int hour_bits = __builtin_popcount(hour);
+				if (hour_bits > num)
+				{
+					continue;
+				}
+				for (int minute = 0; minute < 60; minute++)
+				{
+					if (hour_bits + (__builtin_popcount(minute)) == num)
+					{
+						string cur = to_string(hour) + ((minute >= 10) ? ":" : ":0") + to_string(minute);
+						ret.emplace_back(cur);
+					}
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [402. Remove K Digits](https://leetcode.com/problems/remove-k-digits/)
 
     用栈的思想在目标字符串中维护一个字符的字典序非严格升序（严格非降序）序列，即贪心地尽可能使高位的数字小，如果当前数字小于更高位，则在k允许的范围内移除更高位，在此过程中每个字符最多入栈、弹栈被处理两次，时间复杂度$O(n),n=num.length$，num为给定的数字字符串
