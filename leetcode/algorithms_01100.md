@@ -129,6 +129,49 @@
 	
     ```
 
+- [1005. K 次取反后最大化的数组和](https://leetcode-cn.com/problems/maximize-sum-of-array-after-k-negations/)
+
+    根据贪心原则，优先将负数转化为正数即可使得和最大，时间复杂度$O(n)$
+
+    ```cpp
+	int largestSumAfterKNegations(vector<int> &A, int K)
+	{
+		int min_abs = numeric_limits<int>::max(), negative = 0, sum_A = 0;
+		for (auto v : A)
+		{
+			min_abs = min(min_abs, abs(v));
+			negative += v < 0;
+		}
+		if (negative >= K)
+		{
+			// 优先将绝对值大的负数转化为正数
+			sort(A.begin(), A.end());
+			int i = 0, n = A.size();
+			while (i < K)
+			{
+				sum_A += -A[i++];
+			}
+			while (i < n)
+			{
+				sum_A += A[i++];
+			}
+		}
+		else
+		{
+			// 首先将全部负数转化为正数，然后在绝对值最小的值上来回转换
+			for (auto v : A)
+			{
+				sum_A += abs(v);
+			}
+			if ((K - negative) & 0x1)
+			{
+				sum_A -= 2 * min_abs;
+			}
+		}
+        return sum_A;
+	}
+    ```
+
 - [1008](https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/)
 
     从二叉搜索树BST的先序遍历preorder开始重建BST
