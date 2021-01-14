@@ -927,3 +927,112 @@
     [1,0]
     [0,1]
     ```
+
+- [599. 两个列表的最小索引总和](https://leetcode-cn.com/problems/minimum-index-sum-of-two-lists/)
+
+    - 暴利遍历两个数组，时间复杂度$O(m*n)$
+
+    ```cpp
+	vector<string> findRestaurant(vector<string> &list1, vector<string> &list2)
+	{
+		vector<string> ret;
+		int m = list1.size(), n = list2.size();
+		int min_idx_sum = m + n;
+		for (int i = 0; i < m; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				if (i + j <= min_idx_sum && list1[i].compare(list2[j]) == 0)
+				{
+					if (i + j < min_idx_sum)
+					{
+						min_idx_sum = i + j;
+						ret.clear();
+					}
+					ret.emplace_back(list1[i]);
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - hashmap记录第二个数组中元素的下标并查询，时间复杂度$O(m+n)$
+
+    ```cpp
+	vector<string> findRestaurant(vector<string> &list1, vector<string> &list2)
+	{
+		unordered_map<string, int> stringToIdx;
+		vector<string> ret;
+		int m = list1.size(), n = list2.size();
+		for (int i = 0; i < m; i++)
+		{
+			stringToIdx[list1[i]] = i;
+		}
+		int min_idx_sum = m + n;
+		for (int i = 0; i < n; i++)
+		{
+			auto it = stringToIdx.find(list2[i]);
+			if (it != stringToIdx.end())
+			{
+				if (it->second + i < min_idx_sum)
+				{
+					min_idx_sum = it->second + i;
+					ret.clear();
+					ret.emplace_back(list2[i]);
+				}
+				else if (it->second + i == min_idx_sum)
+				{
+					ret.emplace_back(list2[i]);
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - 对两个数组排序后寻找相同的值，时间复杂度$O(max(m,n)log(max(m,n)))$
+
+    ```cpp
+	vector<string> findRestaurant(vector<string> &list1, vector<string> &list2)
+	{
+		vector<string> ret;
+		int m = list1.size(), n = list2.size();
+		int min_idx_sum = m + n;
+		vector<pair<string, int>> list1_pair(m), list2_pair(n);
+		for (int i = 0; i < m; i++)
+		{
+			list1_pair[i] = make_pair(list1[i], i);
+		}
+		for (int i = 0; i < n; i++)
+		{
+			list2_pair[i] = make_pair(list2[i], i);
+		}
+		sort(list1_pair.begin(), list1_pair.end());
+		sort(list2_pair.begin(), list2_pair.end());
+		int i = 0, j = 0;
+		while (i < m && j < n)
+		{
+			int x = list1_pair[i].first.compare(list2_pair[j].first);
+			if (x == 0)
+			{
+				if (list1_pair[i].second + list2_pair[j].second < min_idx_sum)
+				{
+					min_idx_sum = list1_pair[i].second + list2_pair[j].second;
+					ret.clear();
+					ret.emplace_back(list1_pair[i].first);
+				}
+				else if (list1_pair[i].second + list2_pair[j].second == min_idx_sum)
+				{
+					ret.emplace_back(list1_pair[i].first);
+				}
+                i++, j++;
+			}
+			else
+			{
+				x < 0 ? i++ : j++;
+			}
+		}
+		return ret;
+	}
+    ```
