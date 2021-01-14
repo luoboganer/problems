@@ -604,6 +604,36 @@
     }
     ```
 
+    - 递归的不同实现，不使用函数以外的数据，时间复杂度$O(n)$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<int> dfs(TreeNode *root)
+        {
+            // 返回root的最大深度和直径
+            vector<int> ret{0, 0};
+            if (root)
+            {
+                vector<int> left = dfs(root->left);
+                vector<int> right = dfs(root->right);
+                // root的最大深度是左子树的深度和右子树的深度的最大值加1（1是当前节点root）
+                ret[0] = max(left[0], right[0]) + 1;
+                // root的直径是max(左子树直径，右子树直径，经过当前节点root的一条最长路径)
+                ret[1] = max(max(left[1], right[1]), left[0] + right[0]);
+            }
+            return ret;
+        }
+
+    public:
+        int diameterOfBinaryTree(TreeNode *root)
+        {
+            return dfs(root)[1];
+        }
+    };
+    ```
+
 - [547. Friend Circles](https://leetcode.com/problems/friend-circles/)
 
 	并查集的建立与使用，时间复杂度$O(n^2log(n)))$
