@@ -754,7 +754,64 @@
 
 - [947. Most Stones Removed with Same Row or Column](https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/)
 
-	- 并查集的建立与使用，时间复杂度$O(nlog(n)))$
+    - 暴力二重遍历所有节点，使用并查集标注联通分量
+
+    ```cpp
+    class Solution
+    {
+    private:
+        struct UF
+        {
+            int count;
+            vector<int> uf;
+            UF(int n)
+            {
+                uf.resize(n);
+                count = n;
+                for (int i = 0; i < n; i++)
+                {
+                    uf[i] = i;
+                }
+            }
+            int find(int x)
+            {
+                return x == uf[x] ? x : (uf[x] = find(uf[x]));
+            }
+            bool union_merge(int x, int y)
+            {
+                x = find(x), y = find(y);
+                if (x != y)
+                {
+                    uf[x] = y, count--;
+                    return true;
+                }
+                return false;
+            }
+        };
+
+    public:
+        int removeStones(vector<vector<int>> &stones)
+        {
+            int n = stones.size();
+            UF uf = UF(n);
+            // 用并查集来计算所有stone作为节点表示的图中联通分量的个数
+            // 每个联通分量都可以按照规则删除到只剩一个节点
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = i + 1; j < n; j++)
+                {
+                    if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1])
+                    {
+                        uf.union_merge(i, j); // 横纵坐标有一个相同则可以合并到同一个连通分量中
+                    }
+                }
+            }
+            return uf.count;
+        }
+    };
+    ```
+    
+    - 并查集的建立与使用，时间复杂度$O(nlog(n)))$
 
 	```cpp
 	class Solution

@@ -1127,7 +1127,22 @@
 
 - [386. Lexicographical Numbers](https://leetcode.com/problems/lexicographical-numbers/)
 
-	- 从1-n的数字转化为字符串，字符串按照字典序排序，然后转换为int值输出，时间复杂度$O(nlog(n))$
+    - 暴力排序
+
+    ```cpp
+	vector<int> lexicalOrder(int n)
+	{
+		vector<int> ret(n);
+		for (int i = 1; i <= n; i++)
+		{
+			ret[i] = i;
+		}
+		sort(ret.begin(), ret.end(), [](const auto &a, const auto &b) -> bool { return to_string(a).compare(to_string(b)) < 0; });
+		return ret;
+	}
+    ```
+
+    - 从1-n的数字转化为字符串，字符串按照字典序排序，然后转换为int值输出，时间复杂度$O(nlog(n))$
 
 	```cpp
     vector<int> lexicalOrder(int n)
@@ -1147,7 +1162,7 @@
     }
 	```
 
-	- 递归构造按照字典序排序的数字，时间复杂度$O(n)$
+    - 递归构造按照字典序排序的数字，时间复杂度$O(n)$
 
 	```cpp
     class Solution
