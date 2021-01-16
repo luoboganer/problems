@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-01 12:05:33
+ * @LastEditTime: 2021-01-16 16:24:52
  * @Software: Visual Studio Code
  * @Description: 1701-1800
 -->
@@ -50,6 +50,96 @@
 		}
 		return ret;
 	}
+	```
+
+- [1722. 执行交换操作后的最小汉明距离](https://leetcode-cn.com/problems/minimize-hamming-distance-after-swap-operations/)
+
+	用并查集来标记所有可以任意交换的节点构成一个个的联通分量，在每一个联通分量中所有值可以任意交换，则其汉明距离即为该联通分量的节点数减去其相同值（匹配数）的个数，时间复杂度$O(m+n)$，其中$m=source.size(),n=allowedSwaps.size()$
+
+	```cpp
+	class Solution
+	{
+	private:
+		struct UF
+		{
+			int count;
+			vector<int> uf;
+			UF(int n)
+			{
+				count = n;
+				uf.resize(n);
+				for (int i = 0; i < n; i++)
+				{
+					uf[i] = i;
+				}
+			}
+			int find(int x)
+			{
+				return uf[x] == x ? x : (uf[x] = find(uf[x]));
+			}
+			bool union_merge(int x, int y)
+			{
+				x = find(x), y = find(y);
+				if (x != y)
+				{
+					uf[x] = y;
+					count--;
+					return true;
+				}
+				return false;
+			}
+		};
+
+	public:
+		int minimumHammingDistance(vector<int> &source, vector<int> &target, vector<vector<int>> &allowedSwaps)
+		{
+			const int n = source.size();
+			UF uf = UF(n);
+			for (auto &e : allowedSwaps)
+			{
+				uf.union_merge(e[0], e[1]);
+			}
+			unordered_map<int, vector<int>> idToIndexs;
+			for (int i = 0; i < n; i++)
+			{
+				idToIndexs[uf.find(i)].emplace_back(i);
+			}
+			int ret = 0; // 记录汉明距离
+			for (auto &item : idToIndexs)
+			{
+				int countEqual = 0;
+				vector<int> idxs = item.second;
+				const int part_n = idxs.size();
+				vector<int> part_source(part_n), part_target(part_n);
+				for (int i = 0; i < part_n; i++)
+				{
+					part_source[i] = source[idxs[i]];
+					part_target[i] = target[idxs[i]];
+				}
+				sort(part_source.begin(), part_source.end());
+				sort(part_target.begin(), part_target.end());
+				int i = 0, j = 0;
+				while (i < part_n && j < part_n)
+				{
+					if (part_source[i] == part_target[j])
+					{
+						countEqual++;
+						i++, j++;
+					}
+					else if (part_source[i] < part_target[j])
+					{
+						i++;
+					}
+					else
+					{
+						j++;
+					}
+				}
+				ret += part_n - countEqual;
+			}
+			return ret;
+		}
+	};
 	```
 
 - [...](123)
