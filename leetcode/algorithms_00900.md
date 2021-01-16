@@ -1,5 +1,157 @@
 # 801-900
 
+- [803. 打砖块](https://leetcode-cn.com/problems/bricks-falling-when-hit/)
+
+    将所有黏在房顶的砖块看做一个图结构（每块砖是一个节点，两块砖相邻在认为有一条边），则打砖块的过程是一个逐步拆分联通分量的过程，则可以逆向思维使用并查集（并查集是一个逐步合并联通分量的过程），时间复杂度$O((n+rows*cols)log(rows*cols))$，其中$n=hits.size(),rows=grid.size(),colsgrid[0].size()$，而并查集单次操作的时间复杂度为$O(log(rows*cols))$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        struct UF
+        {
+            int count;
+            vector<int> uf;
+            vector<int> size; // size[x]表示以x为根节点的子树的节点总数
+
+            UF(int n)
+            {
+                count = n;
+                uf.resize(count);
+                size.resize(count);
+                for (int i = 0; i < count; i++)
+                {
+                    uf[i] = i;
+                    size[i] = 1;
+                }
+            }
+
+            int find(int x)
+            {
+                return uf[x] == x ? x : (uf[x] = find(uf[x]));
+            }
+            int getSize(int x)
+            {
+                return size[find(x)];
+            }
+            bool union_merge(int x, int y)
+            {
+                x = find(x), y = find(y);
+                if (x != y)
+                {
+                    uf[x] = y;
+                    count--;
+                    size[y] += size[x]; // 注意这里size的更新
+                    return true;
+                }
+                return false;
+            }
+        };
+
+    public:
+        vector<int> hitBricks(vector<vector<int>> &grid, vector<vector<int>> &hits)
+        {
+            const int n = hits.size();
+            vector<int> ret(n, 0);
+            if (n > 0 && grid.size() > 0 && grid[0].size() > 0)
+            {
+                /**
+                * 1. 把grid中在hits位置的砖块全部击碎
+                * 2. 根据当前的grid建立图模型，用并查集表示每一个连通分量
+                * 3. 逆向思维，倒序遍历hits中每一个节点，对于每一个hits[i]坐标(x,y)，
+                * 将grid[x][y]位置置为1（补上砖块），看看和屋顶相连的联通分量中增加了
+                * 多少砖块，即为顺序敲碎该位置砖块时掉落的砖块
+                **/
+
+                /*  第一步，敲碎hits位置上的砖块  */
+                int rows = grid.size(), cols = grid[0].size();
+                // copy 原始数组（函数不修改输入原则）
+                vector<vector<int>> copy(rows, vector<int>(cols, 0));
+                for (int i = 0; i < rows; i++)
+                {
+                    for (int j = 0; j < cols; j++)
+                    {
+                        copy[i][j] = grid[i][j];
+                    }
+                }
+                for (auto &it : hits)
+                {
+                    copy[it[0]][it[1]] = 0;
+                    // 将需要敲碎的位置置为0,等待逆向填充
+                }
+
+                /*  第二步，建立连通分量的图，并查集表示  */
+                int root = rows * cols; // 表示虚拟的屋顶节点
+                UF uf = UF(rows * cols + 1);
+                // 首先把所有和屋顶相连的砖块（第一行）和屋顶连起来
+                for (int j = 0; j < cols; j++)
+                {
+                    if (copy[0][j])
+                    {
+                        uf.union_merge(root, j);
+                    }
+                }
+                // 网格中的其它砖块，如果左边或者上面是砖块则继续合并到同一个联通分量
+                for (int i = 1; i < rows; i++)
+                {
+                    for (int j = 0; j < cols; j++)
+                    {
+                        if (copy[i][j])
+                        {
+                            if (copy[i - 1][j] == 1)
+                            {
+                                uf.union_merge((i - 1) * cols + j, i * cols + j);
+                            }
+                            if (j > 0 && copy[i][j - 1] == 1)
+                            {
+                                uf.union_merge(i * cols + j - 1, i * cols + j);
+                            }
+                        }
+                    }
+                }
+
+                /*  第三步，逆序遍历hits中的位置，补上该位置的砖块，并计算屋顶root所在连通分量会增加多少砖块  */
+                vector<int> directions{1, 0, -1, 0, 1};
+                for (int i = n - 1; i >= 0; i--)
+                {
+                    int x = hits[i][0], y = hits[i][1];
+                    if (grid[x][y] == 1)
+                    {
+                        /**
+                        * 如果grid[x][y]=1原位置原本有砖块，存在敲碎以后其他位置砖块掉落的问题
+                        * 如果grid[x][y]=0即该位置原本没有砖块，则不存在敲碎的问题，直接返回0
+                        */
+                        //	没有补上(x,y)位置之前和屋顶相连的砖块数量
+                        int origin = uf.getSize(root);
+
+                        // 如果该位置在第一行，直接和屋顶相连
+                        if (x == 0)
+                        {
+                            uf.union_merge(root, y);
+                        }
+                        // 检查该位置四个方向上有相连的砖块，则合并连通分量
+                        for (int d = 0; d < 4; d++)
+                        {
+                            int r = x + directions[d], c = y + directions[d + 1];
+                            if (r >= 0 && r < rows && c >= 0 && c < cols && copy[r][c] == 1)
+                            {
+                                uf.union_merge(x * cols + y, r * cols + c);
+                            }
+                        }
+
+                        //	补上(x,y)位置之后和屋顶相连的砖块数量
+                        int current = uf.getSize(root);
+                        // 当补上(x,y)位置之后和屋顶相连的砖块数量可能没有变化，因此要和0取最大值
+                        ret[i] = max(0, current - origin - 1);
+                        copy[x][y] = 1; // 该位置已经被补上
+                    }
+                }
+            }
+            return ret;
+        }
+    };
+    ```
+
 - [817. Linked List Components](https://leetcode.com/problems/linked-list-components/)
 
     用数组标记G中的所有数为true，然后遍历链表head，对head中相邻的两个节点cur和cur->next，如果值的标记都是flag，则将cur值的标记改为false，最后统计标记中有多少个true即可
