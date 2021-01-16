@@ -256,6 +256,34 @@
     ["void func(int k) {", "// this function does nothing /*", "   k = k*2/4;", "   k = k/2;*/", "}"]
 	```
 
+- [724. 寻找数组的中心索引](https://leetcode-cn.com/problems/find-pivot-index/)
+
+    runing_sum方法左右分别计算累加和，从左到右找出第一个两侧累加和相同的地方即可，时间复杂度$O(n)$
+
+    ```cpp
+	int pivotIndex(vector<int> &nums)
+	{
+		const int n = nums.size();
+		vector<int> left_sum(n), right_sum(n);
+		int left_base = 0, right_base = 0;
+		for (int i = 0; i < n; i++)
+		{
+			left_sum[i] = left_base;
+			left_base += nums[i];
+			right_sum[n - 1 - i] = right_base;
+			right_base += nums[n - 1 - i];
+		}
+		for (int i = 0; i < n; i++)
+		{
+			if (left_sum[i] == right_sum[i])
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+    ```
+
 - [725. Split Linked List in Parts](https://leetcode.com/problems/split-linked-list-in-parts/)
 
     将给定的单向链表截断为长度尽量相等的k组，链表节点数小于k的用空链表补足k组
