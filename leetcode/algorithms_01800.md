@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-16 16:24:52
+ * @LastEditTime: 2021-01-17 14:56:21
  * @Software: Visual Studio Code
  * @Description: 1701-1800
 -->
@@ -140,6 +140,40 @@
 			return ret;
 		}
 	};
+	```
+
+- [1728. 重新排列后的最大子矩阵](https://leetcode-cn.com/problems/largest-submatrix-with-rearrangements/)
+
+	将每个点向上统计连续1的个数，即可转化为[84. Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/)类问题，而每一列可以任意交换，则直接对每一行中所有可能的直方图高度直接从高到低排序即可，时间复杂度$O(rows*cols)$
+
+	```cpp
+	int largestSubmatrix(vector<vector<int>> &matrix)
+	{
+		int ret = 0;
+		if (matrix.size() > 0 && matrix[0].size() > 0)
+		{
+			int rows = matrix.size(), cols = matrix[0].size();
+			for (int i = 1; i < rows; i++)
+			{
+				for (int j = 0; j < cols; j++)
+				{
+					if (matrix[i][j])
+					{
+						matrix[i][j] += matrix[i - 1][j];
+					}
+				}
+			}
+			for (auto &row : matrix)
+			{
+				sort(row.rbegin(), row.rend());
+				for (int i = 0; i < cols; i++)
+				{
+					ret = max(ret, (i + 1) * row[i]);
+				}
+			}
+		}
+		return ret;
+	}
 	```
 
 - [...](123)
