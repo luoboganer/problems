@@ -769,7 +769,7 @@
 
 - [221. Maximal Square](https://leetcode.com/problems/maximal-square/)
 
-    动态规划，时间复杂度$O(m*n)$
+    - 动态规划，时间复杂度$O(m*n)$
 
     ```cpp
     int maximalSquare(vector<vector<char>> &matrix)
@@ -804,6 +804,50 @@
         }
         return area;
     }
+    ```
+
+    - 在每个位置matrix[i][j]统计该点上侧连续1的数量形成一个柱状图，按照[85. 最大矩形](https://leetcode-cn.com/problems/maximal-rectangle/)的思路，将计算矩形面积转化为计算正方形面积即可，时间复杂度$O(m*n)$
+
+    ```cpp
+    int maximalSquare(vector<vector<char>>& matrix) {
+        int ret = 0;
+		if (matrix.size() > 0 && matrix[0].size() > 0)
+		{
+			const int rows = matrix.size(), cols = matrix[0].size();
+			vector<vector<int>> heights(rows, vector<int>(cols + 1)); // 每一行最后一列加入一个哨兵点位
+			for (int j = 0; j < cols; j++)
+			{
+				heights[0][j] = matrix[0][j] == '1' ? 1 : 0;
+			}
+			heights[0][cols] = -1;
+			for (int i = 1; i < rows; i++)
+			{
+				for (int j = 0; j < cols; j++)
+				{
+					heights[i][j] = matrix[i][j] == '1' ? 1 + heights[i - 1][j] : 0;
+				}
+				heights[i][cols] = -1;
+			}
+			// 计算每一行的柱状图形成的最大矩形
+			for (int i = 0; i < rows; i++)
+			{
+				stack<int> st;
+				for (int j = 0; j <= cols; j++)
+				{
+					while (!st.empty() && heights[i][st.top()] >= heights[i][j])
+					{
+						int height = heights[i][st.top()];
+						st.pop();
+						int width = st.empty() ? j : j - st.top() - 1;
+						int square_length = min(height, width);
+						ret = max(ret, square_length * square_length);
+					}
+					st.push(j);
+				}
+			}
+		}
+		return ret;
+	}
     ```
 
 - [222. Count Complete Tree Nodes](https://leetcode.com/problems/count-complete-tree-nodes/)

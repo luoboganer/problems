@@ -2783,8 +2783,8 @@
     ```
 
 - [84. Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/)
-
-	- 通过双指针i和j枚举所有可能矩形宽度$j-i+1$，在此宽度下计算可能的矩形面积，时间复杂度$O(n^2)$，leetcode评测机$\color{red}{TLE}$
+    
+    - 通过双指针i和j枚举所有可能矩形宽度$j-i+1$，在此宽度下计算可能的矩形面积，时间复杂度$O(n^2)$，leetcode评测机$\color{red}{TLE}$
 
 	```cpp
 	int largestRectangleArea(vector<int> &heights)
@@ -2802,8 +2802,8 @@
 		return ret;
 	}
 	```
-
-	- 枚举所有可能的矩形高度$heights[i]$，然后找到i左侧第一个小于heights[i]的柱子left和右侧第一个小于heights[i]的柱子right，则该矩形面积为$heights[i]*(right-left-1)$，时间复杂度$O(n^2)$，leetcode评测机$\color{red}{TLE}$
+    
+    - 枚举所有可能的矩形高度$heights[i]$，然后找到i左侧第一个小于heights[i]的柱子left和右侧第一个小于heights[i]的柱子right，则该矩形面积为$heights[i]*(right-left-1)$，时间复杂度$O(n^2)$，leetcode评测机$\color{red}{TLE}$
 
 	```cpp
 	int largestRectangleArea(vector<int> &heights)
@@ -2864,8 +2864,8 @@
 		return ret;
 	}
     ```
-
-	- 单调栈 + 常数优化
+    
+    - 单调栈 + 常数优化
 
 	```cpp
 	int largestRectangleArea(vector<int> &heights)
@@ -2890,8 +2890,10 @@
 		return ret;
 	}
 	```
+    
+    - 单调栈的一次遍历写法
 
-	- 单调栈的一次遍历写法
+        **单调栈的本质是寻找当前heights[i]的左侧第一个比其低的柱子**
 
 	```cpp
 	int largestRectangleArea(vector<int> &heights)
@@ -2912,6 +2914,51 @@
 		return ret;
 	}
 	```
+
+- [85. 最大矩形](https://leetcode-cn.com/problems/maximal-rectangle/)
+
+    在矩阵中的每一个位置matrix[i][j]计算其上侧连续1的数量，即可形成一个柱状图，转化为[84. Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/)问题解决，时间复杂度$O(rows*cols)$$
+
+    ```cpp
+	int maximalRectangle(vector<vector<char>> &matrix)
+	{
+		int ret = 0;
+		if (matrix.size() > 0 && matrix[0].size() > 0)
+		{
+			const int rows = matrix.size(), cols = matrix[0].size();
+			vector<vector<int>> heights(rows, vector<int>(cols + 1)); // 每一行最后一列加入一个哨兵点位
+			for (int j = 0; j < cols; j++)
+			{
+				heights[0][j] = matrix[0][j] == '1' ? 1 : 0;
+			}
+			heights[0][cols] = -1;
+			for (int i = 1; i < rows; i++)
+			{
+				for (int j = 0; j < cols; j++)
+				{
+					heights[i][j] = matrix[i][j] == '1' ? 1 + heights[i - 1][j] : 0;
+				}
+				heights[i][cols] = -1;
+			}
+			// 计算每一行的柱状图形成的最大矩形
+			for (int i = 0; i < rows; i++)
+			{
+				stack<int> st;
+				for (int j = 0; j <= cols; j++)
+				{
+					while (!st.empty() && heights[i][st.top()] >= heights[i][j])
+					{
+						int h = heights[i][st.top()];
+						st.pop();
+						ret = max(ret, h * (st.empty() ? j : j - st.top() - 1));
+					}
+					st.push(j);
+				}
+			}
+		}
+		return ret;
+	}
+    ```
 
 - [88. Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/)
 
