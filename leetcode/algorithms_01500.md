@@ -321,31 +321,71 @@
 
     - 采用桶排序的方式将下标$i+j$相同的对角线元素全部放入同一个桶里面，时间复杂度$O(n)$，其中n为总的元素个数
 
-    ```cpp
-    vector<int> findDiagonalOrder(vector<vector<int>> &nums)
-    {
-        int rows = nums.size(), max_key = 0;
-        unordered_map<int, vector<int>> buckets;
-        vector<int> ret;
-        for (auto i = 0; i < rows; i++)
+        - hashmap实现
+
+        ```cpp
+        vector<int> findDiagonalOrder(vector<vector<int>> &nums)
         {
-            auto cols = nums[i].size();
-            for (auto j = 0; j < cols; j++)
+            int rows = nums.size(), max_key = 0;
+            unordered_map<int, vector<int>> buckets;
+            vector<int> ret;
+            for (auto i = 0; i < rows; i++)
             {
-                max_key = max(max_key, i + j);
-                buckets[i + j].push_back(nums[i][j]);
+                auto cols = nums[i].size();
+                for (auto j = 0; j < cols; j++)
+                {
+                    max_key = max(max_key, i + j);
+                    buckets[i + j].push_back(nums[i][j]);
+                }
             }
+            for (auto i = 0; i <= max_key; i++)
+            {
+                for (auto v = buckets[i].rbegin(); v != buckets[i].rend(); v++)
+                {
+                    ret.push_back(*v);
+                }
+            }
+            return ret;
         }
-        for (auto i = 0; i <= max_key; i++)
+        ```
+
+        - 数组实现
+
+        ```cpp
+        vector<int> findDiagonalOrder(vector<vector<int>> &nums)
         {
-            for (auto v = buckets[i].rbegin(); v != buckets[i].rend(); v++)
+            vector<int> ret;
+            if (!nums.empty())
             {
-                ret.push_back(*v);
+                int rows = nums.size(), max_col = 0;
+                for (auto &row : nums)
+                {
+                    max_col = max(max_col, static_cast<int>(row.size()));
+                }
+                const int n = rows + max_col - 1;
+                int total_count = 0;
+                vector<vector<int>> ijToVector(n);
+                for (int i = 0; i < rows; i++)
+                {
+                    int cols = nums[i].size();
+                    total_count += cols;
+                    for (int j = 0; j < cols; j++)
+                    {
+                        ijToVector[i + j].emplace_back(nums[i][j]);
+                    }
+                }
+                ret.resize(total_count);
+                for (int i = 0, k = 0; i < n; i++)
+                {
+                    for (int j = ijToVector[i].size() - 1; j >= 0; j--)
+                    {
+                        ret[k++] = ijToVector[i][j];
+                    }
+                }
             }
+            return ret;
         }
-        return ret;
-    }
-    ```
+        ```
 
 - [1449. Form Largest Integer With Digits That Add up to Target](https://leetcode.com/problems/form-largest-integer-with-digits-that-add-up-to-target/)
 
