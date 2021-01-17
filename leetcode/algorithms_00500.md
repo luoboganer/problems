@@ -457,6 +457,40 @@
 
     本题和[442](https://leetcode.com/problems/find-all-duplicates-in-an-array/)很像，在遍历数组的过程中可以简单的用一个bool数组来标记每个下标是否出现即可，在不使用额外空间的情况下，可以用正负标记来代替true和false的bool标记在原数组中标记，只不过每次读取原数组的时候取绝对值即可。
 
+- [451. 根据字符出现频率排序](https://leetcode-cn.com/problems/sort-characters-by-frequency/)
+
+    统计每个字符出现的频率，降序排序，将每个字符加入结果字符串中
+
+    ```cpp
+	string frequencySort(string s)
+	{
+		const int length = 128;
+		vector<vector<int>> count(length, vector(2, 0));
+		for (int i = 0; i < length; i++)
+		{
+			count[i][1] = i; // 用于标记那个字符
+		}
+		for (auto &ch : s)
+		{
+			count[static_cast<int>(ch)][0]++;
+		}
+		sort(count.rbegin(), count.rend());
+		string ret;
+		for (int i = 0; i < length; i++)
+		{
+			if (count[i][1] != 0)
+			{
+				char ch = static_cast<char>( count[i][1]);
+				for (int j = 0; j < count[i][0]; j++)
+				{
+					ret.push_back(ch);
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [454. 4Sum II](https://leetcode.com/problems/4sum-ii/)
 
     - 四个数组，两两组合求和形成两个数组，然后再遍历两个数组，时间复杂度$O(n^4)$，LeetCode提交$\color{red}{TLE}$
