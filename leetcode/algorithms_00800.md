@@ -186,6 +186,103 @@
     };
     ```
 
+- [721. 账户合并](https://leetcode-cn.com/problems/accounts-merge/)
+
+    并查集与hashmap的使用，时间复杂度$O(m*n)$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        struct UF
+        {
+            int count;
+            vector<int> uf;
+
+            UF(int n)
+            {
+                count = n;
+                uf.resize(n);
+                for (int i = 0; i < n; i++)
+                {
+                    uf[i] = i;
+                }
+            }
+
+            int find(int x)
+            {
+                return uf[x] == x ? x : (uf[x] = find(uf[x]));
+            }
+
+            bool union_merge(int x, int y)
+            {
+                x = find(x), y = find(y);
+                if (x != y)
+                {
+                    uf[x] = y;
+                    count--;
+                    return true;
+                }
+                return false;
+            }
+        };
+
+    public:
+        vector<vector<string>> accountsMerge(vector<vector<string>> &accounts)
+        {
+            const int n = accounts.size();
+            UF uf = UF(n);
+            // 用并查集合并同一个用户，通过是否有相同email账号判断
+            unordered_map<string, int> accountToIdx;
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 1; j < accounts[i].size(); j++)
+                {
+                    if (accountToIdx.find(accounts[i][j]) != accountToIdx.end())
+                    {
+                        uf.union_merge(i, accountToIdx[accounts[i][j]]);
+                    }
+                    else
+                    {
+                        accountToIdx[accounts[i][j]] = i;
+                    }
+                }
+            }
+            // 将并查集内的同一个连通分量的全部email地址合并
+            vector<unordered_set<string>> idxToAccounts(n);
+            vector<string> idxToName(n);
+            for (int i = 0; i < n; i++)
+            {
+                int idx = uf.find(i);
+                idxToName[idx] = accounts[i][0];
+                for (int j = 1; j < accounts[i].size(); j++)
+                {
+                    idxToAccounts[idx].insert(accounts[i][j]);
+                }
+            }
+            vector<vector<string>> ret(uf.count);
+            for (int i = 0, r = 0; i < n; i++)
+            {
+                if (idxToAccounts[i].size() > 0)
+                {
+                    ret[r].emplace_back(idxToName[i]);
+                    for (auto &account : idxToAccounts[i])
+                    {
+                        ret[r].emplace_back(account);
+                    }
+                    r++;
+                }
+            }
+            // email地址排序
+            for (int i = 0; i < uf.count; i++)
+            {
+                sort(ret[i].begin() + 1, ret[i].end());
+            }
+            return ret;
+        }
+    };
+    ```
+
 - [722. Remove Comments](https://leetcode.com/problems/remove-comments/)
 
     删除c/c++风格的代码注释，分为行注释和块注释两种类型
