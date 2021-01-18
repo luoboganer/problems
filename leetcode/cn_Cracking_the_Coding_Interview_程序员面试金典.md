@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-18 15:58:42
+ * @LastEditTime: 2021-01-18 16:45:06
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -571,6 +571,24 @@
         }
     };
     ```
+
+- [面试题 05.01. 插入](https://leetcode-cn.com/problems/insert-into-bits-lcci/)
+
+	题目的本质即是将M左移i位后覆盖N的第i到j位，位操作在$O(1)$时间内实现
+
+	**注意对unsigned int取反的操作，!v是逻辑取反，~v是按位取反**
+
+	```cpp
+	int insertBits(int N, int M, int i, int j)
+	{
+		unsigned int mask = 0, m = M, n = N;
+		for (int r = i; r <= j; r++)
+		{
+			mask += (1 << r);
+		}
+		return static_cast<int>((m << i)) + static_cast<int>(n & (~mask));
+	}
+	```
 
 - [面试题 05.03. 翻转数位](https://leetcode-cn.com/problems/reverse-bits-lcci/)
 
