@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-18 15:27:55
+ * @LastEditTime: 2021-01-18 15:58:42
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -572,6 +572,44 @@
     };
     ```
 
+- [面试题 05.03. 翻转数位](https://leetcode-cn.com/problems/reverse-bits-lcci/)
+
+	经典动态规划问题，需要注意：
+	1. 给定num为负数的情况下防止右移溢出（转化为unsigned int）
+	2. 32 bits的int型整数不足32 bits高位要补0补够32 bits
+
+	```cpp
+	int reverseBits(int num)
+	{
+		// 列出num的二进制表示
+		int ret = 0;
+		unsigned int v = num; // 防止负数溢出
+		// 统计至多含有一个0的连续1的最长序列长度, 动态规划
+		int withZero = 0, withoutZero = 0;
+		while (v)
+		{
+			if (v & 0x1)
+			{
+				withZero++;
+				withoutZero++;
+			}
+			else
+			{
+				withZero = withoutZero + 1;
+				withoutZero = 0;
+			}
+			ret = max(ret, withZero);
+			v >>= 1;
+		}
+		if (ret < 32)
+		{
+			// 32bit的int型数据，小于32位时可以在最高位补0
+			ret = max(ret, withoutZero + 1);
+		}
+		return ret;
+	}
+	```
+
 - [面试题 05.07. 配对交换](https://leetcode-cn.com/problems/exchange-lcci/)
     
     - 对32bits的int型数据，生成32个位置的bit值(0/1)，然后逐个交换奇数位和偶数位
@@ -894,7 +932,7 @@
 
 - [面试题 17.10. 主要元素](https://leetcode-cn.com/problems/find-majority-element-lcci/)
 
-	摩尔投票法则（赞成票与否定票互相抵消的思想），寻找占比超过一般的元素
+	摩尔投票法则（赞成票与否定票互相抵消的思想），寻找占比超过一半的元素
 
 	```cpp
 	int majorityElement(vector<int> &nums)
