@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-18 16:45:06
+ * @LastEditTime: 2021-01-18 17:25:47
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -571,6 +571,96 @@
         }
     };
     ```
+
+- [面试题 04.12. 求和路径](https://leetcode-cn.com/problems/paths-with-sum-lcci/)
+
+    - 对于给定非空节点root，首先计算以当前节点root为起点的满足向下路径和为target的路径数量，然后递归的计算以root的左右子树为起点的路径数量求和，时间复杂度$O(n^2)$，其中$n$为给定树root的节点总数
+
+	```cpp
+	class Solution
+	{
+	private:
+		int countCurrentNode(TreeNode *root, int cur, int target)
+		{
+			/**
+			* 计算以当前节点root为开始节点的可能的路径和
+			*/
+			int ret = 0;
+			if (root)
+			{
+				cur += root->val;
+				if (cur == target)
+				{
+					ret += 1;
+				}
+				ret += countCurrentNode(root->left, cur, target) + countCurrentNode(root->right, cur, target);
+			}
+			return ret;
+		}
+		int dfsAllNodes(TreeNode *root, int target)
+		{
+			return root ? countCurrentNode(root, 0, target) + dfsAllNodes(root->left, target) + dfsAllNodes(root->right, target) : 0;
+		}
+
+	public:
+		int pathSum(TreeNode *root, int sum)
+		{
+			return dfsAllNodes(root, sum);
+		}
+	};
+	```
+
+    - 非递归写法，DFS深度优先搜索
+
+	```cpp
+	class Solution
+	{
+	private:
+		int countCurrentNode(TreeNode *root, int target)
+		{
+			/**
+			* 计算以当前节点root为开始节点的可能的路径和
+			*/
+			int ret = 0, cur_sum = 0;
+			stack<TreeNode *> st;
+			TreeNode *cur = root;
+			unordered_set<TreeNode *> visited;
+			while (!st.empty() || cur)
+			{
+				if (cur)
+				{
+					st.push(cur);
+					visited.insert(cur);
+					cur_sum += cur->val;
+					if (cur_sum == target)
+					{
+						ret++;
+					}
+					cur = cur->left;
+				}
+				else
+				{
+					if (st.top()->right && visited.find(st.top()->right) == visited.end())
+					{
+						cur = st.top()->right;
+					}
+					else
+					{
+						cur_sum -= st.top()->val;
+						st.pop();
+					}
+				}
+			}
+			return ret;
+		}
+
+	public:
+		int pathSum(TreeNode *root, int sum)
+		{
+			return root ? countCurrentNode(root, sum) + pathSum(root->left, sum) + pathSum(root->right, sum) : 0;
+		}
+	};
+	```
 
 - [面试题 05.01. 插入](https://leetcode-cn.com/problems/insert-into-bits-lcci/)
 
