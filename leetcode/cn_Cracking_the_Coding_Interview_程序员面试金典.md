@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-03 16:29:30
+ * @LastEditTime: 2021-01-18 15:03:34
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -765,6 +765,95 @@
 		}
 		return a;
 	}
+	```
+
+- [面试题 17.07. 婴儿名字](https://leetcode-cn.com/problems/baby-names-lcci/)
+
+	名字之间的同质关系可以用并查集（Union Find）来表示，合并并查集内的每一联通分量的统计频率即可，时间复杂度$O(m+nlog(n))$，其中$m=names.size(),n=synonyms.size()$
+
+	```cpp
+	class Solution
+	{
+	private:
+		struct UF
+		{
+			int count;
+			vector<int> uf;
+
+			UF(int n)
+			{
+				count = n;
+				uf.resize(n);
+				for (int i = 0; i < n; i++)
+				{
+					uf[i] = i;
+				}
+			}
+
+			int find(int x)
+			{
+				return uf[x] == x ? x : (uf[x] = find(uf[x]));
+			}
+
+			bool union_merge(int x, int y)
+			{
+				x = find(x), y = find(y);
+				if (x != y)
+				{
+					uf[x] = y;
+					count--;
+					return true;
+				}
+				return false;
+			}
+		};
+
+	public:
+		vector<string> trulyMostPopular(vector<string> &names, vector<string> &synonyms)
+		{
+			// 解析每个名字和它的出现频率
+			const int n = names.size();
+			vector<string> nameIdentifier(n);
+			vector<int> nameFrequency(n);
+			unordered_map<string, int> identifierToIdx;
+			for (int i = 0; i < n; i++)
+			{
+				auto item = names[i];
+				auto pos = item.find('(');
+				string name = item.substr(0, pos);
+				nameIdentifier[i] = name;
+				identifierToIdx[name] = i;
+				nameFrequency[i] = stoi(item.substr(pos + 1, item.length() - pos - 2));
+			}
+			// 并查集表示名字间的同名关系
+			UF uf = UF(n);
+			for (auto &item : synonyms)
+			{
+				auto pos = item.find(',');
+				auto nameA = item.substr(1, pos - 1), nameB = item.substr(pos + 1, item.length() - pos - 2);
+				uf.union_merge(identifierToIdx[nameA], identifierToIdx[nameB]);
+			}
+			// 合并所有同名的名字和频率
+			vector<vector<string>> groupToNames(n);
+			vector<int> groupToFrequencySum(n, 0);
+			for (int i = 0; i < n; i++)
+			{
+				int group = uf.find(i);
+				groupToNames[group].emplace_back(nameIdentifier[i]);
+				groupToFrequencySum[group] += nameFrequency[i];
+			}
+			vector<string> ret(uf.count);
+			for (int i = 0, k = 0; i < n; i++)
+			{
+				if (groupToFrequencySum[i] != 0)
+				{
+					auto name = *min_element(groupToNames[i].begin(), groupToNames[i].end());
+					ret[k++] = name + '(' + to_string(groupToFrequencySum[i]) + ')';
+				}
+			}
+			return ret;
+		}
+	};
 	```
 
 - [面试题 17.10. 主要元素](https://leetcode-cn.com/problems/find-majority-element-lcci/)
