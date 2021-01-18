@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-18 15:03:34
+ * @LastEditTime: 2021-01-18 15:27:55
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -571,6 +571,42 @@
         }
     };
     ```
+
+- [面试题 05.07. 配对交换](https://leetcode-cn.com/problems/exchange-lcci/)
+    
+    - 对32bits的int型数据，生成32个位置的bit值(0/1)，然后逐个交换奇数位和偶数位
+
+	```cpp
+	int exchangeBits(int num)
+	{
+		int ret = 0, v = num, n = 32;
+		vector<int> bits(n, 0);
+		int i = n - 1;
+		while (v && i >= 0)
+		{
+			bits[i--] = v & 0x1;
+			v >>= 1;
+		}
+		for (i = 0; i < n; i += 2)
+		{
+			swap(bits[i], bits[i + 1]);
+		}
+		for (auto bit : bits)
+		{
+			ret = (ret << 1) + bit;
+		}
+		return ret;
+	}
+	```
+
+    - 数学方法，用按位与的方法，保留偶数位并右移一位，保留奇数位左移一位，求和
+
+	```cpp
+	int exchangeBits(int num)
+	{
+		return ((num & 0xaaaaaaaa) >> 1) + ((num & 0x55555555) << 1);
+	}
+	```
 
 - [面试题 08.03. 魔术索引](https://leetcode-cn.com/problems/magic-index-lcci/)
 
