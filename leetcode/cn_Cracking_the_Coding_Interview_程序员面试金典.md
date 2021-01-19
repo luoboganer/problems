@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-19 17:15:44
+ * @LastEditTime: 2021-01-19 17:45:33
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -836,6 +836,62 @@
 	{
 		return ((num & 0xaaaaaaaa) >> 1) + ((num & 0x55555555) << 1);
 	}
+	```
+
+- [面试题 08.02. 迷路的机器人](https://leetcode-cn.com/problems/robot-in-a-grid-lcci/)
+
+	DFS搜索可行的路径，当出现超时问题时采用剪枝策略，即当遇到不可行位置时将该位置标记为障碍以剪枝对该节点的重复访问
+
+	```cpp
+	class Solution
+	{
+	private:
+		bool dfs(vector<vector<int>> &ret, vector<vector<int>> &obstacleGrid, vector<int> &cur, vector<int> &target)
+		{
+			if (cur[0] < 0 || cur[0] > target[0] || cur[1] < 0 || cur[1] > target[1] || obstacleGrid[cur[0]][cur[1]] == 1)
+			{
+				// 超出各自区域或者该节点为障碍物
+				return false;
+			}
+			// 当前点可以进入，没有障碍物
+			ret.emplace_back(cur);
+			if (cur == target)
+			{
+				return true;
+				// 到达目标位置
+			}
+			// 向右走
+			cur[0]++;
+			if (dfs(ret, obstacleGrid, cur, target))
+			{
+				return true;
+			}
+			cur[0]--;
+			// 向下走
+			cur[1]++;
+			if (dfs(ret, obstacleGrid, cur, target))
+			{
+				return true;
+			}
+			cur[1]--;
+			// 当前位置可以进入，但是从当前位置出发继续走没有可行路径
+			ret.pop_back();					  //回溯
+			obstacleGrid[cur[0]][cur[1]] = 1; // 剪枝：将当前点设为障碍
+			return false;
+		}
+
+	public:
+		vector<vector<int>> pathWithObstacles(vector<vector<int>> &obstacleGrid)
+		{
+			vector<vector<int>> ret;
+			if (obstacleGrid.size() > 0 && obstacleGrid[0].size() > 0)
+			{
+				vector<int> cur{0, 0}, target{(int)obstacleGrid.size() - 1, (int)obstacleGrid[0].size() - 1};
+				dfs(ret, obstacleGrid, cur, target);
+			}
+			return ret;
+		}
+	};
 	```
 
 - [面试题 08.03. 魔术索引](https://leetcode-cn.com/problems/magic-index-lcci/)
