@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-12-25 11:36:30
+ * @LastEditTime: 2021-01-19 11:28:14
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -485,6 +485,50 @@
 			ret = cur;
 		}
 		return ret;
+	}
+    ```
+
+- [剑指 Offer 67. 把字符串转换成整数](https://leetcode-cn.com/problems/ba-zi-fu-chuan-zhuan-huan-cheng-zheng-shu-lcof/)
+
+    与[8. 字符串转换整数 (atoi)](https://leetcode-cn.com/problems/string-to-integer-atoi/)相同，注意超出int型表示范围的边界条件处理
+
+    ```cpp
+	int strToInt(string str)
+	{
+		long long ret = 0, lower = numeric_limits<int>::min(), upper = numeric_limits<int>::max();
+		int i = 0, n = str.length();
+		bool negative = false;
+		// 判断可能存在的空白字符串
+		while (i < n && isspace(str[i]))
+		{
+			i++;
+		}
+		// 判断可能存在的正负号
+		if (i < n && str[i] == '+')
+		{
+			i++;
+		}
+		else if (i < n && str[i] == '-')
+		{
+			i++, negative = true;
+		}
+		// 从第一个非空白、非正负号的字符开始转换
+		while (i < n && isdigit(str[i]))
+		{
+			ret = ret * 10 + static_cast<int>(str[i] - '0');
+			if (negative && (-ret <= lower))
+			{
+				ret = -lower; // 剪枝处理
+				break;
+			}
+			if (ret >= upper)
+			{
+				ret = upper; // 剪枝处理
+                break;
+			}
+			i++;
+		}
+		return static_cast<int>(negative ? -ret : ret);
 	}
     ```
 
