@@ -564,6 +564,154 @@
 	};
 	```
 
+- [1584. 连接所有点的最小费用](https://leetcode-cn.com/problems/min-cost-to-connect-all-points/)
+
+	典型的最小生成树算法，有kruskal和prim，其中kruskal适合稀疏图（边少），prim适合稠密图（点少）
+
+    - kruskal实现 + 并查集，时间复杂度$O(n^2log(n))$，其中$n=points.size()$
+
+	```cpp
+	class Solution
+	{
+	private:
+		struct UF
+		{
+			int count;
+			vector<int> uf;
+			UF(int n)
+			{
+				uf.resize(n);
+				count = n;
+				for (int i = 0; i < n; i++)
+				{
+					uf[i] = i;
+				}
+			}
+			int find(int x)
+			{
+				return x == uf[x] ? x : (uf[x] = find(uf[x]));
+			}
+			bool union_merge(int x, int y)
+			{
+				x = find(x), y = find(y);
+				if (x != y)
+				{
+					uf[x] = y;
+					count--;
+					return true;
+				}
+				return false;
+			}
+		};
+
+	public:
+		int minCostConnectPoints(vector<vector<int>> &points)
+		{
+			/**
+			* 最小生成树算法，Prim（加点法）或者kruskal(加边法)
+			* kruskal，加边法，时间复杂度O(elog(e))，其中e为连接边的数量
+			* 具体算法：
+			* 		1. 目标点集set为初始为空，对每条边按照权重从小到大，
+			* 		2. 如果边的两个点都在点集set中则continue，否则将该边连接的两个点插入set中，
+			* 		3. 直到所有的点均插入set中
+			*/
+			const int n = points.size();
+			const int edges_n = n * (n - 1) / 2;
+			vector<vector<int>> edges(edges_n);
+			for (int i = 0, r = 0; i < n; i++)
+			{
+				for (int j = i + 1; j < n; j++)
+				{
+					// 每条边{weight,from,to}
+					edges[r++] = vector<int>{abs(points[i][0] - points[j][0]) + abs(points[i][1] - points[j][1]), i, j};
+				}
+			}
+			sort(edges.begin(), edges.end());
+			// 用并查集来标注是否所有点都被插入点集set中
+			UF uf = UF(n);
+			int ret = 0;
+			for (auto &e : edges)
+			{
+				if (uf.union_merge(e[1], e[2]))
+				{
+					ret += e[0]; // 边e的两个端点不在同一个连通分量中的时候，插入该边
+					if (uf.count == 1)
+					{
+						break; // 剪枝，当所有的点均连接后不再继续遍历剩余的边
+					}
+				}
+			}
+			return ret;
+		}
+	};
+	```
+
+    - prim实现，维护lowcost数组即可，时间复杂度$O(n^2)$，其中$n=points.size()$
+
+	```cpp
+	int minCostConnectPoints(vector<vector<int>> &points)
+	{
+		/**
+		 * 最小生成树算法，Prim（加点法）或者kruskal(加边法)
+		 * Prim，加点法，时间复杂度O(n^2)，其中n为点的数量
+		 * 具体算法：
+		 * 		1. 首先给定空的集合set表示最小生成树中的点集，维护lowcost数组，
+		 * 			其中lowcost[i]表示未加入最小生成树set中的点i到最小生成树的最小距离
+		 * 		2. 首先选定一个点start加入set中，更新lowcost数组
+		 * 		3. 遍历所有未加入的点，找到当前距离set最近的点(lowcost[i]最小的点i)，加入set
+		 * 		4. 知道所有点均加入set行成最小生成树
+		 */
+		const int n = points.size();
+		// 建立所有点之间的邻接矩阵
+		auto distance = [&](int x, int y) -> int { return abs(points[x][0] - points[y][0]) + abs(points[x][1] - points[y][1]); };
+		vector<vector<int>> graph(n, vector<int>(n));
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				graph[i][j] = distance(i, j);
+			}
+		}
+		// 选择第一个点0
+		vector<int> lowcost(n, numeric_limits<int>::max());
+		vector<int> visited(n, 0);
+		visited[0] = 1;
+		lowcost[0] = 0;
+		for (int i = 1; i < n; i++)
+		{
+			lowcost[i] = graph[i][0];
+		}
+		// 加入其余的n-1个点
+		int totalCost = 0;
+		for (int i = 1; i < n; i++)
+		{
+			// 寻找剩余节点中距离当前最小生成树最近的节点minIdx
+			int minIdx = -1, minCost = numeric_limits<int>::max();
+			for (int j = 0; j < n; j++)
+			{
+				if (visited[j])
+				{
+					continue; // 点j已经加入最小生成树中
+				}
+				if (lowcost[j] < minCost)
+				{
+					minIdx = j;
+					minCost = lowcost[j];
+				}
+			}
+			// 将点minIdx加入最小生成树
+			totalCost += minCost;
+			visited[minIdx] = 1;
+			lowcost[minIdx] = 0;
+			for (int j = 0; j < n; j++)
+			{
+				lowcost[j] = min(lowcost[j], graph[minIdx][j]);
+			}
+		}
+		return totalCost;
+	}
+	```
+
 - [1590. Make Sum Divisible by P](https://leetcode.com/problems/make-sum-divisible-by-p/)
 
 	本题类似于[974. Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k/)，用前缀和于哈希表记录同余的位置解决
