@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-18 17:25:47
+ * @LastEditTime: 2021-01-19 17:15:44
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -716,6 +716,90 @@
 		}
 		return ret;
 	}
+	```
+
+- [面试题 05.04. 下一个数](https://leetcode-cn.com/problems/closed-number-lcci/submissions/)
+
+	使用位操作实现，具体方法见注释，时间复杂度$O(1)$
+
+	```cpp
+	class Solution
+	{
+	private:
+		int next_number(vector<int> &bits, int a, int b)
+		{
+			/**
+			* 1. 从右向左遍历每一个二进制位，找到第一组连续的10位置idx并交换这两个位置的0和1，
+			* 		保证新数字大于num，然后将idx右侧的1全部集中到最低位，从而使在大于numd的数字中最小，
+			* 		得到的二进制表示即为下一个更大的数字
+			* 2. 从右向左遍历每一个二进制位，找到第一组连续的01位置idx并交换这两个位置的0和1，
+			* 		保证新数字小于num，然后将idx右侧的1全部集中到最高位，从而使在小于num的数字中最大，
+			* 		得到的二进制表示即为下一个更小的数字
+			*/
+			const int width = 32;
+			vector<int> copy_bits(bits.begin(), bits.end()); // 不改变化输入原则
+			int idx = width - 1;
+			while (idx > 0 && !(bits[idx] == a && bits[idx - 1] == b))
+			{
+				idx--;
+			}
+			if (idx > 0)
+			{
+				// 交换0/1
+				swap(copy_bits[idx], copy_bits[idx - 1]);
+				// 集中有效bit到最低位或者最高位
+				if (a == 1)
+				{
+					// 求下一个更大数字，此时将idx右侧的1全部集中到最低位
+					int i = width - 1, r = width - 1;
+					while (i > idx)
+					{
+						if (copy_bits[i] == 1)
+						{
+							copy_bits[i] = 0;
+							copy_bits[r--] = 1;
+						}
+						i--;
+					}
+				}
+				else
+				{
+					// 求下一个更小数字，此时将idx右侧的1全部集中到最高位
+					int i = idx + 1, r = idx + 1;
+					while (i < width)
+					{
+						if (copy_bits[i] == 1)
+						{
+							copy_bits[i] = 0;
+							copy_bits[r++] = 1;
+						}
+						i++;
+					}
+				}
+				unsigned int ret = 0;
+				for (auto &bit : copy_bits)
+				{
+					ret = (ret << 1) + bit;
+				}
+				return static_cast<int>(ret);
+			}
+			return -1; // 没有发现正确解
+		}
+
+	public:
+		vector<int> findClosedNumbers(int num)
+		{
+			unsigned int v = num;
+			const int width = 32;
+			vector<int> bits(width, 0);
+			for (int i = width - 1; i >= 0; i--)
+			{
+				bits[i] = v & 0x1;
+				v >>= 1;
+			}
+			return {next_number(bits, 1, 0), next_number(bits, 0, 1)};
+		}
+	};
 	```
 
 - [面试题 05.07. 配对交换](https://leetcode-cn.com/problems/exchange-lcci/)
