@@ -2802,6 +2802,44 @@
     }
     ```
 
+- [82. 删除排序链表中的重复元素 II](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list-ii/)
+
+    使用三个指针同时向后扫描，遇到相同元素全部删除，时间复杂度$O(n)$
+
+    ```cpp
+	ListNode *deleteDuplicates(ListNode *head)
+	{
+		if (head)
+		{
+			ListNode *auxiliary = new ListNode(0);
+			auxiliary->next = head;
+			ListNode *pre = auxiliary, *cur = head, *next = head->next;
+			while (next)
+			{
+				if (cur->val == next->val)
+				{
+					// 发现重复值，删除该值的全部节点
+					int value = cur->val;
+					while (cur && cur->val == value)
+					{
+						cur = cur->next;
+					}
+					pre->next = cur;
+					next = (cur ? cur->next : nullptr);
+				}
+				else
+				{
+					pre = cur;
+					cur = next;
+					next = cur->next;
+				}
+			}
+            head = auxiliary->next;
+		}
+		return head;
+	}
+    ```
+
 - [84. Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/)
     
     - 通过双指针i和j枚举所有可能矩形宽度$j-i+1$，在此宽度下计算可能的矩形面积，时间复杂度$O(n^2)$，leetcode评测机$\color{red}{TLE}$
