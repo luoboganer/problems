@@ -2699,6 +2699,26 @@
     }
     ```
 
+- [80. 删除排序数组中的重复项 II](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array-ii/)
+
+    使用双指针idx和i，其中idx存储重复次数两次以内的数字，i从左向右遍历给定数组nums，如果当前$nums[idx]$之前已经有两个和当前数字$nums[i]$相同的数字，则忽略/删除当前数字，时间复杂度$O(n)$
+
+    ```cpp
+	int removeDuplicates(vector<int> &nums)
+	{
+		int idx = 0, i = 0, n = nums.size();
+		while (i < n)
+		{
+			if (!(idx >= 2 && nums[idx - 2] == nums[i] && nums[idx - 1] == nums[i]))
+			{
+				nums[idx++] = nums[i];
+			}
+			i++;
+		}
+		return idx;
+	}
+    ```
+
 - [81](https://leetcode.com/problems/search-in-rotated-sorted-array-ii/)
 
     在一个升序旋转后的数组中寻找是否存在一个值，与题目[33](https://leetcode.com/problems/search-in-rotated-sorted-array/)不同的是本题中增加条件，数组中可能有duplicated的值，这时仍然用二分搜索，平均时间复杂度$O(log(n))$，但是由于需要在二分查找是判断mid和left、right的值都相同的情况，所以最坏情况下会退化到$O(n)$
