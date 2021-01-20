@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-20 15:23:45
+ * @LastEditTime: 2021-01-20 15:50:16
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -986,7 +986,7 @@
 
 - [面试题 10.10. 数字流的秩](https://leetcode-cn.com/problems/rank-from-stream-lcci/)
 
-	核心是二分查找算法，两个函数实现的时间复杂度均为$O(log(n))$，可以用STL中的lower_bound和upper_bound两个函数实现
+    - 核心是二分查找算法，两个函数实现的时间复杂度均为$O(log(n))$，可以用STL中的lower_bound和upper_bound两个函数实现
 
 	```cpp
 	class StreamRank
@@ -1009,6 +1009,125 @@
 		int getRankOfNumber(int x)
 		{
 			return upper_bound(nums.begin(), nums.end(), x) - nums.begin();
+		}
+	};
+	```
+
+    - 二叉搜索树实现，时间复杂度$O(log(n))$
+
+	```cpp
+	class StreamRank
+	{
+	private:
+		struct BSTNode
+		{
+			int count; //统计左子树及自身的节点数，默认为1
+			int val;
+			BSTNode *left, *right;
+			BSTNode(int _val)
+			{
+				count = 1;
+				val = _val;
+				left = nullptr, right = nullptr;
+			}
+		};
+
+		struct BST
+		{
+			BSTNode *root;
+			BST()
+			{
+				root = nullptr;
+			}
+
+			void insert(int x)
+			{
+				if (root)
+				{
+					BSTNode *cur = root;
+					while (cur)
+					{
+						if (cur->val == x)
+						{
+							cur->count++;
+							break;
+						}
+						else if (cur->val < x)
+						{
+							// 大于当前节点值
+							if (cur->right)
+							{
+								cur = cur->right; // 插入右子树
+							}
+							else
+							{
+								cur->right = new BSTNode(x);
+								cur = nullptr; // 相当于break
+							}
+						}
+						else
+						{
+							// 小于当前节点值
+							cur->count++; // 当前节点的左子树节点数统计值加一
+							if (cur->left)
+							{
+								cur = cur->left;
+							}
+							else
+							{
+								cur->left = new BSTNode(x);
+								cur = nullptr; // 相当于break
+							}
+						}
+					}
+				}
+				else
+				{
+					root = new BSTNode(x);
+				}
+			}
+
+			int find(int x)
+			{
+				BSTNode *cur = root;
+				int ret = 0;
+				while (cur)
+				{
+					if (cur->val == x)
+					{
+						ret += cur->count;
+						cur = nullptr;
+					}
+					else if (cur->val < x)
+					{
+						ret += cur->count;
+						cur = cur->right;
+					}
+					else
+					{
+						cur = cur->left;
+					}
+				}
+				return ret;
+			}
+		};
+
+		BST *bst;
+
+	public:
+		StreamRank()
+		{
+			bst = new BST();
+		}
+
+		void track(int x)
+		{
+			bst->insert(x);
+		}
+
+		int getRankOfNumber(int x)
+		{
+			return bst->find(x);
 		}
 	};
 	```
