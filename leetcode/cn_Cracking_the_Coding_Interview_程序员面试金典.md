@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-19 17:45:33
+ * @LastEditTime: 2021-01-20 15:23:45
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -980,6 +980,35 @@
 		void hanota(vector<int> &A, vector<int> &B, vector<int> &C)
 		{
 			recursive_move(A, A.size(), B, C);
+		}
+	};
+	```
+
+- [面试题 10.10. 数字流的秩](https://leetcode-cn.com/problems/rank-from-stream-lcci/)
+
+	核心是二分查找算法，两个函数实现的时间复杂度均为$O(log(n))$，可以用STL中的lower_bound和upper_bound两个函数实现
+
+	```cpp
+	class StreamRank
+	{
+	private:
+		vector<int> nums;
+
+	public:
+		StreamRank()
+		{
+			nums.clear();
+		}
+
+		void track(int x)
+		{
+			auto position = lower_bound(nums.begin(), nums.end(), x);
+			nums.insert(position, x);
+		}
+
+		int getRankOfNumber(int x)
+		{
+			return upper_bound(nums.begin(), nums.end(), x) - nums.begin();
 		}
 	};
 	```
