@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-19 11:28:14
+ * @LastEditTime: 2021-01-20 16:09:18
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -530,6 +530,54 @@
 		}
 		return static_cast<int>(negative ? -ret : ret);
 	}
+    ```
+
+- [剑指 Offer 68 - II. 二叉树的最近公共祖先](https://leetcode-cn.com/problems/er-cha-shu-de-zui-jin-gong-gong-zu-xian-lcof/)
+
+    深度优先遍历DFS，递归实现，时间复杂度$O(n)$，其中$n$是给定树的节点总数
+
+    ```cpp
+    class Solution
+    {
+        pair<int, TreeNode *> dfs(TreeNode *root, TreeNode *p, TreeNode *q)
+        {
+            if (root)
+            {
+                auto left = dfs(root->left, p, q);
+                if (left.second != nullptr)
+                {
+                    return make_pair(0, left.second);
+                }
+                auto right = dfs(root->right, p, q);
+                if (right.second != nullptr)
+                {
+                    return make_pair(0, right.second);
+                }
+                int count = left.first + right.first;
+                TreeNode *parent = nullptr;
+                if (p->val == root->val)
+                {
+                    count++;
+                }
+                if (q->val == root->val)
+                {
+                    count++;
+                }
+                if (count >= 2)
+                {
+                    parent = root;
+                }
+                return make_pair(count, parent);
+            }
+            return make_pair(0, nullptr);
+        }
+
+    public:
+        TreeNode *lowestCommonAncestor(TreeNode *root, TreeNode *p, TreeNode *q)
+        {
+            return dfs(root, p, q).second;
+        }
+    };
     ```
 
 - [...](123)
