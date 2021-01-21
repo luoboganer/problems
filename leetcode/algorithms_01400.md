@@ -389,6 +389,30 @@
     }
     ```
 
+    - 直接递归处理每个节点
+
+    ```cpp
+	TreeNode *removeLeafNodes(TreeNode *root, int target)
+	{
+		if (root)
+		{
+			if (root->left)
+			{
+				root->left = removeLeafNodes(root->left, target);
+			}
+			if (root->right)
+			{
+				root->right = removeLeafNodes(root->right, target);
+			}
+			if (!root->left && !root->right && root->val == target)
+			{
+				root = nullptr;
+			}
+		}
+		return root;
+	}
+    ```
+
     部分测试数据
 
     ```cpp

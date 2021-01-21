@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-20 15:50:16
+ * @LastEditTime: 2021-01-21 20:58:19
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -571,6 +571,74 @@
         }
     };
     ```
+
+- [面试题 04.08. 首个共同祖先](https://leetcode-cn.com/problems/first-common-ancestor-lcci/)
+
+	递归处理，注意函数返回多个值时的处理，cpp语言实现可以采用pair/tuple等数据结构
+
+	```cpp
+	class Solution
+	{
+		pair<int, TreeNode *> dfs(TreeNode *root, TreeNode *p, TreeNode *q)
+		{
+			if (root)
+			{
+				auto left = dfs(root->left, p, q);
+				if (left.second != nullptr)
+				{
+					return left;
+				}
+				auto right = dfs(root->right, p, q);
+				if (right.second != nullptr)
+				{
+					return right;
+				}
+				int count = left.first + right.first;
+				if (root->val == p->val)
+				{
+					count++;
+				}
+				if (root->val == q->val)
+				{
+					count++;
+				}
+				if (count == 2)
+				{
+					return make_pair(count, root);
+				}
+				return make_pair(count, nullptr);
+			}
+			return make_pair(0, nullptr);
+		}
+
+	public:
+		TreeNode *lowestCommonAncestor(TreeNode *root, TreeNode *p, TreeNode *q)
+		{
+			return dfs(root, p, q).second;
+		}
+	};
+	```
+
+- [面试题 04.10. 检查子树](https://leetcode-cn.com/problems/check-subtree-lcci/)
+
+	递归实现，检查t1和t2完全相同，或者t2是t1的左子树的子树，或者t2是t1的右子树的子树
+
+	```cpp
+	class Solution
+	{
+	private:
+		bool sameTree(TreeNode *a, TreeNode *b)
+		{
+			return (a == nullptr && b == nullptr) || (a != nullptr && b != nullptr && a->val == b->val && sameTree(a->left, b->left) && sameTree(a->right, b->right));
+		}
+
+	public:
+		bool checkSubTree(TreeNode *t1, TreeNode *t2)
+		{
+			return t2 == nullptr || (t1 != nullptr && (sameTree(t1, t2) || checkSubTree(t1->left, t2) || checkSubTree(t1->right, t2)));
+		}
+	};
+	```
 
 - [面试题 04.12. 求和路径](https://leetcode-cn.com/problems/paths-with-sum-lcci/)
 
