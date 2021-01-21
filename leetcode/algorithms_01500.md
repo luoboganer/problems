@@ -816,3 +816,111 @@
 		}
 	};
 	```
+
+- [1489. 找到最小生成树里的关键边和伪关键边](https://leetcode-cn.com/problems/find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/)
+
+    求出最小生成树的权重和miniumCost，然后枚举每一条边e，在去掉边e的情况下检查是否可以得到最小生成树，不能则为关键边；e不是关键边的情况下，首先加入边e检查是否可以形成MST，可以则为伪关键边；关键是最小生成树算法（Minium Spanning Tree）的kruskal（加边法）算法，采用并查集实现，时间复杂度为$O(m^2*\alpha(n))$，其中$m$是边的数量，$n$是点的数量，$\alpha(n)$是并查集一次路径压缩的时间，接近$log(n)$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        struct UF
+        {
+            int count;
+            vector<int> uf;
+            UF(int n)
+            {
+                count = n;
+                uf.resize(n);
+                for (int i = 0; i < n; i++)
+                {
+                    uf[i] = i;
+                }
+            }
+            int find(int x)
+            {
+                return x == uf[x] ? x : (uf[x] = find(uf[x]));
+            }
+            bool union_merge(int x, int y)
+            {
+                x = find(x), y = find(y);
+                if (x != y)
+                {
+                    uf[x] = y;
+                    count--;
+                    return true;
+                }
+                return false;
+            }
+        };
+
+    public:
+        vector<vector<int>> findCriticalAndPseudoCriticalEdges(int n, vector<vector<int>> &edges)
+        {
+            /**
+            * 1. 求出最小生成树的权重和miniumCost
+            * 2. 枚举每一条边e
+            * 		在去掉边e的情况下检查是否可以得到最小生成树，不能则为关键边
+            * 		e不是关键边的情况下，首先加入边e检查是否可以形成MST，可以则为伪关键边
+            */
+
+            // 求出MST的权重和miniumCost，kruskal算法
+            UF uf = UF(n);
+            int miniumCost = 0;
+            int count_edges = edges.size();
+            for (int i = 0; i < count_edges; i++)
+            {
+                edges[i].emplace_back(i); // 根据权重排序前记录每条边的原始下标
+            }
+            sort(edges.begin(), edges.end(), [](const auto &e1, const auto &e2) -> bool { return e1[2] < e2[2]; });
+            for (int i = 0; uf.count > 1 && i < count_edges; i++)
+            {
+                if (uf.union_merge(edges[i][0], edges[i][1]))
+                {
+                    miniumCost += edges[i][2];
+                }
+            }
+            // 枚举每一条边
+            vector<int> key_edge, pseudo_key_edge;
+            for (int i = 0; i < count_edges; i++)
+            {
+                UF key_uf = UF(n);
+                int keyCost = 0;
+                // 判断edges[i]是否为关键边
+                for (int j = 0; key_uf.count > 1 && keyCost < miniumCost && j < count_edges; j++)
+                {
+                    if (j != i && key_uf.union_merge(edges[j][0], edges[j][1]))
+                    {
+                        keyCost += edges[j][2];
+                    }
+                }
+                if (!(key_uf.count == 1 && keyCost == miniumCost))
+                {
+                    // 禁用edges[i]的情况下没有形成MST，则edges[i]是关键边
+                    key_edge.emplace_back(edges[i][3]);
+                }
+                else
+                {
+                    // 不是关键边的情况下，如过首先从边edges[i]开始可以形成MST则是伪关键边
+                    UF pseudo_key_uf = UF(n);
+                    int pseudoKeyCost = 0;
+                    pseudo_key_uf.union_merge(edges[i][0], edges[i][1]);
+                    pseudoKeyCost += edges[i][2];
+                    for (int j = 0; pseudo_key_uf.count > 1 && pseudoKeyCost < miniumCost && j < count_edges; j++)
+                    {
+                        if (pseudo_key_uf.union_merge(edges[j][0], edges[j][1]))
+                        {
+                            pseudoKeyCost += edges[j][2];
+                        }
+                    }
+                    if (pseudo_key_uf.count == 1 && pseudoKeyCost == miniumCost)
+                    {
+                        pseudo_key_edge.emplace_back(edges[i][3]);
+                    }
+                }
+            }
+            return vector<vector<int>>{key_edge, pseudo_key_edge};
+        }
+    };
+    ```
