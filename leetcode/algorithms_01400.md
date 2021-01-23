@@ -285,6 +285,62 @@
     }
     ```
 
+- [1319. 连通网络的操作次数](https://leetcode-cn.com/problems/number-of-operations-to-make-network-connected/)
+
+    并查集实现，时间复杂度$O(n*\alpha(n))$，其中$n=connections.size()$，$\alpha(n)$是并查集路径压缩查找的时间效率
+
+    ```cpp
+    class Solution
+    {
+    private:
+        struct UF
+        {
+            /* data */
+            int count;
+            vector<int> uf;
+            UF(int n)
+            {
+                count = n;
+                uf.resize(n);
+                for (int i = 0; i < n; i++)
+                {
+                    uf[i] = i;
+                }
+            }
+            int find(int x)
+            {
+                return uf[x] == x ? x : (uf[x] = find(uf[x]));
+            }
+            bool union_merge(int x, int y)
+            {
+                x = find(x), y = find(y);
+                if (x != y)
+                {
+                    uf[x] = y;
+                    count--;
+                    return true;
+                }
+                return false;
+            }
+        };
+
+    public:
+        int makeConnected(int n, vector<vector<int>> &connections)
+        {
+            UF uf = UF(n);
+            int redundant = 0;
+            for (auto &e : connections)
+            {
+                if (!uf.union_merge(e[0], e[1]))
+                {
+                    redundant++;
+                }
+            }
+            return redundant >= uf.count - 1 ? uf.count - 1 : -1;
+        }
+    };
+    ```
+
 - [1325. Delete Leaves With a Given Value](https://leetcode.com/problems/delete-leaves-with-a-given-value/)
 
     - 迭代式post-order遍历二叉树，将符合条件的节点值标记为-1，然后递归式遍历所有节点，删除值为-1的节点，时间复杂度$O(n)$，其中n为二叉树所有节点的数量
