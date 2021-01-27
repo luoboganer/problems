@@ -564,6 +564,88 @@
 	};
 	```
 
+	- 直接使用并查集查询连通图所需要的最少边数，时间复杂度$O(n*\alpha(n))$，其中$n=edges.size()$，$\alpha(n)$是使用路径压缩的并查集单次查询时间
+
+	```cpp
+	class Solution
+	{
+	private:
+		struct UF
+		{
+			int count;
+			vector<int> uf;
+			UF(int n)
+			{
+				uf.resize(n);
+				count = n;
+				for (int i = 0; i < n; i++)
+				{
+					uf[i] = i;
+				}
+			}
+			int find(int x)
+			{
+				return x == uf[x] ? x : (uf[x] = find(uf[x]));
+			}
+			bool union_merge(int x, int y)
+			{
+				x = find(x), y = find(y);
+				if (x != y)
+				{
+					uf[x] = y;
+					count--;
+					return true;
+				}
+				return false;
+			}
+		};
+
+	public:
+		int maxNumEdgesToRemove(int n, vector<vector<int>> &edges)
+		{
+			UF uf = UF(n);
+			int ret = edges.size();
+			for (auto &e : edges)
+			{
+				if (e[0] == 3)
+				{
+					if (uf.union_merge(e[1] - 1, e[2] - 1))
+					{
+						ret--; // 这条边被使用
+					}
+					if (uf.count == 1)
+					{
+						return ret; // 此时图已经完全联通
+					}
+				}
+			}
+			UF Alice = uf, Bob = uf;
+			for (auto &e : edges)
+			{
+				if (e[0] == 1)
+				{
+					if (Alice.union_merge(e[1] - 1, e[2] - 1))
+					{
+						ret--; // 这条边被使用
+					}
+				}
+				else if (e[0] == 2)
+				{
+					if (Bob.union_merge(e[1] - 1, e[2] - 1))
+					{
+						ret--; // 这条边被使用
+					}
+				}
+				if (Alice.count == 1 && Bob.count == 1)
+				{
+					return ret;
+				}
+			}
+			return -1; // 无法完成图的完全遍历
+		}
+	};
+	```
+
 - [1584. 连接所有点的最小费用](https://leetcode-cn.com/problems/min-cost-to-connect-all-points/)
 
 	典型的最小生成树算法，有kruskal和prim，其中kruskal适合稀疏图（边少），prim适合稠密图（点少）
