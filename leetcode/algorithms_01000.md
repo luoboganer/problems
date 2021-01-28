@@ -1059,6 +1059,103 @@
 	["doeeqiy","yabhbqe","twckqte"]
 	```
 
+- [959. 由斜杠划分区域](https://leetcode-cn.com/problems/regions-cut-by-slashes/)
+
+    使用并查集实现，最后没有被斜杠或者反斜杠分开的区域视为两个联通的区域合并，最终连通区域的个数即为被划分的区域数量，时间复杂度$O(n^2*\alpha(4*n^2))$，其中$n=grid.size()$，$\alpha(4*n^2)$是路径压缩实现下并查集的单次查找时间
+
+    ```cpp
+    class Solution
+    {
+    private:
+        struct UF
+        {
+            int count;
+            vector<int> uf;
+            UF(int n)
+            {
+                uf.resize(n);
+                count = n;
+                for (int i = 0; i < n; i++)
+                {
+                    uf[i] = i;
+                }
+            }
+            int find(int x)
+            {
+                return x == uf[x] ? x : (uf[x] = find(uf[x]));
+            }
+            bool union_merge(int x, int y)
+            {
+                x = find(x), y = find(y);
+                if (x != y)
+                {
+                    uf[x] = y;
+                    count--;
+                    return true;
+                }
+                return false;
+            }
+        };
+
+    public:
+        int regionsBySlashes(vector<string> &grid)
+        {
+            /**
+            * 假设每个格子内都有斜杠和反斜杠，则可以将格子分割为四个小格子，
+            * 从最上面的一个开始逆时针分别编号为0123
+            * 1. 没有斜杠，则01联通，23联通
+            * 2. 没有反斜杠，则03联通，12联通
+            * 3. 默认情况下左右两个格子的13是联通的，上下两个格子的20是联通的
+            * 使用并查集记录这个联通过程，则最后的连通域个数即是划分的区域数
+            * 
+            */
+            int ret = 0;
+            if (grid.size() > 0 && grid[0].size() > 0)
+            {
+                const int n = grid.size(); // 给定的是n*n的方阵
+                const int size = 4 * n * n;
+                UF uf = UF(size);
+                for (int i = 0; i < n; i++)
+                {
+                    for (int j = 0; j < n; j++)
+                    {
+                        int d0 = 4 * (i * n + j);
+                        int d1 = d0 + 1, d2 = d0 + 2, d3 = d0 + 3;
+                        if (grid[i][j] == '/')
+                        {
+                            uf.union_merge(d0, d3);
+                            uf.union_merge(d1, d2);
+                        }
+                        else if (grid[i][j] == '\\')
+                        {
+                            uf.union_merge(d0, d1);
+                            uf.union_merge(d2, d3);
+                        }
+                        else
+                        {
+                            uf.union_merge(d0, d1);
+                            uf.union_merge(d1, d2);
+                            uf.union_merge(d2, d3);
+                        }
+                        if (i > 0)
+                        {
+                            // 0与上面一格的2相连
+                            uf.union_merge(d0, 4 * ((i - 1) * n + j) + 2);
+                        }
+                        if (j > 0)
+                        {
+                            // 3与左面一格的1相连
+                            uf.union_merge(d3, 4 * (i * n + j - 1) + 1);
+                        }
+                    }
+                }
+                ret = uf.count;
+            }
+            return ret;
+        }
+    };
+    ```
+
 - [961](https://leetcode.com/problems/n-repeated-element-in-size-2n-array/)
     In a array A of size 2N, there are N+1 unique elements, and exactly one of these elements is repeated N time, find and return this element.
     - HashTable 通过hash统计找到个数不是1的那个数，时间复杂度为O(N)，空间复杂度O(1)
