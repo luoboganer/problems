@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2020-11-06 15:36:20
+ * @LastEditTime: 2021-01-29 22:51:55
  * @Software: Visual Studio Code
  * @Description: 1601-1700
 -->
@@ -126,6 +126,197 @@
 		}
 		return ret + original;
 	}
+    ```
+
+- [1631. 最小体力消耗路径](https://leetcode-cn.com/problems/path-with-minimum-effort/)
+
+    - 使用动态规划从左上角到右下角，BFS宽度优先所有更新从当前节点可以到达周边上下左右四个方向每个节点的最小体力花费
+
+    ```cpp
+	int minimumEffortPath(vector<vector<int>> &heights)
+	{
+		int ret = 0;
+		if (heights.size() > 0 && heights[0].size() > 0)
+		{
+			vector<int> directions{1, 0, -1, 0, 1};
+			int rows = heights.size(), cols = heights[0].size();
+			// dp[i][j]表示到达点(i,j)的最小体力消耗
+			vector<vector<int>> dp(rows, vector<int>(cols, numeric_limits<int>::max()));
+			// 从点(0,0)开始
+			dp[0][0] = 0;
+			queue<pair<int, int>> bfs{{make_pair(0, 0)}};
+			while (!bfs.empty())
+			{
+				// 当前可以到达的点
+				int x = bfs.front().first, y = bfs.front().second;
+				bfs.pop();
+				/**
+				 * 更新从当前点出发上下左右可以到达的四个点，对每个点：
+				 * 如果到达该点的最小体力消耗值降低了，则其周边的点也有可能降低，将该点加入bfs队列继续搜索
+				 * 如果到达该点的最小体力消耗值没变，则不再更新该点的dp值
+				*/
+				for (int i = 0; i < 4; i++)
+				{
+					int r = x + directions[i], c = y + directions[i + 1];
+					if (r >= 0 && c >= 0 && r < rows && c < cols)
+					{
+						// v是从(x,y)到周边点(r,c)的体力消耗
+						int v = max(dp[x][y], abs(heights[x][y] - heights[r][c]));
+						if (v < dp[r][c])
+						{
+							// 从(x,y)到(r,c)的体力消耗小于从其他路径到(r,c)的体力消耗
+							dp[r][c] = v;
+							bfs.push(make_pair(r, c));
+						}
+					}
+				}
+			}
+			ret = dp.back().back();
+		}
+		return ret;
+	}
+    ```
+
+    - 将所有格子间的连接看成带权无向图，然后使用并查集从权重最小的边开始合并，直到点$(0,0)$和点$(rows-1,cols-1)$联通，时间复杂度$O(m*n*(log(m,n)+\alpha(m*n)))$，其中$m*n$为单元格总数
+
+    ```cpp
+    class Solution
+    {
+    private:
+        struct UF
+        {
+            int count;
+            vector<int> uf;
+            UF(int n)
+            {
+                uf.resize(n);
+                count = n;
+                for (int i = 0; i < n; i++)
+                {
+                    uf[i] = i;
+                }
+            }
+            int find(int x)
+            {
+                return x == uf[x] ? x : (uf[x] = find(uf[x]));
+            }
+            bool union_merge(int x, int y)
+            {
+                x = find(x), y = find(y);
+                if (x != y)
+                {
+                    uf[x] = y;
+                    count--;
+                    return true;
+                }
+                return false;
+            }
+            bool connected(int x, int y)
+            {
+                return find(x) == find(y);
+            }
+        };
+
+    public:
+        int minimumEffortPath(vector<vector<int>> &heights)
+        {
+            int ret = 0;
+            if (heights.size() > 0 && heights[0].size() > 0)
+            {
+                /**
+                * 1. 将rows*cols个格子看成不同节点，每个格子编号i*cols+j，
+                * 相邻格子之间有一条边，权重为体力消耗值
+                * 2. 然后将所有边按照权重从小到大排序
+                * 3. 将排序后的边逐条加入并查集，直到点(0,0)和(rows-1,cols-1)之间连通
+                */
+                vector<vector<int>> edges;
+                const int rows = heights.size(), cols = heights[0].size();
+                // 将所有边及其权重存入数组
+                for (int i = 1; i < rows; i++)
+                {
+                    edges.push_back(vector<int>{i * cols, (i - 1) * cols, abs(heights[i - 1][0] - heights[i][0])});
+                }
+                for (int j = 1; j < cols; j++)
+                {
+                    edges.push_back(vector<int>{j - 1, j, abs(heights[0][j - 1] - heights[0][j])});
+                }
+                for (int i = 1; i < rows; i++)
+                {
+                    for (int j = 1; j < cols; j++)
+                    {
+                        edges.push_back(vector<int>{i * cols + j, (i - 1) * cols + j, abs(heights[i][j] - heights[i - 1][j])});
+                        edges.push_back(vector<int>{i * cols + j, i * cols + j - 1, abs(heights[i][j] - heights[i][j - 1])});
+                    }
+                }
+                // 对所有边按照权重排序
+                sort(edges.begin(), edges.end(), [](const auto &a, const auto &b) -> bool { return a[2] < b[2]; });
+                // 用并查集表示所有节点间的连通关系
+                UF uf = UF(rows * cols);
+                const int start = 0, end = rows * cols - 1;
+                for (auto &edge : edges)
+                {
+                    // 将权重最小的边依次加入并查集，直到起点start和终点end连通
+                    uf.union_merge(edge[0], edge[1]);
+                    ret = edge[2];
+                    if (uf.connected(start, end))
+                    {
+                        break;
+                    }
+                }
+            }
+            return ret;
+        }
+    };
+    ```
+
+    - 将所有格子间的连接看成带权无向图，然后在二分查找的前提下，解决以$x_0$的花费是否可以解决连通点$(0,0)$和点$(rows-1,cols-1)$的判定性问题，时间复杂度$O(m*n*log(C))$，其中$m*n$是格子总数，$C$是格子的最大高度
+
+    ```cpp
+	int minimumEffortPath(vector<vector<int>> &heights)
+	{
+		int ret = 0;
+		if (heights.size() > 0 && heights[0].size() > 0)
+		{
+			/**
+			 * 给定格子的最大高度为[1,1e6]，因此可以在这个范围内二分查找可以从(0,0)到达(rows-1,cols-1)的最小体力花费
+			*/
+			const int rows = heights.size(), cols = heights[0].size();
+			int left = 0, right = 1e6;
+			while (left <= right)
+			{
+				int mid = left + ((right - left) >> 1);
+				// 判定在消耗体力不超过mid的情况下是否可以满足从(0,0)到达(rows-1,cols-1)
+				vector<int> directions{1, 0, -1, 0, 1};
+				vector<bool> visited(rows * cols);
+				visited[0] = true; // 从(0,0)点开始
+				queue<pair<int, int>> bfs{{make_pair(0, 0)}};
+				while (!bfs.empty())
+				{
+					auto [x, y] = bfs.front();
+					bfs.pop();
+					for (int i = 0; i < 4; i++)
+					{
+						int r = x + directions[i], c = y + directions[i + 1];
+						if (r >= 0 && c >= 0 && r < rows && c < cols && !visited[r * cols + c] && abs(heights[x][y] - heights[r][c]) <= mid)
+						{
+							bfs.emplace(r, c);
+							visited[r * cols + c] = true;
+						}
+					}
+				}
+				visited[rows * cols - 1] ? right = mid - 1, ret = mid : left = mid + 1;
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - some test cases
+
+    ```cpp
+    [[1,2,2],[3,8,2],[5,3,5]]
+    [[1,2,3],[3,8,4],[5,3,5]]
+    [[1,2,1,1,1],[1,2,1,2,1],[1,2,1,2,1],[1,2,1,2,1],[1,1,1,2,1]]
     ```
 
 - [1642. 可以到达的最远建筑](https://leetcode-cn.com/problems/furthest-building-you-can-reach/)
