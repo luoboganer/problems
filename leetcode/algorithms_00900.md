@@ -1031,10 +1031,81 @@
     }
     ```
 
-- [896](https://leetcode.com/problems/monotonic-array/)
+- [896. 单调数列](https://leetcode-cn.com/problems/monotonic-array/)
     判断一个数列是否单调，单调包含单调递增和单调递减，非严格单调还包含相等的情况
+
     - two pass，第一遍扫描判断是否全部 <= ，第二遍扫描判断是否全部 >=，两次结果取或关系
+
+    ```cpp
+    class Solution
+    {
+    private:
+        bool positive(vector<int> &nums)
+        {
+            const int n = nums.size();
+            for (int i = 1; i < n; i++)
+            {
+                if (nums[i - 1] < nums[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        bool negative(vector<int> &nums)
+        {
+            const int n = nums.size();
+            for (int i = 1; i < n; i++)
+            {
+                if (nums[i - 1] > nums[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+    public:
+        bool isMonotonic(vector<int> &A)
+        {
+            return positive(A) || negative(A);
+        }
+    };
+    ```
+
     - one pass，一遍扫描过程中用${-1,0,1}$分别表示<,=,>三种状态，然后在第二次出现非零元素的情况下，如果和第一次非零元素不同，即可返回false
+
+    ```cpp
+    	bool isMonotonic(vector<int> &A)
+	{
+		const int n = A.size();
+		if (n > 1)
+		{
+			int i = 1;
+			while (i < n && A[i] == A[i - 1])
+			{
+				i++;
+			}
+			if (i < n)
+			{
+				int flag = A[i] > A[i - 1] ? 1 : -1;
+				while (++i < n)
+				{
+					if (A[i] == A[i - 1])
+					{
+						continue;
+					}
+					int next_flag = A[i] > A[i - 1] ? 1 : -1;
+					if (flag != next_flag)
+					{
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+    ```
 
 - [897. Increasing Order Search Tree](https://leetcode.com/problems/increasing-order-search-tree/)
 
