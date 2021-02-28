@@ -484,6 +484,81 @@
     1
     ```
 
+- [1337. 矩阵中战斗力最弱的 K 行](https://leetcode-cn.com/problems/the-k-weakest-rows-in-a-matrix/)
+
+    - 二维遍历给定矩阵mat统计每一行的战斗力即可，然后对战斗力排序，时间复杂度$O(m*n+mlog(m))$
+
+    ```cpp
+	vector<int> kWeakestRows(vector<vector<int> > &mat, int k)
+	{
+		vector<int> ret(k, 0);
+		if (mat.size() > 0 && mat[0].size() > 0)
+		{
+			const int m = mat.size(), n = mat[0].size();
+			vector<vector<int> > mat_stronger(m);
+			for (int i = 0; i < m; i++)
+			{
+				int strong = 0, j = 0;
+				while (j < n && mat[i][j] == 1)
+				{
+					j++, strong++;
+				}
+				mat_stronger[i] = {strong, i};
+			}
+			sort(mat_stronger.begin(), mat_stronger.end(), [](const vector<int> &a, const vector<int> &b) -> bool { return a[0] > b[0] || (a[0] == b[0] && a[1] < b[1]); });
+			for (int i = 0; i < k; i++)
+			{
+				ret[i] = mat_stronger[i][1];
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - 遍历给定矩阵mat每一行，通过二分查找最左侧0的位置统计每一行的战斗力即可，然后对战斗力排序，时间复杂度$O(m(log(m)+log(n)))$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        int binary_search(vector<int> &arr, int n)
+        {
+            if (arr[n - 1] == 1)
+            {
+                return n;
+            }
+            int left = 0, right = n - 1;
+            while (left < right)
+            {
+                int mid = left + ((right - left) >> 1);
+                arr[mid] == 0 ? right = mid : left = mid + 1;
+            }
+            return right;
+        }
+
+    public:
+        vector<int> kWeakestRows(vector<vector<int> > &mat, int k)
+        {
+            vector<int> ret(k, 0);
+            if (mat.size() > 0 && mat[0].size() > 0)
+            {
+                const int m = mat.size(), n = mat[0].size();
+                vector<vector<int> > mat_stronger(m);
+                for (int i = 0; i < m; i++)
+                {
+                    mat_stronger[i] = {binary_search(mat[i], n), i};
+                }
+                sort(mat_stronger.begin(), mat_stronger.end(), [](const vector<int> &a, const vector<int> &b) -> bool { return a[0] < b[0] || (a[0] == b[0] && a[1] < b[1]); });
+                for (int i = 0; i < k; i++)
+                {
+                    ret[i] = mat_stronger[i][1];
+                }
+            }
+            return ret;
+        }
+    };
+    ```
+
 - [1346. Check If N and Its Double Exist](https://leetcode.com/problems/check-if-n-and-its-double-exist/)
 
     - 快速排序后从前向后遍历arr[i]和arr[j]是否存在二倍关系，时间复杂度$O(n^2)$
