@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-20 16:09:18
+ * @LastEditTime: 2021-03-01 15:29:56
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -485,6 +485,41 @@
 			ret = cur;
 		}
 		return ret;
+	}
+    ```
+
+- [剑指 Offer 61. 扑克牌中的顺子](https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof/)
+
+    从最小牌面（非大小王，即非0）开始凑够连续五张牌即可，模拟
+
+    ```cpp
+	bool isStraight(vector<int> &nums)
+	{
+		vector<int> count(16, 0); // 统计0-13每张牌的数量
+		int min_value = 14;		  // 牌面最大为13
+		for (auto &v : nums)
+		{
+			if (v != 0)
+			{
+				min_value = min(min_value, v);
+			}
+			count[v]++;
+		}
+		for (int i = 1; i < 5; i++)
+		{
+			if (count[i + min_value] == 0)
+			{
+				if (count[0] > 0)
+				{
+					count[0]--;
+				}
+				else
+				{
+					return false; // 缺少牌面值i+min_value
+				}
+			}
+		}
+		return true;
 	}
     ```
 
