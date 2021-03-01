@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-21 20:58:19
+ * @LastEditTime: 2021-03-01 15:14:41
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -745,6 +745,34 @@
 			mask += (1 << r);
 		}
 		return static_cast<int>((m << i)) + static_cast<int>(n & (~mask));
+	}
+	```
+
+- [面试题 05.02. 二进制数转字符串](https://leetcode-cn.com/problems/bianry-number-to-string-lcci/)
+
+	整数的二进制$a_na_{n-1}...a_2a_1a_0$表示$a_n*2^n+a_{n-1}*2^{n-1}+...+a_2*2^2+a_1*2^1+a_0*2^0$，则小数的二进制$0.a_1a_2...a_{n-1}a_n$表示$a_1*0.5^1+a_2*0.5^2+a_3*0.5^3+...+a_{n-1}*0.5^{n-1}+a_n*0.5^n$
+
+	```cpp
+	string printBin(double num)
+	{
+		string ret = "0.";
+		double base = 0.5;
+		while (num)
+		{
+			int bit = num / base;
+			ret.push_back(static_cast<char>(bit + '0'));
+			if (ret.length() > 32)
+			{
+				ret = "ERROR";
+				break; // 超出32bit位宽限制
+			}
+			if (bit == 1)
+			{
+				num -= base;
+			}
+			base /= 2;
+		}
+		return ret;
 	}
 	```
 
