@@ -1,5 +1,40 @@
 # 301-400
 
+- [304. 二维区域和检索 - 矩阵不可变](https://leetcode-cn.com/problems/range-sum-query-2d-immutable/)
+
+    在给定矩阵不可变的情况下，用二维前缀和的差来求区域和
+
+    ```cpp
+    class NumMatrix
+    {
+    private:
+        vector<vector<int> > prefix_sum;
+
+    public:
+        NumMatrix(vector<vector<int> > &matrix)
+        {
+            if (matrix.size() > 0 && matrix[0].size() > 0)
+            {
+                const int rows = matrix.size(), cols = matrix[0].size();
+                vector<vector<int> > prefix_sum(rows + 1, vector<int>(cols + 1, 0));
+                for (int i = 0; i < rows; i++)
+                {
+                    for (int j = 0; j < cols; j++)
+                    {
+                        prefix_sum[i + 1][j + 1] = prefix_sum[i + 1][j] + prefix_sum[i][j + 1] + matrix[i][j] - prefix_sum[i][j];
+                    }
+                }
+                this->prefix_sum = prefix_sum;
+            }
+        }
+
+        int sumRegion(int row1, int col1, int row2, int col2)
+        {
+            return prefix_sum[row2 + 1][col2 + 1] - prefix_sum[row1][col2 + 1] - prefix_sum[row2 + 1][col1] + prefix_sum[row1][col1];
+        }
+    };
+    ```
+
 - [309. Best Time to Buy and Sell Stock with Cooldown](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/)
 
     - 动态规划，时间复杂度$O(n)$，空间复杂度$O(1)$
