@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-02 14:15:45
+ * @LastEditTime: 2021-03-02 14:16:32
  * @Software: Visual Studio Code
  * @Description: 1701-1800
 -->
@@ -176,9 +176,9 @@
 	}
 	```
 
-- [](https://leetcode-cn.com/problems/minimum-number-of-operations-to-move-all-balls-to-each-box/)
+- [1769. 移动所有球到每个盒子所需的最小操作数](https://leetcode-cn.com/problems/minimum-number-of-operations-to-move-all-balls-to-each-box/)
 
-	用数组前缀和的方法分别计算将第i个位置左侧、右侧的小球全部移动到该位置的花费，左右求和即可，时间复杂度$O(n)$
+	用数组前缀和的方法分别计算将$ith$位置左侧、右侧的小球全部移动到该位置的花费，左右求和即可，时间复杂度$O(n)$
 
 	```cpp
 	vector<int> minOperations(string boxes)

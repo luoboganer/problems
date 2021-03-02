@@ -449,7 +449,7 @@
         }
         ```
 
-- [338](https://leetcode.com/problems/counting-bits/)
+- [338. 比特位计数](https://leetcode.com/problems/counting-bits/)
 
     注意分组统计的办法，类似和二进制表示中1的数量有关的问题和2的倍数有关系，主要有两条规则：
     - 一个偶数乘以2之后其二进制表示中1的个数不变
@@ -478,6 +478,20 @@
 		{
 			distance = (i == (distance << 1)) ? (distance << 1) : distance;
 			ret[i] = ret[i - distance] + 1;
+		}
+		return ret;
+	}
+    ```
+
+    - 位操作实现，$v\&(v-1)$表示比v小且二进制表示中1的数量比v少一个的数
+
+    ```cpp
+	vector<int> countBits(int num)
+	{
+		vector<int> ret(num + 1, 0);
+		for (int i = 1; i <= num; i++)
+		{
+			ret[i] = ret[i & (i - 1)] + 1;
 		}
 		return ret;
 	}
