@@ -643,6 +643,52 @@
 	};
 	```
 
+- [747. 至少是其他数字两倍的最大数](https://leetcode-cn.com/problems/largest-number-at-least-twice-of-others/)
+
+    寻找数组中相异的两个最大值和次大值，判断倍数关系即可，时间复杂度$O(n)$，注意数组中数字全部相同、只有一个数字等特殊情况的处理
+
+    ```cpp
+	int dominantIndex(vector<int> &nums)
+	{
+		int ret = -1;
+		const int n = nums.size();
+		if (n > 0)
+		{
+			int first = 0, second = 0;
+			while (second < n && nums[first] == nums[second])
+			{
+				second++;
+			}
+			if (second == n)
+			{
+				return 0; // 数组中所有数字全部相同
+			}
+			if (nums[second] > nums[first])
+			{
+				swap(first, second);
+			}
+			for (int i = second + 1; i < n; i++)
+			{
+				if (nums[i] > nums[first])
+				{
+					second = first;
+					first = i;
+				}
+				else if (nums[i] < nums[first] && nums[i] > nums[second])
+				{
+					second = i;
+				}
+			}
+			if (nums[first] < 2 * nums[second])
+			{
+				return -1; // 最大值低于次大值的两倍
+			}
+			ret = first;
+		}
+		return ret;
+	}
+    ```
+
 - [748. Shortest Completing Word](https://leetcode.com/problems/shortest-completing-word/)
 
     - letter count，时间复杂度$O(\sum{word.length()})$，LeetCode时间效率$\color{red}{16ms,91.56\%}$
