@@ -283,6 +283,29 @@
     }
     ```
 
+- [1423. 可获得的最大点数](https://leetcode-cn.com/problems/maximum-points-you-can-obtain-from-cards/)
+
+    按照题目限定规则所取到的k个数必然在首尾相接且长度为k的区间内，大小为k的滑动窗口实现，时间复杂度$O(k)$
+
+    ```cpp
+    int maxScore(vector<int> &cardPoints, int k)
+	{
+		int base = 0, n = cardPoints.size();
+		for (int i = 0; i < k; i++)
+		{
+			base += cardPoints[i]; // 取最前面的k个card
+		}
+		int ret = base;
+		// 每次前面少取一张，则尾巴多取一张
+		for (int offset = k - 1; offset >= 0; offset--)
+		{
+			base += cardPoints[n - k + offset] - cardPoints[offset];
+			ret = max(ret, base);
+		}
+		return ret;
+	}
+    ```
+
 - [1424. Diagonal Traverse II](https://leetcode.com/problems/diagonal-traverse-ii/)
 
     - 从左下角到右上角遍历所有可能的坐标，时间复杂度$O(rows*cols)$，提交结果答案正确但是$\color{red}{TLE}$
