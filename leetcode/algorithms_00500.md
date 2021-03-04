@@ -872,6 +872,166 @@
     };
     ```
 
+- [480. 滑动窗口中位数](https://leetcode-cn.com/problems/sliding-window-median/)
+
+    使用[295. 数据流的中位数](https://leetcode-cn.com/problems/find-median-from-data-stream/)中双优先队列的方式维护滑动窗口向右过程中每次增加一个数的操作，同时采用**延迟删除**策略维护滑动窗口向右过程中每次删除一个数的操作，时间复杂度$O(nlog(n))$
+
+    ```cpp
+    class MedianFinder
+    {
+    private:
+        /**
+        * 使用left和right两个优先队列，左侧left堆顶为最大值，右侧right为最小值
+        * 在不断增加数据（数据流）的过程中位置left.size()==right.size() // right.size()+1
+        * 则有:
+        * 		left.size()==right.size(),中位数为 (left.top()+right.top())/2
+        * 		left.size()==right.size()+1,中位数为 left.top()
+        * 
+        * ****************************************************************
+        * 延迟删除策略，当一个数需要被删除的时候，首先通过hashmap记录键值对(num,freq)表示num需要被删除的次数
+        * 当num实际上走到优先队列的堆顶时再实际删除这个值
+        */
+        priority_queue<int, vector<int>, less<int>> left;	  // 左侧大顶堆
+        priority_queue<int, vector<int>, greater<int>> right; // 右侧小顶堆
+        int count_left, count_right;						  // 记录左右两个部分数量，扣除需要被延迟删除的数
+        unordered_map<int, int> delayed_deleted;			  // 记录每个数需要被删除的次数(延迟删除策略)
+
+        template <typename T>
+        void pop_queue(T &qe)
+        {
+            // 当堆顶元素是需要延迟删除的元素时全部删除，并更新记录延迟删除的hashmap
+            while (!qe.empty())
+            {
+                int v = qe.top();
+                auto it = delayed_deleted.find(v);
+                if (it != delayed_deleted.end())
+                {
+                    --delayed_deleted[v];
+                    if (!delayed_deleted[v])
+                    {
+                        delayed_deleted.erase(v);
+                    }
+                    qe.pop();
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        void make_balance()
+        {
+            // 维护左右两半部分的有效元素数量相同
+            while (count_left > count_right + 1)
+            {
+                right.push(left.top());
+                left.pop();
+                count_left--, count_right++;
+                pop_queue(left); // left堆顶元素被移除以后堆顶可能出现需要延迟删除的数据
+            }
+            while (count_right > count_left)
+            {
+                left.push(right.top());
+                right.pop();
+                count_right--, count_left++;
+                pop_queue(right);
+            }
+        }
+
+    public:
+        /** initialize your data structure here. */
+        MedianFinder()
+        {
+            // 初始化数据时维持left/right两个优先队列均为空
+            while (!left.empty())
+            {
+                left.pop();
+            }
+            while (!right.empty())
+            {
+                right.pop();
+            }
+            count_left = 0, count_right = 0;
+            delayed_deleted.clear();
+        }
+
+        /**
+         * 插入和删除操作之后都要保证左右两半部分的平衡，即：
+         * left.size()==right.size() 或者 right.size()+1
+        */
+
+        void addNum(int num)
+        {
+            (left.empty() || num <= left.top()) ? (left.push(num), count_left++) : (right.push(num), count_right++);
+            make_balance();
+        }
+
+        void erase(int num)
+        {
+            // 记录一个数需要被删除的次数，以备延迟删除
+            delayed_deleted[num]++;
+            // 此时count_left>=1必然成立
+            if (num <= left.top())
+            {
+                --count_left; // 从左半部分删除这个数
+                if (num == left.top())
+                {
+                    pop_queue(left);
+                }
+            }
+            else
+            {
+                --count_right; // 从右半部分删除这个数
+                if (num == right.top())
+                {
+                    pop_queue(right);
+                }
+            }
+            make_balance();
+        }
+
+        double findMedian()
+        {
+            double ret;
+            if (count_left == count_right && count_left > 0)
+            {
+                // 防止int加法溢出
+                ret = (static_cast<long long>(left.top()) + right.top()) / 2.0;
+            }
+            else
+            {
+                ret = left.top();
+            }
+            return ret;
+        }
+    };
+
+    class Solution
+    {
+    private:
+        MedianFinder dualHeap = MedianFinder();
+
+    public:
+        vector<double> medianSlidingWindow(vector<int> &nums, int k)
+        {
+            const int n = nums.size();
+            for (int i = 0; i < k - 1; i++)
+            {
+                dualHeap.addNum(nums[i]);
+            }
+            vector<double> ret(n - k + 1);
+            for (int r = 0, i = k - 1; i < n; r++, i++)
+            {
+                dualHeap.addNum(nums[i]);
+                ret[r] = dualHeap.findMedian();
+                dualHeap.erase(nums[i - k + 1]);
+            }
+            return ret;
+        }
+    };
+    ```
+
 - [496. 下一个更大元素 I](https://leetcode-cn.com/problems/next-greater-element-i/)
 
     - 暴力遍历两个数组，时间复杂度$O(m*n)$，其中m/n分别为两个数组的长度

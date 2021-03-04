@@ -2185,6 +2185,84 @@
     // codec.deserialize(codec.serialize(root));
     ```
 
+- [295. 数据流的中位数](https://leetcode-cn.com/problems/find-median-from-data-stream/)
+
+    理论上求一组数的中位数，将这组数均分为左右两个部分，保证左边的值均小于等于右边的值，则：
+    - 左右部分的数量相同，则左边的最大值和右边的最小值的平均值即为中位数
+    - 左边比右边多一个数，则左边的最大值即为中位数
+    用左右两个优先队列分别维护左边的最大值和右边的最小值即可，时间复杂度$O(log(n))$
+
+    ```cpp
+    class MedianFinder
+    {
+    private:
+        /**
+        * 使用left和right两个优先队列，左侧left堆顶为最大值，右侧right为最小值
+        * 在不断增加数据（数据流）的过程中位置left.size()==right.size() // right.size()+1
+        * 则有:
+        * 		left.size()==right.size(),中位数为 (left.top()+right.top())/2
+        * 		left.size()==right.size()+1,中位数为 left.top()
+        */
+        priority_queue<int, vector<int>, less<int>> left;	  // 左侧大顶堆
+        priority_queue<int, vector<int>, greater<int>> right; // 右侧小顶堆
+        int count_left, count_right;
+
+    public:
+        /** initialize your data structure here. */
+        MedianFinder()
+        {
+            // 初始化数据时维持left/right两个优先队列均为空
+            while (!left.empty())
+            {
+                left.pop();
+            }
+            while (!right.empty())
+            {
+                right.pop();
+            }
+            count_left = 0, count_right = 0;
+        }
+
+        void addNum(int num)
+        {
+            if (count_left == count_right)
+            {
+                // 插入左半部分
+                count_left++;
+                // 先将num插入右半部分，然后将右半部分中最小的一个数插入left
+                // 这样可以保证left中堆顶最大、right中堆顶最小、且left中的最大数小于right中的最小数
+                right.push(num);
+                left.push(right.top());
+                right.pop();
+            }
+            else
+            {
+                // 插入右半部分
+                count_right++;
+                // 先将num插入左半部分，然后将左半部分中最大的一个数插入right
+                // 这样可以保证left中堆顶最大、right中堆顶最小、且left中的最大数小于right中的最小数
+                left.push(num);
+                right.push(left.top());
+                left.pop();
+            }
+        }
+
+        double findMedian()
+        {
+            double ret;
+            if (count_left == count_right && count_left > 0)
+            {
+                ret = (left.top() + right.top()) / 2.0;
+            }
+            else
+            {
+                ret = left.top();
+            }
+            return ret;
+        }
+    };
+    ```
+
 - [300](https://leetcode.com/problems/longest-increasing-subsequence/)
 
     求给定无序顺序的最长升序子序列

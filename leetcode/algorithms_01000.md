@@ -1449,6 +1449,35 @@
         {\text {Area}=\frac{1}{2} |\left(x_{b}-x_{a}\right)\left(y_{c}-y_{a}\right)-\left(x_{c}-x_{a}, y_{b}-y_{a}\right) ) |} \\
         {\text {Area}=\frac{1}{2}\left|x_{a} y_{b}+x_{b} y_{c}+x_{c} y_{a}-x_{a} y_{c}-x_{c} y_{b}-x_{b} y_{a}\right|}\end{array}$$
 
+- [978. 最长湍流子数组](https://leetcode-cn.com/problems/longest-turbulent-subarray/)
+
+    双指针/滑动窗口实现，时间复杂度$O(n)$，注意数组长度小于3时的特殊情况处理
+
+    ```cpp
+	int maxTurbulenceSize(vector<int> &A)
+	{
+		const int n = A.size();
+		int ret = 0;
+		if (n == 1)
+		{
+			ret = 1;
+		}
+		else if (n >= 2)
+		{
+			ret = A[0] == A[1] ? 1 : 2;
+		}
+		for (int left = 0, right = 2; right < n; right++)
+		{
+			if (!((A[right] > A[right - 1] && A[right - 2] > A[right - 1]) || (A[right] < A[right - 1] && A[right - 2] < A[right - 1])))
+			{
+				left = A[right - 1] == A[right] ? right : right - 1;
+			}
+			ret = max(ret, right - left + 1);
+		}
+		return ret;
+	}
+    ```
+
 - [979. Distribute Coins in Binary Tree](https://leetcode.com/problems/distribute-coins-in-binary-tree/)
 
     DFS遍历每个节点，时间复杂度$O(n)$，其中n为给定树root中的节点数

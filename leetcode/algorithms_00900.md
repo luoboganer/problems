@@ -426,6 +426,197 @@
 	}
 	```
 
+- [839. 相似字符串组](https://leetcode-cn.com/problems/similar-string-groups/)
+
+    通过并查集来表示字符串之间的相似关系，即将所有字符串看做不同节点，相似的字符串之间有一条边，构成一个无向图，该无向图中连通分量的数量即为相似字符串组的数量，时间复杂度$O(n^2*\alpha(n)*m)$，其中$n=strs.size()$表示字符串数量（节点数）、$m=max_{0 \le i < n}(strs_i)$表示字符串的最大长度、$\alpha(n)$则表示路径压缩实现下$n$个节点的并查集单次查询时间
+
+    - 并查集实现，LeetCode运行时间$\%73$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        struct UF
+        {
+            // 定义并查集类
+            int count;
+            vector<int> uf;
+
+            UF(int n)
+            {
+                count = n;
+                uf.resize(n);
+                for (int i = 0; i < n; i++)
+                {
+                    uf[i] = i;
+                }
+            }
+
+            int find(int x)
+            {
+                return x == uf[x] ? x : (uf[x] = find(uf[x]));
+            }
+
+            bool union_merge(int x, int y)
+            {
+                x = find(x), y = find(y);
+                if (x != y)
+                {
+                    uf[x] = y;
+                    count--;
+                    return true;
+                }
+                return false;
+            }
+        };
+
+        bool similar(string &s, string &t)
+        {
+            // 检查两个字符串是否相似，时间复杂度O(n)，n=s.length()
+            const int m = s.length(), n = t.length();
+            if (m == n)
+            {
+                int first, second, count = 0;
+                for (int i = 0; i < m; i++)
+                {
+                    if (s[i] != t[i])
+                    {
+                        count++;
+                        if (count == 1)
+                        {
+                            first = i;
+                        }
+                        else if (count == 2)
+                        {
+                            second = i;
+                        }
+                        else
+                        {
+                            return false; // s和t中不相同的字符数量超过两个则不可能相似
+                        }
+                    }
+                }
+                if (count == 0 || (count == 2 && s[first] == t[second] && s[second] == t[first]))
+                {
+                    return true;
+                }
+            }
+            return false; // s和t的长度不同时不可能相似
+        }
+
+    public:
+        int numSimilarGroups(vector<string> &strs)
+        {
+            // 为方便并查集记录，用下标在并查集中表示每个字符串
+            unordered_map<string, int> strToIdx;
+            const int n = strs.size();
+            for (int i = 0; i < n; i++)
+            {
+                strToIdx[strs[i]] = i;
+            }
+            UF uf = UF(n);
+            // 对任意两个字符串检查是否相似，相似则在并查集中联通
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = i + 1; j < n; j++)
+                {
+                    if (similar(strs[i], strs[j]))
+                    {
+                        uf.union_merge(i, j);
+                    }
+                }
+            }
+            // 并查集uf中连通分量的个数即为所求相似字符串组的数量
+            return uf.count;
+        }
+    };
+    ```
+
+    - 常数时间优化，先检查两个节点之间的连通性，确定不连通时再检查其是否相似（相似则连通，不相似则不作处理），LeetCode运行时间$\%90$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        struct UF
+        {
+            // 定义并查集类
+            int count;
+            vector<int> uf;
+
+            UF(int n)
+            {
+                count = n;
+                uf.resize(n);
+                for (int i = 0; i < n; i++)
+                {
+                    uf[i] = i;
+                }
+            }
+
+            int find(int x)
+            {
+                return x == uf[x] ? x : (uf[x] = find(uf[x]));
+            }
+
+            void union_merge(int x, int y)
+            {
+                uf[x] = y;
+                count--;
+            }
+        };
+
+        bool similar(string &s, string &t, int length)
+        {
+            // 给定数据保证全部字符串长度相同且均为字母异位词
+            for (int i = 0, count = 0; i < length; i++)
+            {
+                if (s[i] != t[i])
+                {
+                    count++;
+                    if (count > 2)
+                    {
+                        return false; // s和t中不相同的字符数量超过两个则不可能相似
+                    }
+                }
+            }
+            return true;
+        }
+
+    public:
+        int numSimilarGroups(vector<string> &strs)
+        {
+            int ret = 0, n = strs.size();
+            if (n > 0)
+            {
+                int length = strs[0].length();
+                // 为方便并查集记录，用下标在并查集中表示每个字符串
+                unordered_map<string, int> strToIdx;
+                for (int i = 0; i < n; i++)
+                {
+                    strToIdx[strs[i]] = i;
+                }
+                UF uf = UF(n);
+                // 对任意两个字符串检查是否相似，相似则在并查集中联通
+                for (int i = 0; i < n; i++)
+                {
+                    for (int j = i + 1; j < n; j++)
+                    {
+                        int x = uf.find(i), y = uf.find(j);
+                        if (x != y && similar(strs[i], strs[j], length))
+                        {
+                            uf.union_merge(x, y);
+                        }
+                    }
+                }
+                // 并查集uf中连通分量的个数即为所求相似字符串组的数量
+                ret = uf.count;
+            }
+            return ret;
+        }
+    };
+    ```
+
 - [849](https://leetcode.com/problems/maximize-distance-to-closest-person/)
 
     给定一排座位，0表示空，1表示有人，新来一个人要安排到某个空的座位，使得新人到原来座位上的人(1)的距离尽可能的远，输出这最远距离。整体思路在于某一点到1的最远距离为该点到左边1的距离和到右边1的距离的较小值。
@@ -895,6 +1086,70 @@
 		return true;
 	}
 	```
+
+- [888. 公平的糖果棒交换](https://leetcode-cn.com/problems/fair-candy-swap/)
+
+    首先求出两个各自拥有的糖果总量sum_A和sum_B，求出差值的一半$\delta = (sum_A - sum_B)$即为需要从A和B中交换两个数的差值，因此在A和B中寻找两个数a和b使其差值为$\delta = a - b$即可
+
+    - hashmap实现，时间复杂度$O(n)$
+
+    ```cpp
+	vector<int> fairCandySwap(vector<int> &A, vector<int> &B)
+	{
+		// 注意这里求累加和的写法
+		int sum_A = accumulate(A.begin(), A.end(), 0);
+		int sum_B = accumulate(B.begin(), B.end(), 0);
+		int diff = (sum_A - sum_B) / 2;
+		unordered_set<int> set_A(A.begin(), A.end());
+		for (auto &y : B)
+		{
+			auto it = set_A.find(y + diff);
+			if (it != set_A.end())
+			{
+				return {y + diff, y};
+			}
+		}
+		return {-1, -1}; //题目保证有答案，因此不会执行到这里
+	}
+    ```
+
+    - 数组排序与双指针实现，时间复杂度$O(nlog(n))$，时间消耗主要体现在数组排序上
+
+    ```cpp
+	vector<int> fairCandySwap(vector<int> &A, vector<int> &B)
+	{
+		int sum_A = 0, sum_B = 0;
+		for (auto &a : A)
+		{
+			sum_A += a;
+		}
+		for (auto &b : B)
+		{
+			sum_B += b;
+		}
+		int diff = (sum_A - sum_B) / 2;
+		int i = 0, j = 0, m = A.size(), n = B.size();
+		sort(A.begin(), A.end());
+		sort(B.begin(), B.end());
+		while (i < m && j < n)
+		{
+			int temp = A[i] - B[j];
+			if (temp < diff)
+			{
+				i++;
+			}
+			else if (temp > diff)
+			{
+				j++;
+			}
+			else
+			{
+				return {A[i], B[j]};
+			}
+		}
+		return {-1, -1}; //题目保证有答案，因此不会执行到这里
+	}
+    ```
 
 - [890. Find and Replace Pattern](https://leetcode.com/problems/find-and-replace-pattern/)
 

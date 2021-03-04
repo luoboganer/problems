@@ -333,6 +333,31 @@
     }
     ```
 
+- [643. 子数组最大平均数 I](https://leetcode-cn.com/problems/maximum-average-subarray-i/)
+
+    简单的滑动窗口问题(slide window)，时间复杂度$O(n)$
+
+    **注意初始化的ret值不能为0而是第一个窗口内数组的平均数，因为存在窗口内子数组的平均数为负数的情况**
+
+    ```cpp
+	double findMaxAverage(vector<int> &nums, int k)
+	{
+		double ret = 0, sumSubNums = 0;
+		const int n = nums.size();
+		for (int i = 0; i < k; i++)
+		{
+			sumSubNums += nums[i];
+		}
+		ret = sumSubNums / k; //第一个窗口内的平均数
+		for (int i = k; i < n; i++)
+		{
+			sumSubNums += nums[i] - nums[i - k];
+			ret = max(ret, sumSubNums / k);
+		}
+		return ret;
+	}
+    ```
+
 - [648. Replace Words](https://leetcode.com/problems/replace-words/)
 
     给定一串单词前缀root，构建字典树，然后对给定句子中的每个单词，查询字典树，如果有前缀，则用前缀代替该单词，然后输出该句子
@@ -522,7 +547,7 @@
 
 - [665. Non-decreasing Array](https://leetcode.com/problems/non-decreasing-array/)
 
-    判断在最多修改一个数字的条件下是否给定数组可以成为非严格升序的，时间复杂度$O(n)$，注意在第一次遇到$nums[i]>nums[i+1]$的情况下，判断是否可以通过修改$nums[i]$来保证数组非严格升序，如果可以则按照符合条件的修改办法更新数组，第二次遇到$nums[i]>nums[i+1]$则直接返回$False$
+    - 朴素方法，判断在最多修改一个数字的条件下是否给定数组可以成为非严格升序的，时间复杂度$O(n)$，注意在第一次遇到$nums[i]>nums[i+1]$的情况下，判断是否可以通过修改$nums[i]$来保证数组非严格升序，如果可以则按照符合条件的修改办法更新数组，第二次遇到$nums[i]>nums[i+1]$则直接返回$False$
 
     ```cpp
     bool checkPossibility(vector<int> &nums)
@@ -573,7 +598,70 @@
     }
     ```
 
-    几个典型测试数据
+    - 在修改的过程中只用一次遍历，实现$x>y$的情况下将x改小或者y改大，在这两种情况下只要有一种情形可以构造非递减序列即可返回true，时间复杂度$O(n)$
+
+    ```cpp
+    bool checkPossibility(vector<int> &nums)
+	{
+		const int n = nums.size();
+		int cnt = 0;
+		for (int i = 0; i < n - 1; i++)
+		{
+			int x = nums[i], y = nums[i + 1];
+			if (x > y)
+			{
+				cnt++;
+				if (cnt > 1)
+				{
+					return false; // 遇到nums[i]>nums[i]递减的情况两次及以上
+				}
+				if (i > 0 && y < nums[i - 1])
+				{
+					nums[i + 1] = x; // 修改第二个数，使用给定的一次修改机会
+				}
+			}
+		}
+		return true;
+	}
+    ```
+
+    - 左右两个指针的滑动窗口实现，时间复杂度$O(n)$
+
+    ```cpp
+	bool checkPossibility(vector<int> &nums)
+	{
+		const int n = nums.size();
+		int left = 0, right = n - 1;
+		while (left < n - 1 && nums[left] <= nums[left + 1])
+		{
+			left++; // 过滤左侧非递减区间
+		}
+		if (left == n - 1)
+		{
+			return true; // 已经是连续非递减区间
+		}
+		while (right > 0 && nums[right - 1] <= nums[right])
+		{
+			right--; // 过滤右侧非递减区间
+		}
+		if (right - left >= 2)
+		{
+			return false; // 存在两个以上的递减区间，无法通过一次修改变成非递减区间
+		}
+		if (left == 0 || right == n - 1)
+		{
+			return true; // 唯一递减区间在左端点或者右端点，一定可以修改成非递减区间
+		}
+		if (nums[right + 1] >= nums[left] || nums[left - 1] <= nums[right])
+		{
+			// 中间存在一个递减区间且可以修改为非递减区间
+			return true;
+		}
+		return false; // 理论上不会执行到这里
+	}
+    ```
+
+    - 几个典型测试数据
 
     ```cpp
     [4,2,3]

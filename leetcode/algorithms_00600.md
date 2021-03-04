@@ -739,6 +739,14 @@
     - 基本想法是quick sort，时间复杂度$O(nlog(n))$
     - 本题给出了数据范围，可以bucket sort，时间复杂度$O(n)$，但是需要$O(N)$的额外空间
 
+- [567. 字符串的排列](https://leetcode-cn.com/problems/permutation-in-string/)
+
+    以s2的长度为窗口大小在s1上滑动，在每个窗口内检查是否为s2的排列，时间复杂度$O(mn)$，其中$m=s1.length(),n=s2.length()$
+
+    ```cpp
+
+    ```
+
 - [572. Subtree of Another Tree](https://leetcode.com/problems/subtree-of-another-tree/)
 
     判断二叉树t是否是二叉树s的子树，递归地，s和t完全相同或者t是s->left的子树或者t是s->right的子树

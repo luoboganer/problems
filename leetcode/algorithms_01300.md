@@ -255,6 +255,39 @@
     };
     ```
 
+- [1208. 尽可能使字符串相等](https://leetcode-cn.com/problems/get-equal-substrings-within-budget/)
+
+    使用双指针实现滑动窗口，时间复杂度$O(n)$
+
+    ```cpp
+	int equalSubstring(string s, string t, int maxCost)
+	{
+		// 给定s与t长度相同
+		int ret = 0, left = 0, right = 0, cost = 0, n = s.length();
+		// 预处理s和t相同位置的字符之间的替换开销
+		vector<int> costs(n);
+		for (int i = 0; i < n; i++)
+		{
+			costs[i] = abs(s[i] - t[i]);
+		}
+		while (right < n)
+		{
+			cost += costs[right++]; // 右指针右移
+			if (cost <= maxCost)
+			{
+				// 当前s[left,rigth)在最大maxCost花费下可以完全相同
+				ret = max(ret, right - left);
+			}
+			while (left <= right && cost > maxCost)
+			{
+				// 左指针右移
+				cost -= costs[left++];
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [1209. Remove All Adjacent Duplicates in String II](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/)
 
     删除一个字符串s中重复次数为k的串，可以使用栈的方式来存储每个字符及其出现的次数，每个字符至多被访问两次，时间复杂度$O(n)$
