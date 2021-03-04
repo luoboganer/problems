@@ -778,6 +778,30 @@
     }
     ```
 
+- [354. 俄罗斯套娃信封问题](https://leetcode-cn.com/problems/russian-doll-envelopes/)
+
+    在信封的宽度和高度两个维度上，固定一个维度（排序），在另一个维度上动态规划寻找最长严格递增子序列，时间复杂度$O(n^2)$
+
+    ```cpp
+    int maxEnvelopes(vector<vector<int>> &envelopes)
+	{
+		sort(envelopes.begin(), envelopes.end());
+		const int n = envelopes.size();
+		vector<int> dp(n, 1);
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < i; j++)
+			{
+				if (envelopes[j][0] < envelopes[i][0] && envelopes[j][1] < envelopes[i][1])
+				{
+					dp[i] = max(dp[i], 1 + dp[j]);
+				}
+			}
+		}
+		return *max_element(dp.begin(), dp.end());
+	
+    ```
+
 - [367](https://leetcode.com/problems/valid-perfect-square/)
 
     线性时间内判断一个数是否是完全平方数而不用开方函数，代码如下：
