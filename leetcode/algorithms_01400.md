@@ -782,6 +782,60 @@
 	[3,6,7,5,1]
 	```
 
+- [1367. 二叉树中的列表](https://leetcode-cn.com/problems/linked-list-in-binary-tree/)
+
+    首先递归地判断root为根的向下序列是否符合head链表序列，再检查root的左右子树是否符合
+
+    ```cpp
+    class Solution
+    {
+    private:
+        bool dfs(ListNode *head, TreeNode *root)
+        {
+            // 判断以root为根的向下的序列是否可以和head链表匹配
+            bool ret = true;
+            if (head)
+            {
+                if (root)
+                {
+                    if (root->val == head->val)
+                    {
+                        ret = dfs(head->next, root->left) || dfs(head->next, root->right);
+                    }
+                    else
+                    {
+                        ret = false;
+                    }
+                }
+                else
+                {
+                    ret = false;
+                }
+            }
+            return ret;
+        }
+
+    public:
+        bool isSubPath(ListNode *head, TreeNode *root)
+        {
+            bool ret;
+            if (root)
+            {
+                ret = dfs(head, root) || isSubPath(head, root->left) || isSubPath(root, root->right);
+            }
+            else if (head)
+            {
+                ret = false;
+            }
+            else
+            {
+                ret = true; // root和head均为空
+            }
+            return ret;
+        }
+    };
+    ```
+
 - [1379. Find a Corresponding Node of a Binary Tree in a Clone of That Tree](https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/)
 
     - 递归方法，DFS，时间效率$\color{red}{688 ms, 53.45\%}$
