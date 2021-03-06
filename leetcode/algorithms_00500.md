@@ -491,6 +491,24 @@
 	}
     ```
 
+- [453. 最小操作次数使数组元素相等](https://leetcode-cn.com/problems/minimum-moves-to-equal-array-elements/)
+
+    问题的本质是将最小数递增到和最大值相同，因此遍历一遍数组找到最小值以及其他值和最小值之间的差即可，时间复杂度$O(n)$
+
+    ```cpp
+	int minMoves(vector<int> &nums)
+	{
+		long long sum = 0;
+		int min_value = numeric_limits<int>::max();
+		for (auto &v : nums)
+		{
+			sum += v;
+			min_value = min(min_value, v);
+		}
+		return sum - static_cast<long long>(nums.size()) * min_value;
+	}
+    ```
+
 - [454. 4Sum II](https://leetcode.com/problems/4sum-ii/)
 
     - 四个数组，两两组合求和形成两个数组，然后再遍历两个数组，时间复杂度$O(n^4)$，LeetCode提交$\color{red}{TLE}$
