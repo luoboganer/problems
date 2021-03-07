@@ -499,6 +499,57 @@
     }
     ```
 
+- [131. 分割回文串](https://leetcode-cn.com/problems/palindrome-partitioning/)
+
+    基本思路：搜索回溯+动态规划预处理
+    具体方法：
+    - 使用搜索回溯的方法，假设已经处理完毕$s[0,i-1]$的部分并划分为合适的回文段存入ans中，则从字符$s_i$开始搜索到$s_j$的$s[i,j]$序列找到一个回文段，将该段加入ans中，直到$i$到达字符序列的最右端，得到一个可能的分割序列加入答案ret中
+    - 在判断$s[i,j]$是否回文序列的过程中，会出现大量的重复计算，提前使用动态规划的思路预处理得到dp数组，$dp_{ij}$表示$s[i,j]$段是否为回文序列
+    - 时间复杂度$O(n*2^n)$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        void dfs(vector<vector<string>> &ret, vector<string> &ans, vector<vector<bool>> &dp, const string &s, int start, const int n)
+        {
+            if (start == n)
+            {
+                // 搜索到了最后一个字符
+                ret.emplace_back(ans);
+                return;
+            }
+            for (int j = start; j < n; j++)
+            {
+                if (dp[start][j])
+                {
+                    ans.emplace_back(s.substr(start, j - start + 1));
+                    dfs(ret, ans, dp, s, j + 1, n);
+                    ans.pop_back();
+                }
+            }
+        }
+
+    public:
+        vector<vector<string>> partition(string s)
+        {
+            const int n = s.length();
+            vector<vector<string>> ret;							// 保存所有可能的分割结果
+            vector<string> ans;									// 一种可能的分割结果
+            vector <vector<bool>> dp(n, vector<bool>(n, true)); // 动态规划预处理s[i...j]是否回文
+            for (int i = n - 1; i >= 0; i--)
+            {
+                for (int j = i + 1; j < n; j++)
+                {
+                    dp[i][j] = dp[i + 1][j - 1] && (s[i] == s[j]);
+                }
+            }
+            dfs(ret, ans, dp, s, 0, n); // 从s的第一个字符开始搜索回溯
+            return ret;
+        }
+    };
+    ```
+
 - [133. 克隆图](https://leetcode-cn.com/problems/clone-graph/)
 
     从给定的根节点开始，复制每个节点node后，bfs搜索复制所有与node连接的节点，在这个过程中国为一个hashmap存储已经复制过的节点，与已经复制过的节点则直接在node的neighbors中插入节点指针即可

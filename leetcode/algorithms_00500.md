@@ -621,6 +621,31 @@
 
 - [462. 最少移动次数使数组元素相等 II](https://leetcode-cn.com/problems/minimum-moves-to-equal-array-elements-ii/)
 
+    与[453. 最小操作次数使数组元素相等](https://leetcode-cn.com/problems/minimum-moves-to-equal-array-elements/)类似，使用前缀和的方式计算将所有数字移动到每一个数所需要的移动次数，然后取最小值，时间复杂度$O(nlog(n))$，时间复杂度高在快速排序操作
+
+    ```cpp
+	int minMoves2(vector<int> &nums)
+	{
+		long long sum = 0;
+		const int n = nums.size();
+		vector<long long> runningSum(n);
+		sort(nums.begin(), nums.end());
+		for (int i = 0; i < n; i++)
+		{
+			sum += nums[i];
+			runningSum[i] = sum;
+		}
+		long long ret = numeric_limits<long long>::max();
+		for (int i = 0; i < n; i++)
+		{
+			long long v = nums[i];
+			// ret = min(ret, v * (i + 1) - runningSum[i] + sum - runningSum[i] - v * (n - i - 1));
+			ret = min(ret, sum - (runningSum[i] * 2) + v * ((i << 1) + 2 - n));
+		}
+		return static_cast<int>(ret);
+	}
+    ```
+
 - [468](https://leetcode.com/problems/validate-ip-address/)
 
     验证据given string是否是符合given rules的IPv4或IPv6地址，本题的key points有两处，一是正确理解given rules并在代码中体现出来，而是代码的有效结构设计，精巧的设计模式可以有效降低代码量并提高代码的可读性。
