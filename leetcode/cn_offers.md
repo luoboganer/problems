@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-01 15:29:56
+ * @LastEditTime: 2021-03-08 15:38:01
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -65,6 +65,68 @@
             return false;
         }
     };
+    ```
+
+- [剑指 Offer 19. 正则表达式匹配](https://leetcode-cn.com/problems/zheng-ze-biao-da-shi-pi-pei-lcof/)
+
+    **与主站[10. Regular Expression Matching](https://leetcode.com/problems/regular-expression-matching/)完全相同**
+
+    - 递归写法
+
+    ```cpp
+	bool isMatch(string s, string p)
+	{
+		bool ret;
+		if (p.empty())
+		{
+			ret = s.empty();
+		}
+		else
+		{
+			bool first_match = (!s.empty()) && (s[0] == p[0] || p[0] == '.'); // s非空且第一个字符匹配
+			// 在第一个字符匹配的情况下递归检查后面的字符是否匹配
+			if (p.length() >= 2 && p[1] == '*')
+			{
+				ret = (first_match && isMatch(s.substr(1), p)) || isMatch(s, p.substr(2));
+			}
+			else
+			{
+				ret = first_match && isMatch(s.substr(1), p.substr(1));
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - 动态规划，时间复杂度$O(s.length*p.length)$
+
+    ```cpp
+	bool isMatch(string s, string p)
+	{
+		const int m = s.length(), n = p.length();
+		vector<vector<bool>> dp(m + 1, vector<bool>(n + 1, false));
+		dp[0][0] = true; // s和p均为空的时候默认为匹配
+		for (int j = 2; j <= n; j++)
+		{
+			dp[0][j] = dp[0][j - 2] && (p[j - 1] == '*'); // 模式串为a*时匹配任意空串(*前的字符可以有0个)
+		}
+		for (int i = 0; i < m; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				if (p[j] == '*')
+				{
+					// p[j]为*时，s[i]匹配*之前的字符p[j-1]或者 p[j-1]*匹配一个空串
+					dp[i + 1][j + 1] = dp[i + 1][j - 1] || (dp[i][j + 1] && (s[i] == p[j - 1] || p[j - 1] == '.'));
+				}
+				else
+				{
+					dp[i + 1][j + 1] = dp[i][j] && ((s[i] == p[j]) || (p[j] == '.'));
+				}
+			}
+		}
+		return dp.back().back();
+	}
     ```
 
 - [剑指 Offer 30. 包含min函数的栈](https://leetcode-cn.com/problems/bao-han-minhan-shu-de-zhan-lcof/)
