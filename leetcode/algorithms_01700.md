@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-01-29 22:51:55
+ * @LastEditTime: 2021-03-08 20:23:01
  * @Software: Visual Studio Code
  * @Description: 1601-1700
 -->
@@ -352,6 +352,95 @@
 			return i - 1; // 无法到达i
 		}
 		return n - 1; //可以到达最后一栋建筑
+	}
+    ```
+
+- [1656. 设计有序流](https://leetcode-cn.com/problems/design-an-ordered-stream/)
+
+    模拟操作，注意元素为字符串的向量初始化后向量元素为空字符串，时间复杂度为$O(n)$
+
+    ```cpp
+    class OrderedStream
+    {
+        vector<string> strs;
+        int ptr;
+        int n;
+
+    public:
+        OrderedStream(int n)
+        {
+            this->n = n;
+            strs.resize(n, "");
+            ptr = 1;
+        }
+
+        vector<string> insert(int id, string value)
+        {
+            vector<string> ret;
+            strs[id - 1] = value;
+            if (id == ptr)
+            {
+                while (ptr <= n && !strs[ptr - 1].empty())
+                {
+                    ret.emplace_back(strs[ptr - 1]);
+                    ptr++;
+                }
+            }
+            return ret;
+        }
+    };
+    ```
+
+- [1663. 具有给定数值的最小字符串](https://leetcode-cn.com/problems/smallest-string-with-a-given-numeric-value/)
+
+    贪心思想，相同长度的字符串左端字符序越小字符串的字典序越小，因此将给定的数值和尽可能在字符串右端消耗掉，时间复杂度$O(n)$
+
+    ```cpp
+	string getSmallestString(int n, int k)
+	{
+		string ret;
+		int base = 26, length = n, cost = k;
+		string letters = "0abcdefghijklmnopqrstuvwxyz";
+		while (length)
+		{
+			int idx = min(base, cost - length + 1);
+			cost -= idx, length--;
+			ret.push_back(letters[idx]);
+		}
+		reverse(ret.begin(), ret.end());
+		return ret;
+	}
+    ```
+
+- [1664. 生成平衡数组的方案数](https://leetcode-cn.com/problems/ways-to-make-a-fair-array/)
+
+    对于每一个下标$i$，分别计算i的左右两侧奇数下标的数字和与偶数下标的数字和，时间复杂度$O(n)$
+
+    ```cpp
+	int waysToMakeFair(vector<int> &nums)
+	{
+		const int n = nums.size();
+		vector<int> odd(n, 0), even(n, 0);
+		int odd_base = 0, even_base = 0;
+		for (int i = 0; i < n; i++)
+		{
+			(i & 0x1) ? odd_base += nums[i] : even_base += nums[i];
+			odd[i] = odd_base;
+			even[i] = even_base;
+		}
+		int ret = 0;
+		for (int i = 0; i < n; i++)
+		{
+			int left_odd = odd[i] - (i & 0x1 ? nums[i] : 0);
+			int left_even = even[i] - (i & 0x1 ? 0 : nums[i]);
+			int right_odd = odd_base - odd[i];
+			int right_even = even_base - even[i];
+			if (left_odd + right_even == left_even + right_odd)
+			{
+				ret++;
+			}
+		}
+		return ret;
 	}
     ```
 
