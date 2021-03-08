@@ -550,6 +550,47 @@
     };
     ```
 
+- [132. 分割回文串 II](https://leetcode-cn.com/problems/palindrome-partitioning-ii/submissions/)
+
+    动态规划，时间复杂度$O(n^2)$
+    
+    - 动态规划预处理计算字符串s中任意两点间s[i,j]段子串是否为回文序列 
+    - 动态规划计算将s[0,i]段划分为回文的子串需要的最少次数
+
+    ```cpp
+	int minCut(string s)
+	{
+		const int n = s.length();
+		vector<int> ret(n, n - 1); // 最多分割n-1次的单个字符，全部回文
+		vector<vector<bool>> dp(n, vector<bool>(n, true));
+		for (int i = n - 1; i >= 0; i--)
+		{
+			for (int j = i + 1; j < n; j++)
+			{
+				dp[i][j] = dp[i + 1][j - 1] && (s[i] == s[j]);
+			}
+		}
+		for (int i = 0; i < n; i++)
+		{
+			if (dp[0][i])
+			{
+				ret[i] = 0;
+			}
+			else
+			{
+				for (int j = 0; j < i; j++)
+				{
+					if (dp[j + 1][i])
+					{
+						ret[i] = min(ret[i], ret[j] + 1);
+					}
+				}
+			}
+		}
+		return ret[n - 1];
+	}
+    ```
+
 - [133. 克隆图](https://leetcode-cn.com/problems/clone-graph/)
 
     从给定的根节点开始，复制每个节点node后，bfs搜索复制所有与node连接的节点，在这个过程中国为一个hashmap存储已经复制过的节点，与已经复制过的节点则直接在node的neighbors中插入节点指针即可
