@@ -412,6 +412,19 @@
     };
     ```
 
+    - some testcases
+
+    ```cpp
+    [2,-1]
+    [1,2,3]
+    [-10,9,20,null,null,15,7]
+    [5,4,8,11,null,13,4,7,2,null,null,null,1]
+    [-2,-1]
+    [-3]
+    [0]
+    [-3,0]
+    ```
+
 - [128. Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/)
 
 	在集合中查找一个数v的下一个连续值v+1是否存在，时间复杂度$O(n)$
