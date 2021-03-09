@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-01 15:14:41
+ * @LastEditTime: 2021-03-09 10:03:53
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -1080,6 +1080,38 @@
 	};
 	```
 
+- [面试题 10.02. 变位词组](https://leetcode-cn.com/problems/group-anagrams-lcci/)
+
+	对每个字符串排序，然后将相同的字符串排列在一起即可
+
+	```cpp
+	vector<vector<string>> groupAnagrams(vector<string> &strs)
+	{
+		const int n = strs.size();
+		vector<vector<string>> strs_sorted(n, vector<string>(2));
+		for (int i = 0; i < n; i++)
+		{
+			strs_sorted[i][0] = strs[i];
+			sort(strs_sorted[i][0].begin(), strs_sorted[i][0].end());
+			strs_sorted[i][1] = strs[i];
+		}
+		sort(strs_sorted.begin(), strs_sorted.end());
+		vector<vector<string>> ret;
+		int i = 0, j = 0;
+		while (i < n)
+		{
+			vector<string> cur;
+			while (j < n && strs_sorted[j][0].compare(strs_sorted[i][0]) == 0)
+			{
+				cur.emplace_back(strs_sorted[j++][1]);
+			}
+			ret.emplace_back(cur);
+			i = j;
+		}
+		return ret;
+	}
+	```
+
 - [面试题 10.10. 数字流的秩](https://leetcode-cn.com/problems/rank-from-stream-lcci/)
 
     - 核心是二分查找算法，两个函数实现的时间复杂度均为$O(log(n))$，可以用STL中的lower_bound和upper_bound两个函数实现
@@ -1314,6 +1346,98 @@
 			return cur->is_word;
 		}
 	};
+	```
+
+- [面试题 16.04. 井字游戏](https://leetcode-cn.com/problems/tic-tac-toe-lcci/)
+
+	逐行逐列以及正副对角线统计$'X','O','\ '$三种字符的数量，然后根据给定规则判断结果即可，时间复杂度$O(n^2)$
+
+	```cpp
+	class Solution
+	{
+	private:
+		int charToIdx(char ch)
+		{
+			int idx;
+			if (ch == 'X')
+			{
+				idx = 0;
+			}
+			else if (ch == 'O')
+			{
+				idx = 1;
+			}
+			else
+			{
+				idx = 2;
+			}
+			return idx;
+		}
+
+	public:
+		string tictactoe(vector<string> &board)
+		{
+			const int n = board.size();
+			vector<vector<int>> row_count(n, vector<int>(3, 0)); // 'X','O',' '
+			vector<vector<int>> col_count(n, vector<int>(3, 0));
+			vector<vector<int>> diagonal_count(2, vector<int>(3, 0));
+			for (int i = 0; i < n; i++)
+			{
+				// 统计行列的情况
+				for (int j = 0; j < n; j++)
+				{
+					row_count[i][charToIdx(board[i][j])]++;
+					col_count[j][charToIdx(board[i][j])]++;
+				}
+				// 统计两条对角线的情况
+				diagonal_count[0][charToIdx(board[i][i])]++;		 // 主对角线
+				diagonal_count[1][charToIdx(board[i][n - i - 1])]++; // 副对角线
+			}
+			int space_count = 0;
+			for (int i = 0; i < n; i++)
+			{
+				space_count += row_count[i][2];
+				if (row_count[i][0] == n || col_count[i][0] == n)
+				{
+					return "X";
+				}
+				if (row_count[i][1] == n || col_count[i][1] == n)
+				{
+					return "O";
+				}
+			}
+			if (diagonal_count[0][0] == n || diagonal_count[1][0] == n)
+			{
+				return "X";
+			}
+			else if (diagonal_count[0][1] == n || diagonal_count[1][1] == n)
+			{
+				return "O";
+			}
+			if (space_count == 0)
+			{
+				return "Draw";
+			}
+			return "Pending";
+		}
+	};
+	```
+
+- [面试题 16.05. 阶乘尾数](https://leetcode-cn.com/problems/factorial-zeros-lcci/)
+
+	阶乘尾数中的0均为10，即有2和5相乘构成，因此计算从1到n中因子2和5的个数即可，而2远多于5，因此只需要统计5的因子的个数，时间复杂度$O(log(n))$
+
+	```cpp
+	int trailingZeroes(int n)
+	{
+		int ret = 0;
+		while (n)
+		{
+			n /= 5;
+			ret += n;
+		}
+		return ret;
+	}
 	```
 
 - [面试题 17.01. 不用加号的加法](https://leetcode-cn.com/problems/add-without-plus-lcci/)
