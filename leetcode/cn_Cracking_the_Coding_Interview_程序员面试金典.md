@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-09 20:37:42
+ * @LastEditTime: 2021-03-09 23:34:03
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -503,6 +503,93 @@
 		bool isEmpty(int stackNum)
 		{
 			return sp[stackNum] == stackNum * size - 1;
+		}
+	};
+	```
+
+- [面试题 03.06. 动物收容所](https://leetcode-cn.com/problems/animal-shelter-lcci/)
+
+	使用队列模拟动物的先进先出原则
+
+	```cpp
+	class AnimalShelf
+	{
+	private:
+		int idx; // idx代表动物的入园序号
+		queue<vector<int>> cat, dog;
+
+	public:
+		AnimalShelf()
+		{
+			idx = 0;
+			while (!cat.empty())
+			{
+				cat.pop();
+			}
+			while (!dog.empty())
+			{
+				dog.pop();
+			}
+		}
+
+		void enqueue(vector<int> animal)
+		{
+			animal.emplace_back(idx++);
+			animal[1] == 0 ? cat.push(animal) : dog.push(animal);
+		}
+
+		vector<int> dequeueAny()
+		{
+			vector<int> ret{-1, -1, -1};
+			if (!dog.empty() && !cat.empty())
+			{
+				if (dog.front()[2] < cat.front()[2])
+				{
+					ret = dog.front();
+					dog.pop();
+				}
+				else
+				{
+					ret = cat.front();
+					cat.pop();
+				}
+			}
+			else if (!dog.empty())
+			{
+				ret = dog.front();
+				dog.pop();
+			}
+			else if (!cat.empty())
+			{
+				ret = cat.front();
+				cat.pop();
+			}
+			ret.pop_back();
+			return ret;
+		}
+
+		vector<int> dequeueDog()
+		{
+			vector<int> ret{-1, -1};
+			if (!dog.empty())
+			{
+				ret = dog.front();
+				ret.pop_back(); // 删除入园序号
+				dog.pop();
+			}
+			return ret;
+		}
+
+		vector<int> dequeueCat()
+		{
+			vector<int> ret{-1, -1};
+			if (!cat.empty())
+			{
+				ret = cat.front();
+				ret.pop_back(); // 删除入园序号
+				cat.pop();
+			}
+			return ret;
 		}
 	};
 	```
@@ -1373,6 +1460,73 @@
 			return cur->is_word;
 		}
 	};
+	```
+
+- [面试题 16.03. 交点](https://leetcode-cn.com/problems/intersection-lcci/)
+
+	通过数学方法计算两条直线的交点，然后判断交点是否在给定的线段上，时间复杂度$O(1)$，特别注意两条直线平行（平行与重合）与两条直线垂直于X轴等边界情况
+
+	```cpp
+	vector<double> intersection(vector<int> &start1, vector<int> &end1, vector<int> &start2, vector<int> &end2)
+	{
+		vector<double> ret;
+		int x1 = start1[0], y1 = start1[1], x2 = end1[0], y2 = end1[1], x3 = start2[0], y3 = start2[1], x4 = end2[0], y4 = end2[1];
+		if ((y2 - y1) * (x4 - x3) == (y4 - y3) * (x2 - x1))
+		{
+			// 平行或者重合
+			if (x1 == x2)
+			{
+				// 两段直线均垂直于x轴
+				if (x1 == x3)
+				{
+					int a = min(y1, y2), b = max(y1, y2);
+					int c = min(y3, y4), d = max(y3, y4);
+					if (c <= b && c >= a)
+					{
+						ret = {static_cast<double>(x1), static_cast<double>(c)};
+					}
+					else if (a >= c && a <= d)
+					{
+						ret = {static_cast<double>(x1), static_cast<double>(a)};
+					}
+				}
+			}
+			else
+			{
+				// 两条直线斜率均存在且相同
+				if ((y2 - y1) * (x1 - x3) == (y1 - y3) * (x2 - x1))
+				{
+					// 截距相同即重合
+					int a = min(x1, x2), b = max(x1, x2);
+					int c = min(x3, x4), d = max(x3, x4);
+					if (c <= b && c >= a)
+					{
+						ret.emplace_back(c);
+						ret.emplace_back(c == x3 ? y3 : y4);
+					}
+					else if (a >= c && a <= d)
+					{
+						ret.emplace_back(a);
+						ret.emplace_back(a == x1 ? y1 : y2);
+					}
+				}
+			}
+		}
+		else
+		{
+			// 两条直线交叉，必然有一个交点
+			double x_a = (x4 - x3) * (x2 - x1) * (y3 - y1) - (y4 - y3) * (x2 - x1) * x3 + (y2 - y1) * (x4 - x3) * x1;
+			double y_a = (y2 - y1) * (x4 * (y3 - y1) + x3 * (y1 - y4) + x1 * (y4 - y3));
+			double b = (y2 - y1) * (x4 - x3) - (y4 - y3) * (x2 - x1);
+			double x = x_a / b, y = y_a / b + y1;
+			if (x >= min(x1, x2) && x <= max(x1, x2) && y >= min(y1, y2) && y <= max(y1, y2) && x >= min(x3, x4) && x <= max(x3, x4) && y >= min(y3, y4) && y <= max(y3, y4))
+			{
+				// 交点在线段上
+				ret = {x, y};
+			}
+		}
+		return ret;
+	}
 	```
 
 - [面试题 16.04. 井字游戏](https://leetcode-cn.com/problems/tic-tac-toe-lcci/)
