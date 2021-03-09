@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-09 10:03:53
+ * @LastEditTime: 2021-03-09 20:37:42
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -1260,6 +1260,33 @@
 	};
 	```
 
+- [面试题 16.01. 交换数字](https://leetcode-cn.com/problems/swap-numbers-lcci/)
+
+	- 加减计算，注意int型数据的表示范围，防止溢出
+
+	```cpp
+	vector<int> swapNumbers(vector<int> &numbers)
+	{
+		long long a = numbers[0], b = numbers[1];
+		a = a + b;
+		b = a - b;
+		a = a - b;
+		return {static_cast<int>(a), static_cast<int>(b)};
+	}
+	```
+
+	- 异或计算
+
+	```cpp
+	vector<int> swapNumbers(vector<int> &numbers)
+	{
+		numbers[0] ^= numbers[1];
+		numbers[1] ^= numbers[0];
+		numbers[0] ^= numbers[1];
+		return numbers;
+	}
+	```
+
 - [面试题 16.02. 单词频率](https://leetcode-cn.com/problems/words-frequency-lcci/)
 
     - hashmap统计单词数量
@@ -1440,6 +1467,34 @@
 	}
 	```
 
+- [面试题 16.10. 生存人数](https://leetcode-cn.com/problems/living-people-lcci/)
+
+	区间统计问题，使用扫描线实现，时间复杂度$O(m+n)$，其中$m=max\_year-min\_year,n=birth.size()$
+
+	```cpp
+	int maxAliveYear(vector<int> &birth, vector<int> &death)
+	{
+		const int m = 2000 - 1900 + 2, n = birth.size();
+		vector<int> count(m, 0);
+		for (int i = 0; i < n; i++)
+		{
+			count[birth[i] - 1900]++;	  // 出生
+			count[death[i] - 1900 + 1]--; // 死亡的第二年不再统计
+		}
+		int ret_idx = -1, ret_count = 0, base = 0;
+		for (int i = 0; i < m; i++)
+		{
+			base += count[i];
+			if (base > ret_count)
+			{
+				ret_count = base;
+				ret_idx = i;
+			}
+		}
+		return ret_idx + 1900;
+	}
+	```
+
 - [面试题 17.01. 不用加号的加法](https://leetcode-cn.com/problems/add-without-plus-lcci/)
 
 	使用位运算求和，注意求进位在左移的过程中一定使用无符号整数防止溢出
@@ -1578,6 +1633,58 @@
 			return count > 0 ? key : -1;
 		}
 		return -1;
+	}
+	```
+
+- [面试题 17.11. 单词距离](https://leetcode-cn.com/problems/find-closest-lcci/)
+
+	- hashmap记录所有单词出现的idx，然后寻找单词word1和word2的idx之间最小差值
+
+	```CPP
+	int findClosest(vector<string> &words, string word1, string word2)
+	{
+		unordered_map<string, vector<int>> wordToIdxs;
+		const int n = words.size();
+		for (int i = 0; i < n; i++)
+		{
+			wordToIdxs[words[i]].emplace_back(i);
+		}
+		int ret = numeric_limits<int>::max();
+		for (auto a : wordToIdxs[word1])
+		{
+			for (auto b : wordToIdxs[word2])
+			{
+				ret = min(ret, abs(a - b));
+			}
+		}
+		return ret;
+	}
+	```
+
+	- 双指针分别指向当前扫描过程中遇到的单词word1和word2
+
+	```cpp
+	int findClosest(vector<string> &words, string word1, string word2)
+	{
+		int a = -1, b = -1;
+		const int n = words.size();
+		int ret = numeric_limits<int>::max();
+		for (int i = 0; i < n; i++)
+		{
+			if (words[i] == word1)
+			{
+				a = i;
+			}
+			else if (words[i] == word2)
+			{
+				b = i;
+			}
+			if (a != -1 && b != -1)
+			{
+				ret = min(ret, abs(a - b));
+			}
+		}
+		return ret;
 	}
 	```
 
