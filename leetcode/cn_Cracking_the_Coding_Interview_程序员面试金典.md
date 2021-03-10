@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-09 23:34:03
+ * @LastEditTime: 2021-03-10 16:08:33
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -1647,6 +1647,106 @@
 		}
 		return ret_idx + 1900;
 	}
+	```
+
+- [面试题 16.26. 计算器](https://leetcode-cn.com/problems/calculator-lcci/)
+
+	首先将字符串形式的中缀表达式转换为逆波兰表达式(后缀表达式)，然后再使用栈计算结果，时间复杂度$O(n)$
+
+	```cpp
+	class Solution
+	{
+	private:
+		int priority(char op)
+		{
+			int ret;
+			if (op == '+' || op == '-')
+			{
+				ret = 0;
+			}
+			else if (op == '*' || op == '/')
+			{
+				ret = 1;
+			}
+			return ret;
+		}
+
+	public:
+		int calculate(string s)
+		{
+			// 中缀表达式转为后缀表达式（逆波兰表达式）
+			vector<string> items;
+			stack<char> ops;
+			const int n = s.length();
+			s.push_back('#'); // 哨兵位，保证最后的操作数被输出
+			for (int i = 0; i < n; i++)
+			{
+				char ch = s[i];
+				if (ch == '+' || ch == '-'||ch == '*' || ch == '/')
+				{
+					// 输出栈顶优先级高于或者等于当前ch的操作符（保证当前栈顶操作符优先级最高）
+					while (!ops.empty() && priority(ops.top())>=priority(ch))
+					{
+						string op;
+						op += ops.top();
+						items.emplace_back(op);
+						ops.pop();
+					}
+					ops.push(ch);
+				}
+				else if (ch <= '9' && ch >= '0')
+				{
+					string num;
+					while (i <= n && s[i] >= '0' && s[i] <= '9')
+					{
+						num += s[i++];
+					}
+					items.emplace_back(num);
+					i -= 1; //避免与for循环的i++重复
+				}
+			}
+			while (!ops.empty())
+			{
+				string op;
+				op += ops.top();
+				items.emplace_back(op);
+				ops.pop();
+			}
+			// 计算后缀表达式
+			stack<int> st;
+			for (auto &item : items)
+			{
+				if (item[0] >= '0' && item[0] <= '9')
+				{
+					st.push(stoi(item));
+				}
+				else
+				{
+					int b = st.top();
+					st.pop();
+					int a = st.top();
+					st.pop();
+					if (item == "+")
+					{
+						st.push(a + b);
+					}
+					else if (item == "-")
+					{
+						st.push(a - b);
+					}
+					else if (item == "*")
+					{
+						st.push(a * b);
+					}
+					else if (item == "/")
+					{
+						st.push(a / b);
+					}
+				}
+			}
+			return st.top();
+		}
+	};
 	```
 
 - [面试题 17.01. 不用加号的加法](https://leetcode-cn.com/problems/add-without-plus-lcci/)

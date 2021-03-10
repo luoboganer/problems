@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-08 15:38:01
+ * @LastEditTime: 2021-03-10 14:44:07
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -63,6 +63,66 @@
                 }
             }
             return false;
+        }
+    };
+    ```
+
+- [剑指 Offer 13. 机器人的运动范围](https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof/)
+
+    BFS搜索从$(0,0)$出发所有能够到达的点，时间复杂度与空间复杂度均为$O(m*n)$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        int bitSum(int v)
+        {
+            int ret = 0;
+            while (v)
+            {
+                ret += v % 10;
+                v /= 10;
+            }
+            return ret;
+        }
+
+    public:
+        int movingCount(int m, int n, int k)
+        {
+            vector<int> directions{1, 0, -1, 0, 1};
+            const int length = 4;
+            vector<int> bitSumX(m), bitSumY(n);
+            for (int i = 0; i < m; i++)
+            {
+                bitSumX[i] = bitSum(i);
+            }
+            for (int i = 0; i < n; i++)
+            {
+                bitSumY[i] = bitSum(i);
+            }
+            vector<vector<bool>> unvisited(m, vector<bool>(n, true));
+            int count = 1; // 初始位于格子(0,0)
+            queue<pair<int, int>> qe{{make_pair(0, 0)}};
+            unvisited[0][0] = false;
+            while (!qe.empty())
+            {
+                auto [x, y] = qe.front();
+                qe.pop();
+                for (int i = 0; i < length; i++)
+                {
+                    int r = x + directions[i], c = y + directions[i + 1];
+                    if (r >= 0 && r < m && c >= 0 && c < n && unvisited[r][c])
+                    {
+                        unvisited[r][c] = false;
+                        if (bitSumX[r] + bitSumY[c] <= k)
+                        {
+                            count++;
+                            qe.push(make_pair(r, c));
+                        }
+                    }
+                }
+            }
+            return count;
         }
     };
     ```

@@ -902,6 +902,120 @@
     }
     ```
 
+- [224. 基本计算器](https://leetcode-cn.com/problems/basic-calculator/)
+
+    - 加减法分别看做正负数，而括号内的部分递归计算
+
+    ```cpp
+	int calculate(string s)
+	{
+		const int n = s.length();
+		int ret = 0;
+		bool negative = false;
+		for (int i = 0; i < n; i++)
+		{
+			if (s[i] == '-')
+			{
+				negative = true;
+			}
+			else if (isdigit(s[i]))
+			{
+				int j = i, v = 0;
+				while (j < n && isdigit(s[j]))
+				{
+					v = v * 10 + static_cast<int>(s[j++] - '0');
+				}
+				if (negative)
+				{
+					v = -v;
+					negative = false;
+				}
+				ret += v;
+				i = j - 1;
+			}
+			else if (s[i] == '(')
+			{
+				int count = 1, j = i + 1;
+				while (count > 0 && j < n)
+				{
+					if (s[j] == '(')
+					{
+						count++;
+					}
+					else if (s[j] == ')')
+					{
+						count--;
+					}
+					j++;
+				}
+				int v = calculate(s.substr(i + 1, j - i - 2));
+				if (negative)
+				{
+					v = -v;
+					negative = false;
+				}
+				ret += v;
+				i = j - 1;
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - 展开括号，并标记括号前后的正负号，时间复杂度$O(n)$
+
+    ```cpp
+	int calculate(string s)
+	{
+		const int n = s.length();
+		int ret = 0;
+		int sign = 1;
+		stack<int> ops{{sign}};
+		for (int i = 0; i < n; i++)
+		{
+			switch (s[i])
+			{
+			case ' ':
+				break;
+			case '+':
+				sign = ops.top();
+				break;
+			case '-':
+				sign = -ops.top();
+				break;
+			case '(':
+				ops.push(sign);
+				break;
+			case ')':
+				ops.pop();
+				break;
+
+			default:
+				long long num = 0;
+				while (i < n && isdigit(s[i]))
+				{
+					num = num * 10 + static_cast<int>(s[i++] - '0');
+				}
+				ret += static_cast<int>(sign * num);
+				i -= 1;
+				break;
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - some testcases
+
+    ```cpp
+    "1 + 1"
+    " 2-1 + 2 "
+    "-2+ 1"
+    "(1+2)"
+    "(1+(4+5+2)-3)+(6+8)"
+    "- (3 + (4 + 5))"
+    ```
+
 - [227](https://leetcode.com/problems/basic-calculator-ii/)
 
     计算只包含加减乘除和正整数的表达式的值
