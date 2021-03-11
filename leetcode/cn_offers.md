@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-10 14:44:07
+ * @LastEditTime: 2021-03-11 17:19:11
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -271,6 +271,40 @@
 	}
     ```
 
+- [剑指 Offer 33. 二叉搜索树的后序遍历序列](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof/submissions/)
+
+    递归检查root左右子树是否符合要求
+
+    ```cpp
+    class Solution
+    {
+    private:
+        bool dfs(vector<int> &nums, int left, int right, int lower, int upper)
+        {
+            if (left <= right)
+            {
+                if (nums[right] < lower || nums[right] > upper)
+                {
+                    return false;
+                }
+                int idx = right - 1;
+                while (idx >= left && nums[idx] > nums[right])
+                {
+                    idx--;
+                }
+                return dfs(nums, left, idx, lower, nums[right]) && dfs(nums, idx + 1, right - 1, nums[right], upper);
+            }
+            return true;
+        }
+
+    public:
+        bool verifyPostorder(vector<int> &postorder)
+        {
+            return dfs(postorder, 0, postorder.size() - 1, numeric_limits<int>::min(), numeric_limits<int>::max());
+        }
+    };
+    ```
+
 - [剑指 Offer 37. 序列化二叉树](https://leetcode-cn.com/problems/xu-lie-hua-er-cha-shu-lcof/)
 
     二叉树的序列化与反序列化，主要是队列(Queue)的运用
@@ -359,6 +393,49 @@
                 }
             }
             return auxiliary->right;
+        }
+    };
+    ```
+
+- [剑指 Offer 38. 字符串的排列](https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
+
+    有重复字符串的全排列(permutation)，与[47. 全排列 II](https://leetcode-cn.com/problems/permutations-ii/)相同
+
+    ```cpp
+    class Solution
+    {
+    private:
+        void dfs(vector<string> &ret, string &s, int start, const int end)
+        {
+            if (start == end)
+            {
+                ret.emplace_back(s);
+            }
+            else
+            {
+                for (int i = start; i <= end; i++)
+                {
+                    bool repeat = false;
+                    for (int j = start; !repeat && j < i; j++)
+                    {
+                        repeat = s[i] == s[j];
+                    }
+                    if (!repeat)
+                    {
+                        swap(s[i], s[start]);
+                        dfs(ret, s, start + 1, end);
+                        swap(s[i], s[start]);
+                    }
+                }
+            }
+        }
+
+    public:
+        vector<string> permutation(string s)
+        {
+            vector<string> ret;
+            dfs(ret, s, 0, s.length() - 1);
+            return ret;
         }
     };
     ```

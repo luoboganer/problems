@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-10 16:08:33
+ * @LastEditTime: 2021-03-11 16:01:47
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -1163,6 +1163,123 @@
 		void hanota(vector<int> &A, vector<int> &B, vector<int> &C)
 		{
 			recursive_move(A, A.size(), B, C);
+		}
+	};
+	```
+
+- [面试题 08.07. 无重复字符串的排列组合](https://leetcode-cn.com/problems/permutation-i-lcci/)
+
+	- DFS递归实现
+
+	```cpp
+	class Solution
+	{
+	private:
+		void dfs(vector<string> &ret, string &ans, string const &S, vector<bool> &unused, const int n)
+		{
+			if (ans.length() == n)
+			{
+				ret.emplace_back(ans);
+				return;
+			}
+			for (int i = 0; i < n; i++)
+			{
+				if (unused[i])
+				{
+					unused[i] = false;
+					ans += S[i];
+					dfs(ret, ans, S, unused, n);
+					ans.pop_back();
+					unused[i] = true;
+				}
+			}
+		}
+
+	public:
+		vector<string> permutation(string S)
+		{
+			vector<string> ret;
+			string ans;
+			const int n = S.length();
+			vector<bool> unused(n, true);
+			dfs(ret, ans, S, unused, n);
+			return ret;
+		}
+	};
+	```
+
+	- 字典序递归写法
+
+	```cpp
+	class Solution
+	{
+	private:
+		void dfs(vector<string> &ret, string &S, int start, const int end)
+		{
+			if (start == end)
+			{
+				ret.emplace_back(S);
+				return;
+			}
+			for (int i = start; i <= end; i++)
+			{
+				swap(S[start], S[i]);
+				dfs(ret, S, start + 1, end); // 递归
+				swap(S[start], S[i]);			  // 回溯
+			}
+		}
+
+	public:
+		vector<string> permutation(string S)
+		{
+			vector<string> ret;
+			dfs(ret, S, 0, S.length() - 1);
+			return ret;
+		}
+	};
+	```
+
+- [面试题 08.08. 有重复字符串的排列组合](https://leetcode-cn.com/problems/permutation-ii-lcci/)
+
+	DFS搜索所有位置交换的可能，注意与[面试题 08.07. 无重复字符串的排列组合](https://leetcode-cn.com/problems/permutation-i-lcci/)无重复状态不同的是，在待交换位置字符相同时交换的结果是一样的，因此避免即可
+
+	```cpp
+	class Solution
+	{
+	private:
+		void dfs(vector<string> &ret, string &s, int start, int const end)
+		{
+			if (start == end)
+			{
+				ret.emplace_back(s);
+			}
+			for (int i = start; i <= end; i++)
+			{
+				bool repeated = false;
+				for (int j = start; !repeated && j < i; j++)
+				{
+					// 判断在s[start]这个位置是否已经有重复字符被使用
+					// 该步骤可以用unordered_set实现
+					if (s[i] == s[j])
+					{
+						repeated = true;
+					}
+				}
+				if (!repeated)
+				{
+					swap(s[i], s[start]);
+					dfs(ret, s, start + 1, end);
+					swap(s[i], s[start]);
+				}
+			}
+		}
+
+	public:
+		vector<string> permutation(string S)
+		{
+			vector<string> ret;
+			dfs(ret, S, 0, S.length() - 1);
+			return ret;
 		}
 	};
 	```

@@ -1517,6 +1517,80 @@
     - 注意全排列的实现，递归的和非递归的，字典序的和非字典序的
     - cpp的STL中有*next_permutation*和*prev_permutation*两个函数，注意他们的实现方式
 
+    ```cpp
+    class Solution
+    {
+    private:
+        void dfs(vector<vector<int>> &ret, vector<int> &nums, int start, const int end)
+        {
+            if (start == end)
+            {
+                ret.emplace_back(nums);
+            }
+            else
+            {
+                for (int i = start; i <= end; i++)
+                {
+                    swap(nums[i], nums[start]);
+                    dfs(ret, nums, start + 1, end);
+                    swap(nums[i], nums[start]);
+                }
+            }
+        }
+
+    public:
+        vector<vector<int>> permute(vector<int> &nums)
+        {
+            vector<vector<int>> ret;
+            dfs(ret, nums, 0, nums.size() - 1);
+            return ret;
+        }
+    };
+    ```
+
+- [47. 全排列 II](https://leetcode-cn.com/problems/permutations-ii/)
+
+    与[46](https://leetcode.com/problems/permutations/)不同的是，注意消除重复数字的交换
+
+    ```cpp
+    class Solution
+    {
+    private:
+        void dfs(vector<vector<int>> &ret, vector<int> &nums, int start, const int end)
+        {
+            if (start == end)
+            {
+                ret.emplace_back(nums);
+            }
+            for (int i = start; i <= end; i++)
+            {
+                bool repeated = false;
+                for (int j = start; !repeated && j < i; j++)
+                {
+                    if (nums[i] == nums[j])
+                    {
+                        repeated = true;
+                    }
+                }
+                if (!repeated)
+                {
+                    swap(nums[i], nums[start]);
+                    dfs(ret, nums, start + 1, end);
+                    swap(nums[i], nums[start]);
+                }
+            }
+        }
+
+    public:
+        vector<vector<int>> permuteUnique(vector<int> &nums)
+        {
+            vector<vector<int>> ret;
+            dfs(ret, nums, 0, nums.size() - 1);
+            return ret;
+        }
+    };
+    ```
+
 - [48](https://leetcode.com/problems/rotate-image/)
 
     Rotate Image，旋转图片90度，即将一个二维数组原地旋转90度。

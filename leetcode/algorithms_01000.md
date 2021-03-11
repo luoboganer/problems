@@ -426,6 +426,22 @@
     };
 	```
 
+- [921. 使括号有效的最少添加](https://leetcode-cn.com/problems/minimum-add-to-make-parentheses-valid/)
+
+    顺序扫描给定字符串，遇到左括号入栈，遇到右括号时如果栈中有左括号则弹栈对应，没有则补充做括号，最后根据栈中左括号的数量补充右括号，时间复杂度$O(n)$
+
+    ```cpp
+	int minAddToMakeValid(string S)
+	{
+		int count = 0, st = 0;
+		for (auto &ch : S)
+		{
+			ch == '(' ? st++ : (st > 0 ? st-- : count++);
+		}
+		return count + st;
+	}
+    ```
+
 - [924. Minimize Malware Spread](https://leetcode.com/problems/minimize-malware-spread/)
 
     - 并查集的建立与使用

@@ -424,6 +424,49 @@
     }
     ```
 
+- [526. 优美的排列](https://leetcode-cn.com/problems/beautiful-arrangement/)
+
+    递归搜索所有可能的排列，然后利用优美排列的性质剪枝
+
+    ```cpp
+    class Solution
+    {
+    private:
+        int dfs(vector<int> &nums, int start, const int n)
+        {
+            int ret = 0;
+            if (start > n)
+            {
+                ret = 1;
+            }
+            else
+            {
+                for (int i = start - 1; i < n; i++)
+                {
+                    if (nums[i] % start == 0 || start % nums[i] == 0)
+                    {
+                        swap(nums[i], nums[start - 1]);
+                        ret += dfs(nums, start + 1, n);
+                        swap(nums[i], nums[start - 1]);
+                    }
+                }
+            }
+            return ret;
+        }
+
+    public:
+        int countArrangement(int n)
+        {
+            vector<int> nums(n);
+            for (int i = 0; i < n; i++)
+            {
+                nums[i] = i + 1;
+            }
+            return dfs(nums, 1, n);
+        }
+    };
+    ```
+
 - [530. 二叉搜索树的最小绝对差](https://leetcode-cn.com/problems/minimum-absolute-difference-in-bst/)
 
     本题与[783. 二叉搜索树节点最小距离](https://leetcode-cn.com/problems/minimum-distance-between-bst-nodes/)完全相同，对二叉搜索树BST进行中序遍历即可

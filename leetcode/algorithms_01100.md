@@ -386,6 +386,32 @@
     }
     ```
 
+- [1021. 删除最外层的括号](https://leetcode-cn.com/problems/remove-outermost-parentheses/)
+
+    双指针判定所有符合原语定义的子串，删除子串左右两端即可，时间复杂度$O(n)$
+
+    ```cpp
+	string removeOuterParentheses(string S)
+	{
+		string ret;
+		const int n = S.size();
+		for (int i = 0; i < n; i++)
+		{
+			if (S[i] == '(')
+			{
+				int count = 1, j = i + 1;
+				while (j < n && count > 0)
+				{
+					S[j++] == ')' ? count-- : count++;
+				}
+				ret += S.substr(i + 1, j - i - 2);
+				i = j - 1; // 防止和for循环中的i++重复
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [1022. 从根到叶的二进制数之和](https://leetcode-cn.com/problems/sum-of-root-to-leaf-binary-numbers/)
 
     二叉树类题目，应该尽量用递归的方式解决 / 或者明显的可以非递归遍历式的题目

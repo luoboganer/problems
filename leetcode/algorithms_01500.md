@@ -492,6 +492,63 @@
     };
 	```
 
+- [1451. 重新排列句子中的单词](https://leetcode-cn.com/problems/rearrange-words-in-a-sentence/)
+
+    将string解析为vector<word>后按照其长度和原始的位置idx排序即可，注意结果中大小写的处理
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<string> stringToTokens(string text, char delimiter)
+        {
+            text.push_back(delimiter);
+            vector<string> ret;
+            string item;
+            for (auto &ch : text)
+            {
+                if (ch == delimiter)
+                {
+                    if (!item.empty())
+                    {
+                        ret.emplace_back(item);
+                        item.clear();
+                    }
+                    continue;
+                }
+                item += ch >= 'A' && ch <= 'Z' ? ch - 'A' + 'a' : ch;
+            }
+            return ret;
+        }
+
+    public:
+        string arrangeWords(string text)
+        {
+            vector<string> words = stringToTokens(text, ' ');
+            const int n = words.size();
+            vector<vector<int>> lengthAndIdx(n, vector<int>(2));
+            for (int i = 0; i < n; ++i)
+            {
+                lengthAndIdx[i][0] = i;
+                lengthAndIdx[i][1] = words[i].length();
+            }
+            sort(lengthAndIdx.begin(), lengthAndIdx.end(), [](const auto &a, const auto &b) -> bool { return a[1] < b[1] || (a[1] == b[1] && a[0] < b[0]); });
+            string ret;
+            for (int i = 0; i < n; i++)
+            {
+                ret += ' ';
+                ret += words[lengthAndIdx[i][0]];
+            }
+            ret = ret.substr(1);
+            if (ret.length() > 0)
+            {
+                ret[0] = ret[0] - 'a' + 'A';
+            }
+            return ret;
+        }
+    };
+    ```
+
 - [1452. People Whose List of Favorite Companies Is Not a Subset of Another List](https://leetcode.com/problems/people-whose-list-of-favorite-companies-is-not-a-subset-of-another-list/)
     
     早cpp中判断set a是否为set b的子集，将a和b排序后处理，时间复杂度$O(kn^2)$，其中$n=favoriteCompanies.length,k=max_i(favoriteCompanies[i])$
