@@ -1284,36 +1284,39 @@
 
 - [39](https://leetcode.com/problems/combination-sum/)
 
-    给定一个数组candidates，没有重复数字，从中选出一些数字（可以重复使用）使其和为给定的target，找出所有可能的组合，这里勇递归的方式解决，即遍历candidates中的数字，对于任意的$candidates[i]$递归求解满足和为$target-candidates[i]$的所有可能值即可，递归结束条件为$target=0$
+    给定一个数组candidates，没有重复数字，从中选出一些数字（可以重复使用）使其和为给定的target，找出所有可能的组合，这里用递归的方式解决，即遍历candidates中的数字，对于任意的$candidates[i]$递归求解满足和为$target-candidates[i]$的所有可能值即可，递归结束条件为$target=0$
 
     ```cpp
-    void dfs_helper(vector<int> &candidates, int target, int index, vector<int> &cur, vector<vector<int>> &ans)
+    class Solution
     {
-        if (target == 0)
+    private:
+        void dfs(vector<vector<int>> &ret, vector<int> &cur, vector<int> &candidates, int target, int idx)
         {
-            ans.push_back(cur);
-        }
-        else if (target > 0)
-        {
-            cur.push_back(candidates[index]);
-            for (int i = index; i < candidates.size() && candidates[i] <= target; i++)
+            if (target == 0)
             {
-                dfs_helper(candidates, target - candidates[index], i, cur, ans);
+                ret.emplace_back(cur);
             }
-            cur.pop_back();
+            else if (target > 0)
+            {
+                const int n = candidates.size();
+                for (int i = idx; i < n; i++)
+                {
+                    cur.push_back(candidates[i]);
+                    dfs(ret, cur, candidates, target - candidates[i], i);
+                    cur.pop_back();
+                }
+            }
         }
-    }
-    vector<vector<int>> combinationSum(vector<int> &candidates, int target)
-    {
-        vector<int> cur;
-        vector<vector<int>> ans;
-        sort(candidates.begin(), candidates.end());
-        for (int i = 0; i < candidates.size(); i++)
+
+    public:
+        vector<vector<int>> combinationSum(vector<int> &candidates, int target)
         {
-            dfs_helper(candidates, target, i, cur, ans);
+            vector<vector<int>> ret;
+            vector<int> cur;
+            dfs(ret, cur, candidates, target, 0);
+            return ret;
         }
-        return ans;
-    }
+    };
     ```
 
 - [40](https://leetcode.com/problems/combination-sum-ii/)

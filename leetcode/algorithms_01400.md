@@ -1151,3 +1151,38 @@
         return ret;
     }
     ```
+
+- [1399. 统计最大组的数目](https://leetcode-cn.com/problems/count-largest-group/)
+
+    统计每个可能的数位和的频率，然后统计其最大频率出现的次数即可，时间复杂度$O(n)$
+
+    ```cpp
+	int countLargestGroup(int n)
+	{
+		unordered_map<int, int> group;
+		for (int v = 1; v <= n; v++)
+		{
+			int bitsum = 0, cur = v;
+			while (cur)
+			{
+				bitsum += cur % 10;
+				cur /= 10;
+			}
+			group[bitsum]++;
+		}
+		int max_freq = 0, ret = 0;
+		for (auto item : group)
+		{
+			if (item.second == max_freq)
+			{
+				ret++;
+			}
+			else if (item.second > max_freq)
+			{
+				ret = 1;
+				max_freq = item.second;
+			}
+		}
+		return ret;
+	}
+    ```

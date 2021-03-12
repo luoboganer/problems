@@ -523,3 +523,26 @@
 		return (int)(ret);
 	}
 	```
+
+- [1189. “气球” 的最大数量](https://leetcode-cn.com/problems/maximum-number-of-balloons/)
+
+    统计$b,a,l,o,n$五个字符出现的数量即可，时间复杂度$O(n)$，其中$n=text.length()$
+
+    ```cpp
+    int maxNumberOfBalloons(string text)
+	{
+		const int length = 26;
+		vector<int> count(length, 0);
+		for (auto &ch : text)
+		{
+			count[static_cast<int>(ch - 'a')]++;
+		}
+		vector<int> ret_balloon;
+		ret_balloon.emplace_back(count[static_cast<int>('b' - 'a')]);
+		ret_balloon.emplace_back(count[static_cast<int>('a' - 'a')]);
+		ret_balloon.emplace_back(count[static_cast<int>('l' - 'a')] / 2);
+		ret_balloon.emplace_back(count[static_cast<int>('o' - 'a')] / 2);
+		ret_balloon.emplace_back(count[static_cast<int>('n' - 'a')]);
+		return *min_element(ret_balloon.begin(), ret_balloon.end());
+	}
+    ```

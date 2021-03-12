@@ -934,20 +934,53 @@
 
 - [950](https://leetcode.com/problems/reveal-cards-in-increasing-order/)
 
-    按照揭牌的顺序，反向操作模拟
-    题目给定的揭牌操作：
-    - 揭开最上面一张牌
-    - 把下一张牌移到最下面
+    - 反向模拟揭牌顺序
+        按照揭牌的顺序，反向操作模拟
+        题目给定的揭牌操作：
+        - 揭开最上面一张牌
+        - 把下一张牌移到最下面
 
-    最终得到升序的序列
+        最终得到升序的序列
 
-    因此反向操作，首先对给定数组升序排序，然后
-    - 牌堆最后一张移到最上面
-    - 有序数列的最后一个（当前最大值）放到牌堆最上面盖住
+        因此反向操作，首先对给定数组升序排序，然后
+        - 牌堆最后一张移到最上面
+        - 有序数列的最后一个（当前最大值）放到牌堆最上面盖住
 
-    直到给定的数列完全被放到牌堆里
+        直到给定的数列完全被放到牌堆里
 
-    时间复杂度$O(nlog(n))$
+        时间复杂度$O(nlog(n))$
+    
+    - 排序后通过隔空确定每个数字的下标，时间复杂度$O(nlog(n))$
+
+    ```CPP
+	vector<int> deckRevealedIncreasing(vector<int> &deck)
+	{
+		sort(deck.begin(), deck.end());
+		const int n = deck.size();
+		vector<int> idxs(n), ret(n);
+		queue<int> qe;
+		for (int i = 0; i < n; i++)
+		{
+			qe.push(i);
+		}
+		int r = 0;
+		while (!qe.empty())
+		{
+			idxs[r++] = qe.front();
+			qe.pop();
+			if (!qe.empty())
+			{
+				qe.push(qe.front());
+				qe.pop();
+			}
+		}
+		for (int i = 0; i < n; i++)
+		{
+			ret[idxs[i]] = deck[i];
+		}
+		return ret;
+	}
+    ```
 
 - [951. Flip Equivalent Binary Trees](https://leetcode.com/problems/flip-equivalent-binary-trees/)
 
