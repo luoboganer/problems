@@ -325,6 +325,92 @@
     }
     ```
 
+- [331. 验证二叉树的前序序列化](https://leetcode-cn.com/problems/verify-preorder-serialization-of-a-binary-tree/)
+
+    - 用一个栈来维护二叉树中槽位(指需要一个空指针或者一个数字来占位)的变化，时间复杂度$O(n)$
+
+    ```cpp
+	bool isValidSerialization(string preorder)
+	{
+		const int n = preorder.length();
+		stack<int> st{{1}}; // 需要一个数或者空指针来指代根节点
+		for (int i = 0; i < n; i++)
+		{
+			// 进入循环即还有字符未处理，此时如果栈为空（没有槽位）则非法
+			if (st.empty())
+			{
+				return false;
+			}
+			if (preorder[i] == ',')
+			{
+				continue;
+			}
+			else if (preorder[i] == '#')
+			{
+				// '#'占据一个槽位，空指针
+				st.top()--;
+				if (st.top() == 0)
+				{
+					st.pop();
+				}
+			}
+			else if (isdigit(preorder[i]))
+			{
+				while (isdigit(preorder[i]))
+				{
+					i++;
+				}
+				// 数字则占据一个槽位，同时左右子节点带来两个新的槽位
+				st.top()--;
+				if (st.top() == 0)
+				{
+					st.pop();
+				}
+				st.push(2);
+				i -= 1; // 避免与for循环的i++重复
+			}
+		}
+		return st.empty();
+	}
+    ```
+
+    - 用$O(1)$空间的一个数代替栈来维护槽位的变化
+
+    ```cpp
+	bool isValidSerialization(string preorder)
+	{
+		const int n = preorder.length();
+		int count = 1; // 需要一个数或者空指针来指代根节点
+		for (int i = 0; i < n; i++)
+		{
+			// 进入循环即还有字符未处理，此时如果栈为空（没有槽位）则非法
+			if (count == 0)
+			{
+				return false;
+			}
+			if (preorder[i] == ',')
+			{
+				continue;
+			}
+			else if (preorder[i] == '#')
+			{
+				count--; // '#'占据一个槽位，空指针
+			}
+			else if (isdigit(preorder[i]))
+			{
+				while (isdigit(preorder[i]))
+				{
+					i++;
+				}
+				// 数字则占据一个槽位，同时左右子节点带来两个新的槽位
+				count += 1; // count - 1 + 2
+				i -= 1;		// 避免与for循环的i++重复
+			}
+		}
+		return count == 0;
+	}
+    ```
+
 - [332. Reconstruct Itinerary](https://leetcode.com/problems/reconstruct-itinerary/)
 
 	DFS搜索，求给定有向图中的最短哈密路径
