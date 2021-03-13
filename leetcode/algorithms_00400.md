@@ -1653,7 +1653,7 @@
 
 - [400](https://leetcode.com/problems/nth-digit/)
     
-    在$1,2,3,4,5,6,7,8,9,10,11,...$的数列中找到第n个数字，思想简单，分别计算不同位宽的数字个数即可(k位数一共占据$k*(9*10^k)$个位置)，但是注意实现时的具体细节处理。
+    - 在$1,2,3,4,5,6,7,8,9,10,11,...$的数列中找到第n个数字，思想简单，分别计算不同位宽的数字个数即可(k位数一共占据$k*(9*10^k)$个位置)，但是注意实现时的具体细节处理。
 
     ```cpp
     int findNthDigit(int n)
@@ -1678,4 +1678,25 @@
         }
         return num % 10;
     }
+    ```
+
+    - cpp实现二
+
+    ```cpp
+	int findNthDigit(int n)
+	{
+		long long base = 9, width = 1, count = n;
+		while (true)
+		{
+			long long base_width = base * width;
+			if (base_width >= count)
+			{
+				break;
+			}
+			count -= base_width;
+			base *= 10, width++;
+		}
+		base /= 9;
+		return static_cast<int>(to_string(base + (count - 1) / width)[(count - 1) % width] - '0');
+	}
     ```

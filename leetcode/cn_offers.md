@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-11 17:19:11
+ * @LastEditTime: 2021-03-13 15:52:22
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -459,6 +459,29 @@
 			qe.pop();
 		}
 		return ret;
+	}
+    ```
+
+- [剑指 Offer 44. 数字序列中某一位的数字](https://leetcode-cn.com/problems/shu-zi-xu-lie-zhong-mou-yi-wei-de-shu-zi-lcof/)
+
+    与主站[400](https://leetcode.com/problems/nth-digit/)完全相同，统计位宽为$k$的数字数量即可
+
+    ```cpp
+	int findNthDigit(int n)
+	{
+		long long base = 9, width = 1, count = n;
+		while (true)
+		{
+			long long base_width = base * width;
+			if (base_width >= count)
+			{
+				break;
+			}
+			count -= base_width;
+			base *= 10, width++;
+		}
+		base /= 9;
+		return static_cast<int>(to_string(base + (count - 1) / width)[(count - 1) % width] - '0');
 	}
     ```
 
