@@ -1,5 +1,73 @@
 # 701-800
 
+- [706. 设计哈希映射](https://leetcode-cn.com/problems/design-hashmap/)
+
+    开放链地址法
+
+    ```cpp
+    class MyHashMap
+    {
+    private:
+        vector<vector<pair<int, int>>> data;
+        static const int factor = 9973; // 10000以内最大的质数
+        static int hash(int key)
+        {
+            return key % factor;
+        }
+
+    public:
+        /** Initialize your data structure here. */
+        MyHashMap()
+        {
+            data.clear();
+            data.resize(factor);
+        }
+
+        /** value will always be non-negative. */
+        void put(int key, int value)
+        {
+            int idx = hash(key);
+            for (auto it = data[idx].begin(); it != data[idx].end(); it++)
+            {
+                if ((*it).first == key)
+                {
+                    (*it).second = value;
+                    return;
+                }
+            }
+            data[idx].emplace_back(make_pair(key, value));
+        }
+
+        /** Returns the value to which the specified key is mapped, or -1 if this map contains no mapping for the key */
+        int get(int key)
+        {
+            int idx = hash(key);
+            for (auto it = data[idx].begin(); it != data[idx].end(); it++)
+            {
+                if ((*it).first == key)
+                {
+                    return (*it).second;
+                }
+            }
+            return -1;
+        }
+
+        /** Removes the mapping of the specified value key if this map contains a mapping for the key */
+        void remove(int key)
+        {
+            int idx = hash(key);
+            for (auto it = data[idx].begin(); it != data[idx].end(); it++)
+            {
+                if ((*it).first == key)
+                {
+                    data[idx].erase(it);
+                    return;
+                }
+            }
+        }
+    };
+    ```
+
 - [719. Find K-th Smallest Pair Distance](https://leetcode.com/problems/find-k-th-smallest-pair-distance/)
 
 	- 暴力算出所有可能的distance，排序然后取第k小的值，时间复杂度$O(n^2*log(n))$，leetcode评测机$\color{red}{TLE}$
