@@ -1740,3 +1740,76 @@
 
 - [985](https://leetcode.com/problems/sum-of-even-numbers-after-queries/)
     注意每次query对应下标的数字在query前后的奇偶性，分别有不同的操作。time complexity O(n+q)，其中n(size of array) and q(the number of queries)。
+
+- [986. 区间列表的交集](https://leetcode-cn.com/problems/interval-list-intersections/)
+
+    给定区间列表是有序的，因此直接在两个列表的左端寻找共同区间即可，时间复杂度$O(n)$
+
+    ```cpp
+	vector<vector<int>> intervalIntersection(vector<vector<int>> &firstList, vector<vector<int>> &secondList)
+	{
+		vector<vector<int>> ret;
+		const int m = firstList.size(), n = secondList.size();
+		for (int i = 0, j = 0; i < m && j < n;)
+		{
+			if (firstList[i][1] <= secondList[j][1])
+			{
+				if (firstList[i][1] >= secondList[j][0])
+				{
+					ret.emplace_back(vector<int>{max(firstList[i][0], secondList[j][0]), firstList[i][1]});
+				}
+				i++;
+			}
+			else
+			{
+				if (firstList[i][0] <= secondList[j][1])
+				{
+					ret.emplace_back(vector<int>{max(firstList[i][0], secondList[j][0]), secondList[j][1]});
+				}
+				j++;
+			}
+		}
+		return ret;
+	}
+    ```
+
+- [988. 从叶结点开始的最小字符串](https://leetcode-cn.com/problems/smallest-string-starting-from-leaf/)
+
+    DFS搜索所有可能的字符串
+
+    ```cpp
+    class Solution
+    {
+    private:
+        void dfs(TreeNode *root, string &cur, string &ret)
+        {
+            if (root)
+            {
+                cur += static_cast<char>(root->val + 'a');
+                if (!root->left && !root->right)
+                {
+                    string temp = cur;
+                    reverse(temp.begin(), temp.end());
+                    if (ret.empty() || temp.compare(ret) < 0)
+                    {
+                        ret = temp;
+                    }
+                }
+                else
+                {
+                    dfs(root->left, cur, ret);
+                    dfs(root->right, cur, ret);
+                }
+                cur.pop_back();
+            }
+        }
+
+    public:
+        string smallestFromLeaf(TreeNode *root)
+        {
+            string cur, ret;
+            dfs(root, cur, ret);
+            return ret;
+        }
+    };
+    ```
