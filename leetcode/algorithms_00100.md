@@ -2123,6 +2123,54 @@
     }
     ```
 
+- [59. 螺旋矩阵 II](https://leetcode-cn.com/problems/spiral-matrix-ii/)
+
+    与[54](https://leetcode.com/problems/spiral-matrix/)相似，控制数组下标反向回填即可，时间复杂度$O(n^2)$
+
+    ```cpp
+	vector<vector<int>> generateMatrix(int n)
+	{
+		vector<vector<int>> matrix(n, vector<int>(n));
+		int left = 0, up = 0, right = n - 1, bottom = n - 1, k = 1;
+		while (true)
+		{
+			for (int i = left; i <= right; i++)
+			{
+				matrix[up][i] = k++;
+			}
+			if (++up > bottom)
+			{
+				break;
+			}
+			for (int i = up; i <= bottom; i++)
+			{
+				matrix[i][right] = k++;
+			}
+			if (--right < left)
+			{
+				break;
+			}
+			for (int i = right; i >= left; i--)
+			{
+				matrix[bottom][i] = k++;
+			}
+			if (--bottom < up)
+			{
+				break;
+			}
+			for (int i = bottom; i >= up; i--)
+			{
+				matrix[i][left] = k++;
+			}
+			if (++left > right)
+			{
+				break;
+			}
+		}
+		return matrix;
+	}
+    ```
+
 - [60](https://leetcode.com/problems/permutation-sequence/)
 
     求$"1234...n"$形成的第$k$个全排列，数学上可以计算第$k$个全排列的第$i$个字符。

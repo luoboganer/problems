@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-08 20:23:01
+ * @LastEditTime: 2021-03-14 19:24:52
  * @Software: Visual Studio Code
  * @Description: 1601-1700
 -->
@@ -444,4 +444,37 @@
 	}
     ```
 
-- [...](123)
+- [1700. 无法吃午餐的学生数量](https://leetcode-cn.com/problems/number-of-students-unable-to-eat-lunch/)
+
+    使用队列模拟学生轮回排队的过程，时间复杂度$O(n^2)$
+
+    ```cpp
+	int countStudents(vector<int> &students, vector<int> &sandwiches)
+	{
+		const int n = students.size();
+		queue<int> qe;
+		for (auto i = 0; i < n; ++i)
+		{
+			qe.push(students[i]);
+		}
+		for (int i = 0; i < n; i++)
+		{
+			int j = 0;
+			while (j < n && qe.front() != sandwiches[i])
+			{
+				qe.push(qe.front());
+				qe.pop();
+                j++;
+			}
+			if (j < n && qe.front() == sandwiches[i])
+			{
+				qe.pop();
+			}
+			else
+			{
+				return qe.size();
+			}
+		}
+		return 0; // 所有学生均吃到了三明治
+	}
+    ```

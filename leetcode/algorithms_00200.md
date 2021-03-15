@@ -455,6 +455,85 @@
 	}
 	```
 
+- [129. 求根节点到叶节点数字之和](https://leetcode-cn.com/problems/sum-root-to-leaf-numbers/)
+
+    - 递归实现
+
+    ```cpp
+    class Solution
+    {
+    private:
+        int dfs(TreeNode *root, int v)
+        {
+            int ret = 0;
+            if (root)
+            {
+                v = v * 10 + root->val;
+                if (root->left || root->right)
+                {
+                    ret += dfs(root->left, v);
+                    ret += dfs(root->right, v);
+                }
+                else
+                {
+                    ret = v;
+                }
+            }
+            return ret;
+        }
+
+    public:
+        int sumNumbers(TreeNode *root)
+        {
+            return dfs(root, 0);
+        }
+    };
+    ```
+
+    - 非递归的栈实现
+
+    ```cpp
+	int sumNumbers(TreeNode *root)
+	{
+		int ret = 0;
+		if (root)
+		{
+			int v = 0;
+			stack<TreeNode *> st;
+			TreeNode *cur = root;
+			unordered_set<TreeNode *> visited;
+			while (cur || !st.empty())
+			{
+				if (cur)
+				{
+					st.push(cur);
+					v = v * 10 + cur->val;
+					cur = cur->left;
+				}
+				else
+				{
+					if (st.top()->right && visited.find(st.top()->right) == visited.end())
+					{
+						cur = st.top()->right;
+						visited.insert(st.top()->right);
+					}
+					else
+					{
+						if (!st.top()->left && !st.top()->right)
+						{
+							ret += v; // st.top()叶子节点}
+						}
+						st.pop();
+						v /= 10;
+						cur = nullptr;
+					}
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [130. Surrounded Regions](https://leetcode.com/problems/surrounded-regions/)
 
     时间复杂度$O(m*n)$，其中$m*n$为矩阵中所有元素的个数，具体算法流程：
