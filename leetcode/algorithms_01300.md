@@ -424,6 +424,105 @@
     }
     ```
 
+- [1222. 可以攻击国王的皇后](https://leetcode-cn.com/problems/queens-that-can-attack-the-king/)
+
+    在“米”字型的八个方向上找到第一个可以攻击king的queen位置即可，固定的$8*8$棋盘，因此时间复杂度$O(1)$
+
+    ```cpp
+	vector<vector<int>> queensAttacktheKing(vector<vector<int>> &queens, vector<int> &king)
+	{
+		unordered_set<int> visited;
+		const int n = 8, base = 10;
+		vector<vector<int>> grid(n, vector<int>(n, 0));
+		for (auto &p : queens)
+		{
+			grid[p[0]][p[1]] = 1;
+		}
+		// up
+		for (int i = king[0] - 1, j = king[1]; i >= 0; i--)
+		{
+			if (grid[i][j] == 1)
+			{
+				visited.insert(i * base + j);
+				break;
+			}
+		}
+		// bottom
+		for (int i = king[0] + 1, j = king[1]; i < n; i++)
+		{
+			if (grid[i][j] == 1)
+			{
+				visited.insert(i * base + j);
+				break;
+			}
+		}
+		// left
+		for (int i = king[0], j = king[1] - 1; j >= 0; j--)
+		{
+			if (grid[i][j] == 1)
+			{
+				visited.insert(i * base + j);
+				break;
+			}
+		}
+		// right
+		for (int i = king[0], j = king[1] + 1; j < n; j++)
+		{
+			if (grid[i][j] == 1)
+			{
+				visited.insert(i * base + j);
+				break;
+			}
+		}
+		// left up
+		for (int i = king[0] - 1, j = king[1] - 1; i >= 0 && j >= 0; i--, j--)
+		{
+			if (grid[i][j] == 1)
+			{
+				visited.insert(i * base + j);
+				break;
+			}
+		}
+		// left bottom
+		for (int i = king[0] + 1, j = king[1] - 1; i < n && j >= 0; i++, j--)
+		{
+			if (grid[i][j] == 1)
+			{
+				visited.insert(i * base + j);
+				break;
+			}
+		}
+		// right up
+		for (int i = king[0] - 1, j = king[1] + 1; i >= 0 && j < n; i--, j++)
+		{
+			if (grid[i][j] == 1)
+			{
+				visited.insert(i * base + j);
+				break;
+			}
+		}
+		// right bottom
+		for (int i = king[0] + 1, j = king[1] + 1; i < n && j < n; i++, j++)
+		{
+			if (grid[i][j] == 1)
+			{
+				visited.insert(i * base + j);
+				break;
+			}
+		}
+		// 检查可以攻击的queue
+		vector<vector<int>> ret;
+		for (auto queue : queens)
+		{
+			if (visited.find(queue[0] * base + queue[1]) != visited.end())
+			{
+				ret.emplace_back(queue);
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [1227](https://leetcode.com/problems/airplane-seat-assignment-probability/)
 
     本题中，前n-1个人占据前n-1个座位的情况有$A_{n-1}^{n-1}$种，此时第n个人一定可以匹配到自己的位置，当前n-1个人在前n-1个座位中只占据了n-2个并占用第n个座位的可能情况有$A_{n-1}^{n-2}$种，此时第n个人只能坐在前n-1个座位中空出来的那个，因此第n个人坐在第n个座位的概率为
