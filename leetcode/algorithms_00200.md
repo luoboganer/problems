@@ -162,6 +162,38 @@
     }
     ```
 
+- [115. 不同的子序列](https://leetcode-cn.com/problems/distinct-subsequences/)
+
+    动态规划问题，用$dp[i][j]$表示$s[i:]$和$t[j:]$的匹配结果，则有状态转移方程：
+    $$ dp[i][j] = \left \{  \begin{array}{lr} 1, & j=n（空串是任何字符串的子串）\\0, & i=m \ and \  j<n （非空串不是空串的子串）\\ dp[i+1][j+1] + dp[i+1][j], & s[i] = t[j]  \\ dp[i+1][j], & s[i] \ne t[j] \end{array} \right.$$
+    时间复杂度$O(mn)$
+
+    ```cpp
+	int numDistinct(string s, string t)
+	{
+		const int m = s.length(), n = t.length();
+		int ret = 0;
+		if (m >= n)
+		{
+			vector<vector<long long>> dp(m + 1, vector<long long>(n + 1, 0));
+			for (int i = 0; i <= m; i++)
+			{
+				dp[i][n] = 1;
+			}
+			for (int j = n - 1; j >= 0; j--)
+			{
+				for (int i = m - 1; i >= 0; i--)
+				{
+					dp[i][j] = (s[i] == t[j]) ? dp[i + 1][j + 1] + dp[i + 1][j] : dp[i + 1][j];
+				}
+			}
+			ret = dp[0][0];
+		}
+		return ret;
+	}
+    ```
+
+
 - [116](https://leetcode.com/problems/populating-next-right-pointers-in-each-node/)
 
     更一般化的问题是如题[117](https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/)所示的条件，给定一个二叉树，将每一个节点的next指针指向他的同深度的右侧兄弟节点，简单BFS(Breadth-First-Search)，即层序遍历然后将同层的节点扫描一遍将每个节点的next指针指向同层下一个节点即可。
