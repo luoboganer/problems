@@ -531,6 +531,26 @@
     }
     ```
 
+- [1030. 距离顺序排列矩阵单元格](https://leetcode-cn.com/problems/matrix-cells-in-distance-order/)
+
+    输入所有坐标点后直接排序，时间复杂度$O(RClog(RC))$
+
+    ```cpp
+	vector<vector<int>> allCellsDistOrder(int R, int C, int r0, int c0)
+	{
+		vector<vector<int>> ret(R * C);
+		for (int i = 0, k = 0; i < R; i++)
+		{
+			for (int j = 0; j < C; j++)
+			{
+				ret[k++] = {i, j};
+			}
+		}
+		sort(ret.begin(), ret.end(), [&](const auto &a, const auto &b) -> bool { return abs(a[0] - r0) + abs(a[1] - c0) < abs(b[0] - r0) + abs(b[1] - c0); });
+		return ret;
+	}
+    ```
+
 - [1031. Maximum Sum of Two Non-Overlapping Subarrays](https://leetcode.com/problems/maximum-sum-of-two-non-overlapping-subarrays/)
 
     在给定数组A中选择两个长度分别为L和M的连续、无重叠子数组，使这两个子数组的和最大。用两个辅助数组subArraySumL、subArraySumM分别表示当前下标左侧L、M个数的和，即表示题目要求的两个长度分别为L和M的连续子数组的元素之和，然后在针对subArraySumL中每个值（下标i），在subArraySumM中找到下标i - M - 1及其左侧的最大值left（构成长度为M的数组）、下标i + L及其右侧的最大值right（构成长度为L的子数组）,这样$ret=max(ret,subArraySumL[i]+(max(let,right))$即为所求的最终值，时间复杂度$O(A.length)$

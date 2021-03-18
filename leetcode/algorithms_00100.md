@@ -3304,6 +3304,35 @@
     }
     ```
 
+- [92. 反转链表 II](https://leetcode-cn.com/problems/reverse-linked-list-ii/)
+
+    链表常规操作，时间复杂度$O(n)$
+
+    ```cpp
+	ListNode *reverseBetween(ListNode *head, int left, int right)
+	{
+		ListNode *auxiliary = new ListNode(0);
+		auxiliary->next = head;
+		if (right - left)
+		{
+			ListNode *pre = auxiliary;
+			for (int i = 1; i < left; i++)
+			{
+				pre = pre->next;
+			}
+			ListNode *pre_cur = pre->next, *cur = pre->next->next;
+			for (int i = left + 1; i <= right; i++)
+			{
+				pre_cur->next = cur->next;
+				cur->next = pre->next;
+				pre->next = cur;
+				cur = pre_cur->next;
+			}
+		}
+		return auxiliary->next;
+	}
+    ```
+
 - [93. Restore IP Addresses](https://leetcode.com/problems/restore-ip-addresses/)
 
     每次从剩余字符串的开头取出1到3位作为一个整型数，递归得处理剩余字符串，看是否构成四个0到255范围内的整型数时恰好用完字符串，其中注意0只能由字符串'0'构成，stoi('00')=0不符合要求

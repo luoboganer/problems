@@ -559,6 +559,41 @@
     }
     ```
 
+- [1237. 找出给定方程的正整数解](https://leetcode-cn.com/problems/find-positive-integer-solution-for-a-given-equation/)
+
+    遍历给定的x区间[1,1000]，二分搜索可能的y值，时间复杂度$O(nlog(n))$，其中$n=1000$
+
+    ```cpp
+	vector<vector<int>> findSolution(CustomFunction &customfunction, int z)
+	{
+		vector<vector<int>> ret;
+		// binary search in range [1,1000]
+		for (int x = 1; x <= 1000; x++)
+		{
+			int left = 1, right = 1000;
+			while (left <= right)
+			{
+				int mid = left + ((right - left) >> 1);
+				int v = customfunction.f(x, mid);
+				if (v == z)
+				{
+					ret.emplace_back(vector<int>{x, mid});
+                    break;
+				}
+				else if (v > z)
+				{
+					right = mid - 1;
+				}
+				else
+				{
+					left = mid + 1;
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [1245](https://leetcode.com/problems/tree-diameter/)
 
     给定一颗树，即N叉树，求树的直径，即树中任意两各节点之间的最远距离，通过两遍BFS来求解，首先BFS从任意节点start出发求得最远节点end，然后第二遍BFS从节点end出发求得最远节点last，end到last之间的距离即为树的直径。

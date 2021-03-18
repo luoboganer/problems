@@ -223,6 +223,44 @@
     };
     ```
 
+- [1122. 数组的相对排序](https://leetcode-cn.com/problems/relative-sort-array/)
+
+    以arr2的数字相对顺序为标准对arr1快速排序即可，时间复杂度$O(nlog(n))$
+
+    ```cpp
+	vector<int> relativeSortArray(vector<int> &arr1, vector<int> &arr2)
+	{
+		const int n = arr2.size();
+		unordered_map<int, int> order;
+		for (int i = 0; i < n; i++)
+		{
+			order[arr2[i]] = i;
+		}
+		sort(arr1.begin(), arr1.end(), [&order](const auto &a, const auto &b) -> bool {
+			bool ret;
+			auto it_a = order.find(a), it_b = order.find(b);
+			if (it_a != order.end() && it_b != order.end())
+			{
+				ret = it_a->second < it_b->second;
+			}
+			else if (it_a != order.end() && it_b == order.end())
+			{
+				ret = true;
+			}
+			else if (it_a == order.end() && it_b != order.end())
+			{
+				ret = false;
+			}
+			else
+			{
+				ret = a < b;
+			}
+			return ret;
+		});
+        return arr1;
+	}
+    ```
+
 - [1128](https://leetcode.com/problems/number-of-equivalent-domino-pairs/)
 
     - brute force[$O(n^2)$]
