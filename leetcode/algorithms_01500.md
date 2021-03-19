@@ -25,6 +25,32 @@
     }
     ```
 
+- [1403. 非递增顺序的最小子序列](https://leetcode-cn.com/problems/minimum-subsequence-in-non-increasing-order/)
+
+    优先队列寻找最大值直到其和大于全部元素和的一半，时间复杂度$O(nlog(n))$
+
+    ```cpp
+	vector<int> minSubsequence(vector<int> &nums)
+	{
+		priority_queue<int> qe;
+		int sum = 0;
+		for (auto &v : nums)
+		{
+			qe.push(v);
+			sum += v;
+		}
+		vector<int> ret;
+		int part_sum = 0;
+		while (part_sum * 2 <= sum)
+		{
+			part_sum += qe.top();
+			ret.emplace_back(qe.top());
+			qe.pop();
+		}
+		return ret;
+	}
+    ```
+
 - [1406. Stone Game III](https://leetcode.com/problems/stone-game-iii/)
 
 	DP，时间复杂度$O(n)$

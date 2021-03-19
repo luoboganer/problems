@@ -721,6 +721,33 @@
     }
     ```
 
+- [944. 删列造序](https://leetcode-cn.com/problems/delete-columns-to-make-sorted/)
+
+    逐列扫描检验其是否符合字典序即可，时间复杂度$O(m*n)$，其中$m$和$n$分别为给定数据的行数和列数
+
+    ```cpp
+	int minDeletionSize(vector<string> &A)
+	{
+		int ret = 0;
+		if (A.size() > 0 && A[0].size() > 0)
+		{
+			int rows = A.size(), cols = A[0].size();
+			for (int j = 0; j < cols; j++)
+			{
+				for (int i = 1; i < rows; i++)
+				{
+					if (A[i][j] < A[i - 1][j])
+					{
+						ret++;
+						break;
+					}
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [945. Minimum Increment to Make Array Unique](https://leetcode.com/problems/minimum-increment-to-make-array-unique/)
 
     - 排序，时间复杂度$O(nlog(n))$

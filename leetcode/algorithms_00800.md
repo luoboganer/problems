@@ -1286,6 +1286,24 @@
     }
     ```
 
+- [791. 自定义字符串排序](https://leetcode-cn.com/problems/custom-sort-string/)
+
+    将T中字符按照S中给定顺序排序即可，时间复杂度$O(nlog(n)),n=T.length()$
+
+    ```cpp
+	string customSortString(string S, string T)
+	{
+		const int length = 26, n = S.length();
+		vector<int> order(length, length);
+		for (int i = 0; i < n; i++)
+		{
+			order[static_cast<int>(S[i] - 'a')] = i;
+		}
+		sort(T.begin(), T.end(), [&order](const auto a, const auto b) -> bool { return order[static_cast<int>(a - 'a')] < order[static_cast<int>(b - 'a')]; });
+		return T;
+	}
+    ```
+
 - [797](https://leetcode.com/problems/all-paths-from-source-to-target/)
 
     本题是通过可达矩阵给出一个有向图，然后求出从0节点到达最后一个节点的所有路径，理论上DFS或者BFS遍历所有节点即可，重点在于代码的实现方式和效率，是其它图节点遍历问题的模板。

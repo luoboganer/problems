@@ -152,6 +152,61 @@
     };
     ```
 
+- [811. 子域名访问计数](https://leetcode-cn.com/problems/subdomain-visit-count/)
+
+    字符串处理与hashmap，时间复杂度$O(n*m)$，其中$n=cpdomains.size(),m=max(cpdomains[i].length())$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<string> get_domains(string s)
+        {
+            vector<string> ret;
+            int i = 0, n = s.length();
+            while (i < n)
+            {
+                if (i < n)
+                {
+                    ret.emplace_back(s.substr(i));
+                }
+                while (i < n && s[i] != '.')
+                {
+                    i++;
+                }
+                i++; // 跳过'.'
+            }
+            return ret;
+        }
+
+    public:
+        vector<string> subdomainVisits(vector<string> &cpdomains)
+        {
+            unordered_map<string, int> count;
+            for (auto &s : cpdomains)
+            {
+                int freq = 0;
+                int i = 0, n = s.length();
+                while (i < n && s[i] != ' ')
+                {
+                    freq = freq * 10 + static_cast<int>(s[i++] - '0');
+                }
+                vector<string> domains = get_domains(s.substr(i + 1));
+                for (auto &domain : domains)
+                {
+                    count[domain] += freq;
+                }
+            }
+            vector<string> ret;
+            for (auto &[domain_name, frequency] : count)
+            {
+                ret.emplace_back(to_string(frequency) + " " + domain_name);
+            }
+            return ret;
+        }
+    };
+    ```
+
 - [817. Linked List Components](https://leetcode.com/problems/linked-list-components/)
 
     用数组标记G中的所有数为true，然后遍历链表head，对head中相邻的两个节点cur和cur->next，如果值的标记都是flag，则将cur值的标记改为false，最后统计标记中有多少个true即可
