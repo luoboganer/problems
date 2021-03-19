@@ -436,6 +436,29 @@
         }
         ```
 
+- [1437. 是否所有 1 都至少相隔 k 个元素](https://leetcode-cn.com/problems/check-if-all-1s-are-at-least-length-k-places-away/)
+
+    滑动窗口，时间复杂度$O(n)$
+
+    ```cpp
+	bool kLengthApart(vector<int> &nums, int k)
+	{
+		const int n = nums.size();
+		for (int i = 0, last = -k - 2; i < n; i++)
+		{
+			if (nums[i])
+			{
+				if (i - last < k + 1)
+				{
+					return false;
+				}
+				last = i;
+			}
+		}
+        return true;
+	}
+    ```
+
 - [1449. Form Largest Integer With Digits That Add up to Target](https://leetcode.com/problems/form-largest-integer-with-digits-that-add-up-to-target/)
 
     1-9的每个数字需要消耗的weight是cost数组，在相同的cost下优先选择值更大的数字v，然后使用DP方法动态规划背包容量为target时的最大结果，这里注意不超过背包容量的最优解和恰好装满背包的最优解（需要从target=0开始使用，所有值初始化为inf，最优解为max时inf为max，最优解为min时inf为min，然后dp[0]=0），时间复杂度$O(target)$

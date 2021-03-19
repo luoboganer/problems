@@ -462,6 +462,35 @@
 	}
     ```
 
+- [654. 最大二叉树](https://leetcode-cn.com/problems/maximum-binary-tree/)
+
+    寻找序列中的最大值，建立根节点，递归建立左子树和右子树，时间复杂度$O(n^2)$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        TreeNode *recursive_search(vector<int> &nums, int left, int right)
+        {
+            if (left <= right)
+            {
+                int max_index = max_element(nums.begin() + left, nums.begin() + right + 1) - nums.begin();
+                TreeNode *root = new TreeNode(nums[max_index]);
+                root->left = recursive_search(nums, left, max_index - 1);
+                root->right = recursive_search(nums, max_index + 1, right);
+                return root;
+            }
+            return nullptr;
+        }
+
+    public:
+        TreeNode *constructMaximumBinaryTree(vector<int> &nums)
+        {
+            return recursive_search(nums, 0, nums.size() - 1);
+        }
+    };
+    ```
+
 - [662. Maximum Width of Binary Tree](https://leetcode.com/problems/maximum-width-of-binary-tree/)
 
     - BFS遍历所有非空节点，在cur_level去除两端的nullptr后计算长度，时间复杂度$O(n)$，其中n为给定树的节点数量，LeetCode提交$\color{red}{48ms,5.22\%}$

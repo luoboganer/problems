@@ -1840,3 +1840,32 @@
         }
     };
     ```
+
+- [998. 最大二叉树 II](https://leetcode-cn.com/problems/maximum-binary-tree-ii/)
+
+    当给定值大于已有根节点root值时，创建新节点ret并以root为ret的左子树，否则将val插入root的右子树，时间复杂度$O(n)$，其中n为给定最大二叉树的节点数
+
+    ```cpp
+	TreeNode *insertIntoMaxTree(TreeNode *root, int val)
+	{
+		TreeNode *ret = nullptr;
+		if (root)
+		{
+			if (root->val < val)
+			{
+				ret = new TreeNode(val);
+				ret->left = root;
+			}
+			else
+			{
+				root->right = insertIntoMaxTree(root->right, val);
+				ret = root;
+			}
+		}
+		else
+		{
+			ret = new TreeNode(val);
+		}
+		return ret;
+	}
+    ```

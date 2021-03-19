@@ -891,6 +891,43 @@
 	}
     ```
 
+- [1267. 统计参与通信的服务器](https://leetcode-cn.com/problems/count-servers-that-communicate/)
+
+    统计每一行和每一列的节点数，然后判断每个节点，如果所在行和所在列还有其他节点，则可以和其他节点通信，时间复杂度$O(m*n)$
+
+    ```cpp
+	int countServers(vector<vector<int>> &grid)
+	{
+		int ret = 0;
+		if (grid.size() > 0 && grid[0].size() > 0)
+		{
+			const int rows = grid.size(), cols = grid[0].size();
+			vector<int> count_row(rows, 0), count_col(cols, 0);
+			for (int i = 0; i < rows; i++)
+			{
+				for (int j = 0; j < cols; j++)
+				{
+					if (grid[i][j])
+					{
+						count_row[i]++, count_col[j]++;
+					}
+				}
+			}
+			for (int i = 0; i < rows; i++)
+			{
+				for (int j = 0; j < cols; j++)
+				{
+					if (grid[i][j] && (count_row[i] > 1 || count_col[j] > 1))
+					{
+						ret++;
+					}
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [1268. Search Suggestions System](https://leetcode.com/problems/search-suggestions-system/)
 
     做出类似于现代编辑器中代码提示、自动补全的功能，即在给定的所有字符串中，搜索符合当前已经键入的字符的串，按字典序排序只要前3个
