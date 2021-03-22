@@ -88,6 +88,48 @@
 	}
     ```
 
+- [912. 排序数组](https://leetcode-cn.com/problems/sort-an-array/)
+
+    快速排序，不稳定排序，平均时间复杂度$O(nlog(n))$，最坏时间复杂度$O(n^2)$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        void sort(vector<int> &nums, int left, int right)
+        {
+            if (left < right)
+            {
+                int i = left, j = right, base = nums[left];
+                while (i < j)
+                {
+                    while (i < j && nums[j] >= base)
+                    {
+                        j--;
+                    }
+                    nums[i] = nums[j];
+                    while (i < j && nums[i] <= base)
+                    {
+                        i++;
+                    }
+                    nums[j] = nums[i];
+                }
+                nums[i] = base;
+                sort(nums, left, i - 1);
+                sort(nums, i + 1, right);
+            }
+        }
+
+    public:
+        vector<int> sortArray(vector<int> &nums)
+        {
+            // sort(nums.begin(), nums.end());
+            sort(nums, 0, nums.size() - 1);
+            return nums;
+        }
+    };
+    ```
+
 - [914. X of a Kind in a Deck of Cards](https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/)
 
     当给定数组deck长度小于2时明显不可能，当长度大于等于2时，统计每个不同的数出现的次数（桶统计或者hashmap），然后求所有次数的最大公约数（X）大约等于2即可

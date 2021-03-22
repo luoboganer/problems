@@ -285,6 +285,24 @@
     }
     ```
 
+- [1318. 或运算的最小翻转次数](https://leetcode-cn.com/problems/minimum-flips-to-make-a-or-b-equal-to-c/)
+
+    对于给定的32bit整数，检查每一个bit位是否需要翻转以得到按位或的值为c对应位的值即可，时间复杂度$O(1)$
+
+    ```cpp
+	int minFlips(int a, int b, int c)
+	{
+		int ret = 0;
+		const int length = 32;
+		for (int i = 0, mask = 1; i < length; i++)
+		{
+			int x = (a >> i) & mask, y = (b >> i) & mask, z = (c >> i) & mask;
+			ret += (z == 0) ? x + y : (x + y == 0);
+		}
+		return ret;
+	}
+    ```
+
 - [1319. 连通网络的操作次数](https://leetcode-cn.com/problems/number-of-operations-to-make-network-connected/)
 
     并查集实现，时间复杂度$O(n*\alpha(n))$，其中$n=connections.size()$，$\alpha(n)$是并查集路径压缩查找的时间效率
@@ -337,6 +355,72 @@
                 }
             }
             return redundant >= uf.count - 1 ? uf.count - 1 : -1;
+        }
+    };
+    ```
+
+- [1324. 竖直打印单词](https://leetcode-cn.com/problems/print-words-vertically/)
+
+    根据前方单词的长度确定每一列的长度（行数），时间复杂度$O(max(s.length(),max(words[i].length())*words.size()))$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<string> stringToTokens(string sentence, char delim)
+        {
+            vector<string> ret;
+            if (sentence.size() > 0)
+            {
+                sentence.push_back(delim); // for the last token
+                string token;
+                for (auto &&ch : sentence)
+                {
+                    if (ch == delim)
+                    {
+                        if (!token.empty())
+                        {
+                            ret.push_back(token);
+                            token.clear();
+                        }
+                    }
+                    else
+                    {
+                        token.push_back(ch);
+                    }
+                }
+            }
+            return ret;
+        }
+
+    public:
+        vector<string> printVertically(string s)
+        {
+            vector<string> words = stringToTokens(s, ' ');
+            const int n = words.size();
+            vector<int> lengths(n + 1);
+            lengths[n] = 0;
+            // 确定每一列的长度
+            for (int i = n - 1; i >= 0; i--)
+            {
+                lengths[i] = max(lengths[i + 1], static_cast<int>(words[i].length()));
+            }
+            vector<string> ret(lengths[0]);
+            for (int i = 0; i < n; i++)
+            {
+                int j = 0, length = words[i].length();
+                while (j < length)
+                {
+                    ret[j] += words[i][j];
+                    j++;
+                }
+                while (j < lengths[i])
+                {
+                    ret[j] += ' ';
+                    j++;
+                }
+            }
+            return ret;
         }
     };
     ```
@@ -557,6 +641,18 @@
             return ret;
         }
     };
+    ```
+
+- [1344. 时钟指针的夹角](https://leetcode-cn.com/problems/angle-between-hands-of-a-clock/)
+
+    数学计算问题，用分针转过的角度减去时针转过的角度，时间复杂度$O(1)$
+
+    ```cpp
+	double angleClock(int hour, int minutes)
+	{
+		double angle = ((minutes + hour * 60) % 720) * 0.5 - minutes * 6;
+		return min(abs(angle), 360 - abs(angle));
+	}
     ```
 
 - [1346. Check If N and Its Double Exist](https://leetcode.com/problems/check-if-n-and-its-double-exist/)

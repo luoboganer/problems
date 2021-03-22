@@ -531,6 +531,37 @@
     }
     ```
 
+- [1029. 两地调度](https://leetcode-cn.com/problems/two-city-scheduling/)
+
+    根据经济学理论的“机会成本”，使去不同城市机会成本最大的人先选择A或者B，当A或者B城市人数达到总人数的一半时其余的全部去另一个城市，时间复杂度$O(nlog(n))$，时间复杂度主要体现在排序过程
+
+    ```cpp
+	int twoCitySchedCost(vector<vector<int>> &costs)
+	{
+		sort(costs.begin(), costs.end(), [](const auto &a, const auto &b) -> bool { return abs(a[0] - a[1]) > abs(b[0] - b[1]); });
+		const int n = costs.size();
+		int count_A = n / 2, count_B = n / 2, ret = 0;
+		int i = 0;
+		while (count_A > 0 && count_B > 0)
+		{
+			costs[i][0] < costs[i][1] ? count_A-- : count_B--;
+			ret += min(costs[i][0], costs[i][1]);
+			i++;
+		}
+		while (count_A > 0 && i < n)
+		{
+			ret += costs[i][0];
+			count_A--, i++;
+		}
+		while (count_B > 0 && i < n)
+		{
+			ret += costs[i][1];
+			count_B--, i++;
+		}
+		return ret;
+	}
+    ```
+
 - [1030. 距离顺序排列矩阵单元格](https://leetcode-cn.com/problems/matrix-cells-in-distance-order/)
 
     输入所有坐标点后直接排序，时间复杂度$O(RClog(RC))$
@@ -896,6 +927,57 @@
 		return ret;
 	}
 	```
+
+- [1078. Bigram 分词](https://leetcode-cn.com/problems/occurrences-after-bigram/)
+
+    顺序扫描每个单词并和first/second比对
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<string> stringToTokens(string sentence, char delim)
+        {
+            vector<string> ret;
+            if (sentence.size() > 0)
+            {
+                sentence.push_back(delim); // for the last token
+                string token;
+                for (auto &&ch : sentence)
+                {
+                    if (ch == delim)
+                    {
+                        if (!token.empty())
+                        {
+                            ret.push_back(token);
+                            token.clear();
+                        }
+                    }
+                    else
+                    {
+                        token.push_back(ch);
+                    }
+                }
+            }
+            return ret;
+        }
+
+    public:
+        vector<string> findOcurrences(string text, string first, string second)
+        {
+            vector<string> ret, words = stringToTokens(text, ' ');
+            const int n = words.size() - 2; // 至少要有是哪个单词
+            for (int i = 0; i < n; i++)
+            {
+                if (words[i].compare(first) == 0 && words[i + 1].compare(second) == 0)
+                {
+                    ret.emplace_back(words[i + 2]);
+                }
+            }
+            return ret;
+        }
+    };
+    ```
 
 - [1079. Letter Tile Possibilities](https://leetcode.com/problems/letter-tile-possibilities/)
 

@@ -1349,6 +1349,49 @@
     }
     ```
 
+- [150. 逆波兰表达式求值](https://leetcode-cn.com/problems/evaluate-reverse-polish-notation/)
+
+    单次扫描给定tokens序列，遇到数字压栈，遇到运算符取栈顶两个操作数计算，时间复杂度$O(n)$
+
+    ```cpp
+	int evalRPN(vector<string> &tokens)
+	{
+		stack<int> st;
+		for (auto &s : tokens)
+		{
+			if (s.length() == 1 && !isdigit(s[0]))
+			{
+				int b = st.top();
+				st.pop();
+				int a = st.top();
+				st.pop();
+				switch (s[0])
+				{
+				case '+':
+					st.push(a + b);
+					break;
+				case '-':
+					st.push(a - b);
+					break;
+				case '*':
+					st.push(a * b);
+					break;
+				case '/':
+					st.push(a / b);
+					break;
+				default:
+					break;
+				}
+			}
+			else
+			{
+				st.push(stoi(s));
+			}
+		}
+		return st.top();
+	}
+    ```
+
 - [152. Maximum Product Subarray](https://leetcode.com/problems/maximum-product-subarray/)
 
 	**当nums中的元素均为正数的时候，本题可以通过取对数转化为[53. Maximum Subarray](https://leetcode.com/problems/maximum-subarray/)求连续子数组的最大和问题**

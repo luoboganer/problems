@@ -672,6 +672,35 @@
     };
     ```
 
+- [841. 钥匙和房间](https://leetcode-cn.com/problems/keys-and-rooms/)
+
+    BFS搜索所有可以到达的房间
+
+    ```cpp
+	bool canVisitAllRooms(vector<vector<int>> &rooms)
+	{
+		queue<int> bfs{{0}}; // 开始在0号房间
+		const int n = rooms.size();
+		vector<bool> visited(n, false);
+		int visited_count = 0;
+		while (!bfs.empty())
+		{
+			int cur = bfs.front();
+			bfs.pop();
+			if (!visited[cur])
+			{
+				visited[cur] = true;
+				visited_count++;
+				for (auto &room : rooms[cur])
+				{
+					bfs.push(room);
+				}
+			}
+		}
+		return visited_count == n;
+	}
+    ```
+
 - [849](https://leetcode.com/problems/maximize-distance-to-closest-person/)
 
     给定一排座位，0表示空，1表示有人，新来一个人要安排到某个空的座位，使得新人到原来座位上的人(1)的距离尽可能的远，输出这最远距离。整体思路在于某一点到1的最远距离为该点到左边1的距离和到右边1的距离的较小值。

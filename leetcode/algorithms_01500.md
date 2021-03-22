@@ -751,6 +751,59 @@
     };
 	```
 
+- [1455. 检查单词是否为句中其他单词的前缀](https://leetcode-cn.com/problems/check-if-a-word-occurs-as-a-prefix-of-any-word-in-a-sentence/)
+
+    对每个单词检测其与searchWord长度相同的部分是否相同即可，时间复杂度$O(n)$，其中n为给地字符串s的长度
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<string> stringToTokens(string sentence, char delim)
+        {
+            vector<string> ret;
+            if (sentence.size() > 0)
+            {
+                sentence.push_back(delim); // for the last token
+                string token;
+                for (auto &&ch : sentence)
+                {
+                    if (ch == delim)
+                    {
+                        if (!token.empty())
+                        {
+                            ret.push_back(token);
+                            token.clear();
+                        }
+                    }
+                    else
+                    {
+                        token.push_back(ch);
+                    }
+                }
+            }
+            return ret;
+        }
+
+    public:
+        int isPrefixOfWord(string sentence, string searchWord)
+        {
+            int ret = -1;
+            vector<string> words = stringToTokens(sentence, ' ');
+            const int n = words.size();
+            for (int i = 0, length = searchWord.length(); i < n; i++)
+            {
+                if (words[i].length() >= length && words[i].substr(0, length).compare(searchWord) == 0)
+                {
+                    ret = i + 1;
+                    break;
+                }
+            }
+            return ret;
+        }
+    };
+    ```
+
 - [1458. Max Dot Product of Two Subsequences](https://leetcode.com/problems/max-dot-product-of-two-subsequences/)
 
     最长公共子序列问题（LCS），DP，时间复杂度$O(n^2)$
@@ -877,6 +930,54 @@
 		return nums;
 	}
 	```
+
+- [1472. 设计浏览器历史记录](https://leetcode-cn.com/problems/design-browser-history/)
+
+    使用数组来保存浏览器的历史，通过数组下标的指针变化来表示浏览器的前进和后腿，visit和forward/back操作的时间复杂度均为$O(1)$
+
+    ```cpp
+    class BrowserHistory
+    {
+    private:
+        vector<string> urls;
+        int count, cur_idx;
+
+    public:
+        BrowserHistory(string homepage)
+        {
+            urls.clear();
+            urls.emplace_back(homepage);
+            count = 1;
+            cur_idx = 0;
+        }
+
+        void visit(string url)
+        {
+            cur_idx++;
+            if (urls.size() > cur_idx)
+            {
+                urls[cur_idx] = url;
+            }
+            else
+            {
+                urls.emplace_back(url);
+            }
+            count = cur_idx + 1;
+        }
+
+        string back(int steps)
+        {
+            cur_idx = max(0, cur_idx - steps);
+            return urls[cur_idx];
+        }
+
+        string forward(int steps)
+        {
+            cur_idx = min(cur_idx + steps, count - 1);
+            return urls[cur_idx];
+        }
+    };
+    ```
 
 - [1476. Subrectangle Queries](https://leetcode.com/problems/subrectangle-queries/)
     
