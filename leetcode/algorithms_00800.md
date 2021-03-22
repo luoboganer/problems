@@ -68,6 +68,153 @@
     };
     ```
 
+- [710. 黑名单中的随机数](https://leetcode-cn.com/problems/random-pick-with-blacklist/)
+
+    - 黑名单拒绝采样，LeetCode评测机$TLE$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<int> blacklist;
+        int N;
+        bool exists(int v)
+        {
+            int left = 0, right = blacklist.size() - 1;
+            while (left <= right)
+            {
+                int mid = left + ((right - left) >> 1);
+                if (blacklist[mid] > v)
+                {
+                    right = mid - 1;
+                }
+                else if (blacklist[mid] < v)
+                {
+                    left = mid + 1;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+    public:
+        Solution(int N, vector<int> &blacklist)
+        {
+            this->N = N;
+            this->blacklist = blacklist;
+            sort(this->blacklist.begin(), this->blacklist.end());
+        }
+
+        int pick()
+        {
+            int v;
+            do
+            {
+                v = static_cast<int>(static_cast<double>(rand()) / RAND_MAX * N);
+            } while (exists(v));
+            return v;
+        }
+    };
+    ```
+
+    - 给定区间$[0,N)$共有N个数，其中黑名单M个，则剩余可取的数为$N-M$个，将黑名单中在$rand(N-M)$范围内的数字映射到大于$N-M$且不在黑名单中即可
+
+    ```cpp
+    class Solution
+    {
+    private:
+        unordered_map<int, int> blacklistToWhite;
+        int mode;
+        bool exists(vector<int> &nums, int v)
+        {
+            int left = 0, right = nums.size() - 1;
+            while (left <= right)
+            {
+                int mid = left + ((right - left) >> 1);
+                if (nums[mid] > v)
+                {
+                    right = mid - 1;
+                }
+                else if (nums[mid] < v)
+                {
+                    left = mid + 1;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+    public:
+        Solution(int N, vector<int> &blacklist)
+        {
+            int M = blacklist.size();
+            mode = N - M;
+            int k = N - M;
+            sort(blacklist.begin(), blacklist.end());
+            for (auto &v : blacklist)
+            {
+                if (v < mode)
+                {
+                    while (exists(blacklist, k))
+                    {
+                        k++;
+                    }
+                    blacklistToWhite[v] = k++;
+                }
+            }
+        }
+
+        int pick()
+        {
+            int v = rand() % mode;
+            auto it = blacklistToWhite.find(v);
+            if (it != blacklistToWhite.end())
+            {
+                v = it->second;
+            }
+            return v;
+        }
+    };
+    ```
+
+    - 二分查找白名单中的第k个数，其中$k=rand(N-M)$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<int> blacklist;
+        int mode;
+
+    public:
+        Solution(int N, vector<int> &blacklist)
+        {
+            int M = blacklist.size();
+            mode = N - M;
+            this->blacklist = blacklist;
+            sort(this->blacklist.begin(), this->blacklist.end());
+        }
+
+        int pick()
+        {
+            int k = rand() % mode;
+            int left = 0, right = blacklist.size() - 1;
+            while (left < right)
+            {
+                int mid = left + ((right - left + 1) >> 1);
+                blacklist[mid] - mid > k ? right = mid - 1 : left = mid;
+            }
+            return left == right && blacklist[left] - left <= k ? k + left + 1 : k;
+        }
+    };
+    ```
+
 - [719. Find K-th Smallest Pair Distance](https://leetcode.com/problems/find-k-th-smallest-pair-distance/)
 
 	- 暴力算出所有可能的distance，排序然后取第k小的值，时间复杂度$O(n^2*log(n))$，leetcode评测机$\color{red}{TLE}$

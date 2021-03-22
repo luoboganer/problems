@@ -467,6 +467,35 @@
     };
     ```
 
+- [528. 按权重随机选择](https://leetcode-cn.com/problems/random-pick-with-weight/submissions/)
+
+    将权重映射到等长的区间范围内采样，时间复杂度$O(log(n))$，其中$n=sum(weights)$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<int> weights;
+
+    public:
+        Solution(vector<int> &w)
+        {
+            weights = w;
+            const int n = weights.size();
+            for (int i = 1; i < n; i++)
+            {
+                weights[i] += weights[i - 1];
+            }
+        }
+
+        int pickIndex()
+        {
+            int weight = rand() % weights.back();
+            return upper_bound(weights.begin(), weights.end(), weight) - weights.begin();
+        }
+    };
+    ```
+
 - [530. 二叉搜索树的最小绝对差](https://leetcode-cn.com/problems/minimum-absolute-difference-in-bst/)
 
     本题与[783. 二叉搜索树节点最小距离](https://leetcode-cn.com/problems/minimum-distance-between-bst-nodes/)完全相同，对二叉搜索树BST进行中序遍历即可

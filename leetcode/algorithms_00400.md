@@ -1249,6 +1249,76 @@
 	[[],[0],[0],[0],[],[0],[0]]
 	```
 
+- [382. 链表随机节点](https://leetcode-cn.com/problems/linked-list-random-node/)
+
+    - 用数组保存链表节点的值，然后RAND()函数产生随机idx
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<int> data;
+        int count;
+
+    public:
+        /** @param head The linked list's head.
+            Note that the head is guaranteed to be not null, so it contains at least one node. */
+        Solution(ListNode *head)
+        {
+            ListNode *cur = head;
+            data.clear();
+            while (cur)
+            {
+                data.emplace_back(cur->val);
+                cur = cur->next;
+            }
+            count = data.size();
+        }
+
+        /** Returns a random node's value. */
+        int getRandom()
+        {
+            return data[static_cast<int>(static_cast<double>(rand()) / RAND_MAX * count)];
+        }
+    };
+    ```
+
+    - 蓄水池抽样算法
+
+    ```cpp
+    class Solution
+    {
+    private:
+        ListNode *head;
+
+    public:
+        /** @param head The linked list's head.
+                Note that the head is guaranteed to be not null, so it contains at least one node. */
+        Solution(ListNode *head)
+        {
+            this->head = head;
+        }
+
+        /** Returns a random node's value. */
+        int getRandom()
+        {
+            ListNode *cur = head;
+            int v = cur->val, count = 1;
+            while (cur)
+            {
+                double prop = static_cast<double>(rand()) / RAND_MAX;
+                if (prop < 1.0 / count)
+                {
+                    v = cur->val;
+                }
+                cur = cur->next;
+                count++;
+            }
+            return v;
+        }
+    };
+    ```
+
 - [384](https://leetcode.com/problems/shuffle-an-array/)
 
     给定一个数组，实现shuffle操作，即每次等概率地返回他的任何一种全排列。倒序遍历数组nums从i到0，每次对nums[i]，生成一个随机数r使得$r \in [0,i]$，交换nums[i]和nums[r]即可，数学上可以证明这是等概率操作
@@ -1649,6 +1719,70 @@
         }
         return ret;
     }
+    ```
+
+- [398. 随机数索引](https://leetcode-cn.com/problems/random-pick-index/)
+
+    - hashmap存储所有数字的下标，然后rand()函数随机选择一个
+
+    ```cpp
+    class Solution
+    {
+    private:
+        unordered_map<int, vector<int>> numToIdxs;
+
+    public:
+        Solution(vector<int> &nums)
+        {
+            const int n = nums.size();
+            for (int i = 0; i < n; i++)
+            {
+                numToIdxs[nums[i]].emplace_back(i);
+            }
+        }
+
+        int pick(int target)
+        {
+            auto it = numToIdxs.find(target);
+            return it->second[static_cast<int>(static_cast<double>(rand()) / RAND_MAX * it->second.size())];
+        }
+    };
+    ```
+
+    - 蓄水池抽样法，时间复杂度$O(n)$，空间复杂度$O(1)$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<int> nums;
+        int n;
+
+    public:
+        Solution(vector<int> &nums)
+        {
+            this->nums = nums;
+            this->n = nums.size();
+        }
+
+        int pick(int target)
+        {
+            int count = 1, ret = -1;
+            for (int i = 0; i < n; i++)
+            {
+                if (nums[i] == target)
+                {
+                    double prop = static_cast<double>(rand()) / RAND_MAX;
+                    if (prop < 1.0 / count)
+                    {
+                        ret = i;
+                    }
+                    count++;
+                }
+            }
+            return ret;
+        }
+    };
     ```
 
 - [400](https://leetcode.com/problems/nth-digit/)
