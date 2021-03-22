@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-11 16:01:47
+ * @LastEditTime: 2021-03-22 21:34:20
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -1282,6 +1282,29 @@
 			return ret;
 		}
 	};
+	```
+
+- [面试题 08.11. 硬币](https://leetcode-cn.com/problems/coin-lcci/)
+
+	动态规划，时间复杂度$O(m*n)$，其中m是兑换的钱数、n是给定硬币类型的数量
+
+	```cpp
+	int waysToChange(int n)
+	{
+		vector<long long> dp(n + 1, 1);
+		long long mode = 1e9 + 7;
+		dp[0] = 0;
+		vector<int> coins{1, 2, 10, 25};
+		for (int i = 1; i < 4; i++)
+		{
+			int v = coins[i];
+			for (int j = v; j <= n; j++)
+			{
+				dp[j] = (dp[j] + dp[j - v]) % mode;
+			}
+		}
+		return static_cast<int>(dp.back());
+	}
 	```
 
 - [面试题 10.02. 变位词组](https://leetcode-cn.com/problems/group-anagrams-lcci/)

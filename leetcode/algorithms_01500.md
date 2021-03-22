@@ -51,6 +51,39 @@
 	}
     ```
 
+- [1404. 将二进制表示减到 1 的步骤数](https://leetcode-cn.com/problems/number-of-steps-to-reduce-a-number-in-binary-representation-to-one/)
+
+    倒序扫描字符串，0则除2，1则加1变为末尾0并进位，时间复杂度$O(n)$
+
+    ```cpp
+	int numSteps(string s)
+	{
+		int ret = 0;
+		while (s.length() > 1)
+		{
+			if (s.back() == '0')
+			{
+				ret++;
+				s.pop_back();
+			}
+			else
+			{
+				ret++;
+				while (s.length() && s.back() == '1')
+				{
+					ret++;
+					s.pop_back();
+				}
+				if (s.length() && s.back() == '0')
+				{
+					s.back() = '1';
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [1406. Stone Game III](https://leetcode.com/problems/stone-game-iii/)
 
 	DP，时间复杂度$O(n)$

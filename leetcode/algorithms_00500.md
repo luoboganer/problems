@@ -1077,6 +1077,95 @@
     };
     ```
 
+- [494. 目标和](https://leetcode-cn.com/problems/target-sum/)
+
+    - DFS搜索与边界剪枝
+
+    ```cpp
+    class Solution
+    {
+    private:
+        int dfs(vector<int> &nums, vector<int> &boundary, int target, int idx, int const n)
+        {
+            int ret = 0;
+            if (idx == n && target == 0)
+            {
+                ret = 1;
+            }
+            else if (idx < n && target <= boundary[idx] && target >= -boundary[idx])
+            {
+                ret = dfs(nums, boundary, target - nums[idx], idx + 1, n) + dfs(nums, boundary, target + nums[idx], idx + 1, n);
+            }
+            return ret;
+        }
+
+    public:
+        int findTargetSumWays(vector<int> &nums, int S)
+        {
+            vector<int> right_sum = nums;
+            for (int i = nums.size() - 1; i > 0; i--)
+            {
+                right_sum[i - 1] += right_sum[i];
+            }
+            return dfs(nums, right_sum, S, 0, nums.size());
+        }
+    };
+    ```
+
+    - 给定所有数字总和的范围不超过1000，因此可以使用01背包的思路动态规划
+
+    ```cpp
+	int findTargetSumWays(vector<int> &nums, int S)
+	{
+		int max_sum = 1000;
+		if (S <= max_sum && S >= -max_sum)
+		{
+			const int n = nums.size();
+			vector<vector<int>> dp(n, vector<int>(max_sum * 2 + 1, 0));
+			dp[0][nums[0] + max_sum] = 1;
+			dp[0][-nums[0] + max_sum] += 1;
+			for (int i = 1; i < n; i++)
+			{
+				for (int sum = nums[i] - max_sum; sum <= max_sum - nums[i]; sum++)
+				{
+					dp[i][sum - nums[i] + max_sum] += dp[i - 1][sum + max_sum];
+					dp[i][sum + nums[i] + max_sum] += dp[i - 1][sum + max_sum];
+				}
+			}
+			return dp.back()[S + max_sum];
+		}
+		return 0;
+	}
+    ```
+
+    - 动态规划的空间优化
+
+    ```cpp
+	int findTargetSumWays(vector<int> &nums, int S)
+	{
+		int max_sum = 1000;
+		if (S <= max_sum && S >= -max_sum)
+		{
+			const int n = nums.size();
+			vector<int> dp(max_sum * 2 + 1, 0);
+			dp[nums[0] + max_sum] = 1;
+			dp[-nums[0] + max_sum] += 1;
+			for (int i = 1; i < n; i++)
+			{
+				vector<int> next(max_sum * 2 + 1, 0);
+				for (int sum = nums[i] - max_sum; sum <= max_sum - nums[i]; sum++)
+				{
+					next[sum - nums[i] + max_sum] += dp[sum + max_sum];
+					next[sum + nums[i] + max_sum] += dp[sum + max_sum];
+				}
+				dp = next;
+			}
+			return dp[S + max_sum];
+		}
+		return 0;
+	}
+    ```
+
 - [496. 下一个更大元素 I](https://leetcode-cn.com/problems/next-greater-element-i/)
 
     - 暴力遍历两个数组，时间复杂度$O(m*n)$，其中m/n分别为两个数组的长度
