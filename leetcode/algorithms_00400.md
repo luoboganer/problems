@@ -583,6 +583,52 @@
 	}
     ```
 
+- [341. 扁平化嵌套列表迭代器](https://leetcode-cn.com/problems/flatten-nested-list-iterator/)
+
+    DFS遍历所有integer存储在vector中，然后逐个返回即可，时间复杂度$O(n)$，其中n为给定嵌套列表中的整数数量
+
+    ```cpp
+    class NestedIterator
+    {
+    private:
+        vector<int> data;
+        int n;
+        int cur_idx;
+        void dfs(vector<NestedInteger> &nestedList, vector<int> &data)
+        {
+            for (auto &item : nestedList)
+            {
+                if (item.isInteger())
+                {
+                    data.emplace_back(item.getInteger());
+                }
+                else
+                {
+                    dfs(item.getList(), data);
+                }
+            }
+        }
+
+    public:
+        NestedIterator(vector<NestedInteger> &nestedList)
+        {
+            dfs(nestedList, data);
+            cur_idx = 0;
+            n = data.size();
+        }
+
+        int next()
+        {
+            return data[cur_idx++];
+        }
+
+        bool hasNext()
+        {
+            return cur_idx != n;
+        }
+    };
+    ```
+
 - [343. Integer Break](https://leetcode.com/problems/integer-break/)
 
 	- 数学方法，列出推导式求导数优化求值，时间复杂度$O(1)$
