@@ -217,6 +217,27 @@
     }
     ```
 
+- [518. 零钱兑换 II](https://leetcode-cn.com/problems/coin-change-2/)
+
+    动态规划，时间复杂度$O(n*amount)$，其中n为给定硬币种类数，amount是需要兑换的钱数总量
+
+    ```cpp
+	int change(int amount, vector<int> &coins)
+	{
+		const int n = coins.size();
+		vector<int> dp(amount + 1, 0);
+        dp[0] = 1;
+		for (auto &v : coins)
+		{
+			for (int j = v; j <= amount; j++)
+			{
+				dp[j] += dp[j - v];
+			}
+		}
+		return dp.back();
+	}
+    ```
+
 - [521](https://leetcode.com/problems/longest-uncommon-subsequence-i/)
 
     注意理解最长非公共子串儿的正确含义，即只有两个字符串完全相同时才构成公共子串，否则最长非公共子串就是两个字符串中较长的一个。
@@ -807,16 +828,50 @@
 
 - [561](https://leetcode.com/problems/array-partition-i/)
     
-    2n个给定范围的数据划分成n组使得每组最小值求和最大，基本思路是对所有数排序后对基数位置上的数求和即可，这里类似于NMS非极大值抑制的思路，主要的时间复杂度在排序上。
+    2n个给定范围的数据划分成n组使得每组最小值求和最大，基本思路是对所有数排序后对奇数位置上的数求和即可，这里类似于NMS非极大值抑制的思路，主要的时间复杂度在排序上。
     - 基本想法是quick sort，时间复杂度$O(nlog(n))$
     - 本题给出了数据范围，可以bucket sort，时间复杂度$O(n)$，但是需要$O(N)$的额外空间
 
 - [567. 字符串的排列](https://leetcode-cn.com/problems/permutation-in-string/)
 
-    以s2的长度为窗口大小在s1上滑动，在每个窗口内检查是否为s2的排列，时间复杂度$O(mn)$，其中$m=s1.length(),n=s2.length()$
+    滑动窗口，以s1的长度为窗口大小在s2上滑动，比较s2在窗口内的部分是否为s1的全排列即可，时间复杂度$O(n)$，其中$n=s2.length()$
 
     ```cpp
-
+	bool checkInclusion(string s1, string s2)
+	{
+		const int length = 26, m = s1.length(), n = s2.length();
+		if (m <= n)
+		{
+			vector<int> count_s1(length, 0), count_s2(length, 0);
+			for (auto &ch : s1)
+			{
+				count_s1[static_cast<int>(ch - 'a')]++;
+			}
+			for (int i = 0; i < m - 1; i++)
+			{
+				count_s2[static_cast<int>(s2[i] - 'a')]++;
+			}
+			for (int i = m - 1; i < n; i++)
+			{
+				count_s2[static_cast<int>(s2[i] - 'a')]++;
+				bool anagram = true;
+				for (int i = 0; i < length; i++)
+				{
+					if (count_s1[i] != count_s2[i])
+					{
+						anagram = false;
+						break;
+					}
+				}
+				if (anagram)
+				{
+					return true;
+				}
+				count_s2[static_cast<int>(s2[i - m + 1] - 'a')]--;
+			}
+		}
+		return false;
+	}
     ```
 
 - [572. Subtree of Another Tree](https://leetcode.com/problems/subtree-of-another-tree/)

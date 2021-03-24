@@ -643,6 +643,34 @@
     };
     ```
 
+- [1338. 数组大小减半](https://leetcode-cn.com/problems/reduce-array-size-to-the-half/)
+
+    hashmap统计每个数的频率，然后从频率最高的开始删除直到数组的大小减小一半或以上，时间复杂度$O(n)$
+
+    ```cpp
+	int minSetSize(vector<int> &arr)
+	{
+		int n = arr.size() / 2;
+		unordered_map<int, int> count;
+		for (auto &v : arr)
+		{
+			count[v]++;
+		}
+		vector<int> frequencies;
+		for (auto &item : count)
+		{
+			frequencies.emplace_back(item.second);
+		}
+		sort(frequencies.rbegin(), frequencies.rend());
+		int ret = 0, m = frequencies.size();
+		for (int i = 0; n > 0 && i < m; i++)
+		{
+			ret++, n -= frequencies[i];
+		}
+		return ret;
+	}
+    ```
+
 - [1344. 时钟指针的夹角](https://leetcode-cn.com/problems/angle-between-hands-of-a-clock/)
 
     数学计算问题，用分针转过的角度减去时针转过的角度，时间复杂度$O(1)$

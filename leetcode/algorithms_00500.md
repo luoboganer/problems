@@ -333,6 +333,49 @@
     }
     ```
 
+- [438. 找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
+
+    滑动窗口，时间复杂度$O(n)$，其中n为给定字符串s的长度
+
+    ```cpp
+	vector<int> findAnagrams(string s, string p)
+	{
+		const int length = 26, n = s.length(), m = p.length();
+		vector<int> count_s(length, 0), count_p(length, 0);
+		vector<int> ret;
+		if (n >= m)
+		{
+			for (auto &ch : p)
+			{
+				count_p[static_cast<int>(ch - 'a')]++;
+			}
+			for (int i = 0; i < m - 1; i++)
+			{
+				count_s[static_cast<int>(s[i] - 'a')]++;
+			}
+			for (int i = m - 1; i < n; i++)
+			{
+				count_s[static_cast<int>(s[i] - 'a')]++;
+				bool anagram = true;
+				for (int j = 0; j < length; j++)
+				{
+					if (count_s[j] != count_p[j])
+					{
+						anagram = false;
+						break;
+					}
+				}
+				if (anagram)
+				{
+					ret.emplace_back(i - m + 1);
+				}
+				count_s[static_cast<int>(s[i - m + 1] - 'a')]--;
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [441. 排列硬币](https://leetcode-cn.com/problems/arranging-coins/)
 
     - 从第一行还是逐行排列，直到无法满足当前行时为止

@@ -1762,6 +1762,49 @@
     }
     ```
 
+- [242. 有效的字母异位词](https://leetcode-cn.com/problems/valid-anagram/)
+
+    - 统计每个字符在s和t中出现的次数，然后检验每个字符出现的频率是否相同
+
+    ```cpp
+	bool isAnagram(string s, string t)
+	{
+		if (s.length() != t.length())
+		{
+			return false;
+		}
+		const int length = 26;
+		vector<int> count(length, 0);
+		for (auto &&ch : s)
+		{
+			count[static_cast<int>(ch - 'a')]++;
+		}
+		for (auto &&ch : t)
+		{
+			count[static_cast<int>(ch - 'a')]--;
+		}
+		for (auto &&v : count)
+		{
+			if (v != 0)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+    ```
+
+    - 将s和t分别排序后比较是否完全相同
+
+    ```cpp
+	bool isAnagram(string s, string t)
+	{
+		sort(s.begin(), s.end());
+		sort(t.begin(), t.end());
+		return s.compare(t) == 0;
+	}
+    ```
+
 - [258](https://leetcode.com/problems/add-digits/)
     
     对一个数字求各个数位的和，递归直到这个数是个位数

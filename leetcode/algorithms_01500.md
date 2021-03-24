@@ -342,6 +342,70 @@
     }
     ```
 
+- [1418. 点菜展示表](https://leetcode-cn.com/problems/display-table-of-food-orders-in-a-restaurant/)
+
+    首先统计所有存在的桌号和菜品名称，然后按照每桌每个菜品的数量统计，然后输出即可，时间复杂度$O(m*n+k)$，其中m为菜品数量，n为桌子数量，k为订单数量
+
+    ```cpp
+	vector<vector<string>> displayTable(vector<vector<string>> &orders)
+	{
+		// 菜品名称与桌号统计
+		unordered_set<string> food_items;
+		unordered_set<int> table_items;
+		for (auto &order : orders)
+		{
+			food_items.insert(order[2]);
+			table_items.insert(stoi(order[1]));
+		}
+		vector<string> food_items_sorted;
+        vector<int> table_items_sorted;
+		for (auto &item : food_items)
+		{
+			food_items_sorted.emplace_back(item);
+		}
+		for (auto &item : table_items)
+		{
+			table_items_sorted.emplace_back(item);
+		}
+		sort(food_items_sorted.begin(), food_items_sorted.end());
+		sort(table_items_sorted.begin(), table_items_sorted.end());
+		unordered_map<string, int> foodItemToIdx, tableItemToIdx;
+		const int m = food_items.size(), n = table_items.size();
+		for (int i = 0; i < m; i++)
+		{
+			foodItemToIdx[food_items_sorted[i]] = i;
+		}
+		for (int i = 0; i < n; i++)
+		{
+			tableItemToIdx[to_string(table_items_sorted[i])] = i;
+		}
+		// 所有订单按照桌号排序
+		vector<vector<int>> count(n, vector<int>(m, 0));
+		for (auto &item : orders)
+		{
+			count[tableItemToIdx[item[1]]][foodItemToIdx[item[2]]]++;
+		}
+		// 返回结果
+		vector<vector<string>> ret(n + 1);
+		ret[0] = {"Table"};
+		for (auto &item : food_items_sorted)
+		{
+			ret[0].emplace_back(item);
+		}
+		for (int i = 0; i < n; i++)
+		{
+			vector<string> table(m + 1);
+			table[0] = to_string(table_items_sorted[i]);
+			for (int j = 0; j < m; j++)
+			{
+				table[j + 1] = to_string(count[i][j]);
+			}
+			ret[i + 1] = table;
+		}
+		return ret;
+	}
+    ```
+
 - [1423. 可获得的最大点数](https://leetcode-cn.com/problems/maximum-points-you-can-obtain-from-cards/)
 
     按照题目限定规则所取到的k个数必然在首尾相接且长度为k的区间内，大小为k的滑动窗口实现，时间复杂度$O(k)$
@@ -468,6 +532,37 @@
             return ret;
         }
         ```
+
+- [1433. 检查一个字符串是否可以打破另一个字符串](https://leetcode-cn.com/problems/check-if-a-string-can-break-another-string/)
+
+    将两个字符串排序后逐位比较大小即可，时间复杂度$O(nlog(n))$，其中n为给定字符串长度
+
+    ```cpp
+    class Solution
+    {
+    private:
+        bool a_break_b(string &a, string &b)
+        {
+            const int n = a.length();
+            for (int i = 0; i < n; i++)
+            {
+                if (a[i] < b[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+    public:
+        bool checkIfCanBreak(string s1, string s2)
+        {
+            sort(s1.rbegin(), s1.rend());
+            sort(s2.rbegin(), s2.rend());
+            return a_break_b(s1, s2) || a_break_b(s2, s1);
+        }
+    };
+    ```
 
 - [1437. 是否所有 1 都至少相隔 k 个元素](https://leetcode-cn.com/problems/check-if-all-1s-are-at-least-length-k-places-away/)
 
