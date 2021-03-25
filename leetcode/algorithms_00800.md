@@ -215,6 +215,28 @@
     };
     ```
 
+- [718. 最长重复子数组](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/)
+
+    最长公共子序列（LCS）问题，二维动态规划，时间复杂度$O(mn)$
+
+    ```cpp
+	int findLength(vector<int> &A, vector<int> &B)
+	{
+		const int m = A.size(), n = B.size();
+		int ret = 0;
+		vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < m; j++)
+			{
+				dp[i + 1][j + 1] = A[i] == B[j] ? dp[i][j] + 1 : 0;
+				ret = max(ret, dp[i + 1][j + 1]);
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [719. Find K-th Smallest Pair Distance](https://leetcode.com/problems/find-k-th-smallest-pair-distance/)
 
 	- 暴力算出所有可能的distance，排序然后取第k小的值，时间复杂度$O(n^2*log(n))$，leetcode评测机$\color{red}{TLE}$
