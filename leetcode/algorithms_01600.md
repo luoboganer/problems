@@ -106,6 +106,59 @@
 	}
 	```
 
+- [1530. 好叶子节点对的数量](https://leetcode-cn.com/problems/number-of-good-leaf-nodes-pairs/)
+
+	首先递归root的左右子树，计算左右子树上每个叶子节点到root的距离，然对每个节点计算左右子树的距离和小于等于给定distance的组合数量即可
+
+	```cpp
+	class Solution
+	{
+		vector<int> dfs(TreeNode *root, int const distance, int *ret)
+		{
+			vector<int> distanceToLeaf;
+			if (root)
+			{
+				if (!root->left && !root->right)
+				{
+					distanceToLeaf.emplace_back(0);
+				}
+				else
+				{
+					auto left = dfs(root->left, distance, ret);
+					auto right = dfs(root->right, distance, ret);
+					for (auto d1 : left)
+					{
+						for (auto d2 : right)
+						{
+							if (d1 + d2 + 2 <= distance)
+							{
+								(*ret)++;
+							}
+						}
+					}
+					for (auto d1 : left)
+					{
+						distanceToLeaf.emplace_back(d1 + 1);
+					}
+					for (auto d2 : right)
+					{
+						distanceToLeaf.emplace_back(d2 + 1);
+					}
+				}
+			}
+			return distanceToLeaf;
+		}
+
+	public:
+		int countPairs(TreeNode *root, int distance)
+		{
+			int ret = 0;
+			dfs(root, distance, &ret);r
+			return ret;
+		}
+	};
+	```
+
 - [1553. Minimum Number of Days to Eat N Oranges](https://leetcode.com/problems/minimum-number-of-days-to-eat-n-oranges/)
 
 	- DP，时间复杂度$O(n)$，leetcode评测机$\color{red}{Out of memory}$

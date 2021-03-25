@@ -961,9 +961,25 @@
     }
     ```
 
-- [583](https://leetcode.com/problems/delete-operation-for-two-strings/)
+- [583. 两个字符串的删除操作](https://leetcode-cn.com/problems/delete-operation-for-two-strings/)
 
-    删除最少数量的字符使得两个字符串相等即可，因为删除完成之后要保证相等，因此保留下来的是最长公共子串(LCS)，递归求解LCS会TLE，需要二维DP或者一维DP。
+    删除最少数量的字符使得两个字符串相等即可，因为删除完成之后要保证相等，因此保留下来的是最长公共子串(LCS)，递归求解LCS会TLE，需要二维DP或者一维DP，时间复杂度$O(m*n)$
+
+    ```cpp
+    int minDistance(string word1, string word2)
+	{
+		const int m = word1.length(), n = word2.length();
+		vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+		for (int i = 0; i < m; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				dp[i + 1][j + 1] = word1[i] == word2[j] ? dp[i][j] + 1 : max(dp[i + 1][j], dp[i][j + 1]);
+			}
+		}
+		return m + n - dp[m][n] * 2;
+	}
+    ```
 
 - [590. N-ary Tree Postorder Traversal](https://leetcode.com/problems/n-ary-tree-postorder-traversal/)
 

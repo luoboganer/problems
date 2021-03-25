@@ -627,9 +627,25 @@
 
     本题主要练习字典树的的构建与查询，tire tree是一种高效的单词存储与查询数据结构，比如可以完成IDE的代码自动提示语补全功能，[here](https://blog.csdn.net/v_july_v/article/details/6897097)有相关博客。
 
-- [1035](https://leetcode.com/problems/uncrossed-lines/)
+- [1035. 不相交的线](https://leetcode-cn.com/problems/uncrossed-lines/)
 
-    类似于LCS最长公共子序列的问题，二维dp或者一维dp均可，注意问题中隐藏的dp思维。
+    类似于LCS最长公共子序列的问题，二维dp或者一维dp均可，注意问题中隐藏的dp思维，时间复杂度$O(mn)$，其中$m=A.size(),n=B.size()$
+
+    ```cpp
+	int maxUncrossedLines(vector<int> &A, vector<int> &B)
+	{
+		const int m = A.size(), n = B.size();
+		vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+		for (int i = 1; i <= m; i++)
+		{
+			for (int j = 1; j <= n; j++)
+			{
+				dp[i][j] = A[i - 1] == B[j - 1] ? dp[i - 1][j - 1] + 1 : max(dp[i - 1][j], dp[i][j - 1]);
+			}
+		}
+		return dp[m][n];
+	}
+    ```
 
 - [1041. Robot Bounded In Circle](https://leetcode.com/problems/robot-bounded-in-circle/)
 
