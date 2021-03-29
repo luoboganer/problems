@@ -1,5 +1,34 @@
 # 1501-1600
 
+- [1508. 子数组和排序后的区间和](https://leetcode-cn.com/problems/range-sum-of-sorted-subarray-sums/)
+
+	用前缀和计算所有可能的子数组的和，然后排序，时间复杂度$O(n^2log(n))$
+
+	```cpp
+	int rangeSum(vector<int> &nums, int n, int left, int right)
+	{
+		vector<int> running_sum(n + 1, 0), part_sum(n * (n + 1) / 2);
+		for (int i = 0; i < n; i++)
+		{
+			running_sum[i + 1] = running_sum[i] + nums[i];
+		}
+		for (int length = 1, k = 0; length <= n; length++)
+		{
+			for (int i = length; i <= n; i++)
+			{
+				part_sum[k++] = running_sum[i] - running_sum[i - length];
+			}
+		}
+		sort(part_sum.begin(), part_sum.end());
+		long long ret = 0, mode = 1e9 + 7;
+		for (int i = left - 1; i < right; i++)
+		{
+			ret = (ret + part_sum[i]) % mode;
+		}
+		return static_cast<int>(ret);
+	}
+	```
+
 - [1519. Number of Nodes in the Sub-Tree With the Same Label](https://leetcode.com/problems/number-of-nodes-in-the-sub-tree-with-the-same-label/)
 
 	DP + DFS-topdown，时间复杂度$O(n)$

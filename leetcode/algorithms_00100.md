@@ -1207,6 +1207,45 @@
 	};
 	```
 
+- [35. 搜索插入位置](https://leetcode-cn.com/problems/search-insert-position/)
+
+    在有序数组中查找第一个大于等于给定target值的位置，时间复杂度$O(log(n))$
+
+    - STL函数lower_bound/upper_bound
+
+    ```cpp
+	int searchInsert(vector<int> &nums, int target)
+	{
+		return lower_bound(nums.begin(), nums.end(), target) - nums.begin();
+	}
+    ```
+
+    - binary search
+
+    ```cpp
+	int searchInsert(vector<int> &nums, int target)
+	{
+		int left = 0, right = nums.size() - 1;
+		while (left <= right)
+		{
+			int mid = left + ((right - left) >> 1);
+			if (nums[mid] == target)
+			{
+				return mid; // target 存在位置
+			}
+			else if (nums[mid] > target)
+			{
+				right = mid - 1;
+			}
+			else
+			{
+				left = mid + 1;
+			}
+		}
+		return left; // target 插入位置
+	}
+    ```
+
 - [37. Sudoku Solver](https://leetcode.com/problems/sudoku-solver/)
 
     填满一个数独表格，每一个格子有9中可能，用DFS的方式尝试、回溯即可，时间复杂度$O(9^k),k \le 81$，其中$k$是给定数独表中待填充空格的数量

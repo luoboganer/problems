@@ -1912,18 +1912,16 @@
     计算给定数n的阶乘($n!$)的结果中0的个数，理论上结果中0只能由5的偶数倍得来，因此计算从1到n的所有数中因子5的个数即可，时间复杂度$O(log(n))$。
 
     ```cpp
-    int trailingZeroes(int n)
-    {
-        int ans = 0, power = 1;
-        long base = 5;
-        while (base <= n)
-        {
-            ans += n / base;
-            base *= 5;
-            power++;
-        }
-        return ans;
-    }
+	int trailingZeroes(int n)
+	{
+		int ret = 0;
+		while (n)
+		{
+			n /= 5;
+			ret += n;
+		}
+		return ret;
+	}
     ```
 
 - [173](https://leetcode.com/problems/binary-search-tree-iterator/)

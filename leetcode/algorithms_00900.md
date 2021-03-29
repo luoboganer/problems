@@ -207,6 +207,47 @@
     };
     ```
 
+- [814. 二叉树剪枝](https://leetcode-cn.com/problems/binary-tree-pruning/)
+
+    DFS递归处理root的左右子树，然后检查若root的值为0且左右子树为空，则将root剪掉，时间复杂度$O(n)$，其中n为给定二叉树root的节点总数
+
+    ```cpp
+    class Solution
+    {
+    private:
+        bool dfs(TreeNode *root)
+        {
+            if (root)
+            {
+                if (root->left && dfs(root->left))
+                {
+                    root->left = nullptr;
+                }
+                if (root->right && dfs(root->right))
+                {
+                    root->right = nullptr;
+                }
+                if (root->val == 0 && !root->left && !root->right)
+                {
+                    return true; // 该节点需要被剪枝
+                }
+                return false;
+            }
+            return true;
+        }
+
+    public:
+        TreeNode *pruneTree(TreeNode *root)
+        {
+            if (dfs(root))
+            {
+                root = nullptr;
+            }
+            return root;
+        }
+    };
+    ```
+
 - [817. Linked List Components](https://leetcode.com/problems/linked-list-components/)
 
     用数组标记G中的所有数为true，然后遍历链表head，对head中相邻的两个节点cur和cur->next，如果值的标记都是flag，则将cur值的标记改为false，最后统计标记中有多少个true即可
@@ -239,6 +280,80 @@
         }
         return ret;
     }
+    ```
+
+- [819. 最常见的单词](https://leetcode-cn.com/problems/most-common-word/)
+
+    hashmap统计单词出现频率和被禁用单词列表，时间复杂度$O(n)$
+
+    **字符串解析时注意空格和标点符号的处理**
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<string> stringToTokens(string sentence)
+        {
+            vector<string> ret;
+            if (sentence.size() > 0)
+            {
+                sentence.push_back(' '); // for the last token
+                unordered_set<char> punctuation;
+                string punctuation_all = " !?',;.";
+                for (auto &ch : punctuation_all)
+                {
+                    punctuation.insert(ch);
+                }
+                string token;
+                for (auto &&ch : sentence)
+                {
+                    if (punctuation.find(ch) == punctuation.end())
+                    {
+                        token.push_back(islower(ch) ? ch : tolower(ch));
+                    }
+                    else
+                    {
+                        if (!token.empty())
+                        {
+                            ret.push_back(token);
+                            token.clear();
+                        }
+                    }
+                }
+            }
+            return ret;
+        }
+
+    public:
+        string mostCommonWord(string paragraph, vector<string> &banned)
+        {
+            unordered_map<string, int> frequencies;
+            unordered_set<string> banned_set;
+            for (auto &word : banned)
+            {
+                banned_set.insert(word);
+            }
+            vector<string> words = stringToTokens(paragraph);
+            for (auto &word : words)
+            {
+                if (banned_set.find(word) == banned_set.end())
+                {
+                    frequencies[word]++;
+                }
+            }
+            int max_frequency = 0;
+            string ret;
+            for (auto &item : frequencies)
+            {
+                if (item.second > max_frequency)
+                {
+                    ret = item.first;
+                    max_frequency = item.second;
+                }
+            }
+            return ret;
+        }
+    };
     ```
 
 - [824. Goat Latin](https://leetcode-cn.com/problems/goat-latin/)

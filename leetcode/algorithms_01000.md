@@ -132,7 +132,7 @@
 
 - [914. X of a Kind in a Deck of Cards](https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/)
 
-    当给定数组deck长度小于2时明显不可能，当长度大于等于2时，统计每个不同的数出现的次数（桶统计或者hashmap），然后求所有次数的最大公约数（X）大约等于2即可
+    - 给定数组deck长度小于2时明显不可能，当长度大于等于2时，统计每个不同的数出现的次数（桶统计或者hashmap），然后求所有次数的最大公约数（X）大约等于2即可
 
     ```cpp
     int gcd(int a, int b)
@@ -179,6 +179,38 @@
         }
         return ret;
     }
+    ```
+
+    - 统计每种值的卡牌频率，然后检查这些频率之间的最大公约数是否大于等于2
+
+    ```cpp
+	bool hasGroupsSizeX(vector<int> &deck)
+	{
+		unordered_map<int, int> count;
+		for (auto &v : deck)
+		{
+			count[v]++;
+		}
+		vector<int> frequencies;
+		for (auto &item : count)
+		{
+			frequencies.emplace_back(item.second);
+		}
+		int min_freq = *min_element(frequencies.begin(), frequencies.end());
+		for (int v = 2, n = frequencies.size(); v <= min_freq; v++)
+		{
+			bool divided = true;
+			for (int i = 0; divided && i < n; i++)
+			{
+				divided = frequencies[i] % v == 0;
+			}
+			if (divided)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
     ```
 
 - [915. Partition Array into Disjoint Intervals](https://leetcode.com/problems/partition-array-into-disjoint-intervals/)
