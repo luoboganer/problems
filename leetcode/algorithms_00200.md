@@ -1,6 +1,6 @@
 # 101-200
 
-- [101](https://leetcode.com/problems/symmetric-tree/)
+- [101. 对称二叉树](https://leetcode-cn.com/problems/symmetric-tree/)
 
     分析一棵树对称问题的本质，是：
 
@@ -9,6 +9,65 @@
     - 非空的非叶子节点对称的条件有：
         - 左右子树同时存在且左右子树的值相同（对称）
         - 左子树的左子树和右子树的右子树递归对称，左子树的右子树和右子树的左子树递归对称
+
+    - 递归写法，队列实现，时间复杂度$O(n)$，其中n为节点总数
+
+    ```cpp
+    class Solution
+    {
+    private:
+        bool dfs(TreeNode *a, TreeNode *b)
+        {
+            return (a == nullptr && b == nullptr) || (a && b && a->val == b->val && dfs(a->left, b->right) && dfs(a->right, b->left));
+        }
+
+    public:
+        bool isSymmetric(TreeNode *root)
+        {
+            if (root)
+            {
+                return dfs(root->left, root->right);
+            }
+            return true;
+        }
+    };
+    ```
+
+    - 非递归写法，队列实现，时间复杂度$O(n)$，其中n为节点总数
+
+    ```cpp
+	bool isSymmetric(TreeNode *root)
+	{
+		if (root)
+		{
+			queue<TreeNode *> qe{{root->left, root->right}};
+			while (!qe.empty())
+			{
+				TreeNode *a = qe.front();
+				qe.pop();
+				TreeNode *b = qe.front();
+				qe.pop();
+				if (a && b && a->val == b->val)
+				{
+					// 按照对称每两个一组入队
+					qe.push(a->left);
+					qe.push(b->right);
+					qe.push(a->right);
+					qe.push(b->left);
+				}
+				else if (!a && !b)
+				{
+					continue; // 对应位置为两个空节点也是对称的
+				}
+				else
+				{
+					return false; //出现不对称的节点对
+				}
+			}
+		}
+		return true;
+	}
+    ```
 
 - [104](https://leetcode.com/problems/maximum-depth-of-binary-tree/)
 
