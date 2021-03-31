@@ -1451,6 +1451,55 @@
 	}
     ```
 
+- [151. 翻转字符串里的单词](https://leetcode-cn.com/problems/reverse-words-in-a-string/)
+
+    字符串解析，时间复杂度$O(n)$
+
+    ```cpp
+    class Solution
+    {
+    private:
+        vector<string> stringToTokens(string sentence, char delim)
+        {
+            vector<string> ret;
+            if (sentence.size() > 0)
+            {
+                sentence.push_back(delim); // for the last token
+                string token;
+                for (auto &&ch : sentence)
+                {
+                    if (ch == delim)
+                    {
+                        if (!token.empty())
+                        {
+                            ret.push_back(token);
+                            token.clear();
+                        }
+                    }
+                    else
+                    {
+                        token.push_back(ch);
+                    }
+                }
+            }
+            return ret;
+        }
+
+    public:
+        string reverseWords(string s)
+        {
+            vector<string> words = stringToTokens(s, ' ');
+            string ret;
+            for (auto it = words.rbegin(); it != words.rend(); it++)
+            {
+                ret += ' ';
+                ret += (*it);
+            }
+            return ret.substr(1);
+        }
+    };
+    ```
+
 - [152. Maximum Product Subarray](https://leetcode.com/problems/maximum-product-subarray/)
 
 	**当nums中的元素均为正数的时候，本题可以通过取对数转化为[53. Maximum Subarray](https://leetcode.com/problems/maximum-subarray/)求连续子数组的最大和问题**
