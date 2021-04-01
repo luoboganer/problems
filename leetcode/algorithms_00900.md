@@ -1053,6 +1053,38 @@
     }
     ```
 
+- [865. 具有所有最深节点的最小子树](https://leetcode-cn.com/problems/smallest-subtree-with-all-the-deepest-nodes/)
+
+    递归检查左右子树的最大深度，如果左右子树深度相同在返回root节点，如果左右子树深度不同则返回深度更深的子树，时间复杂度$O(n)$，其中n为给定树的节点总数
+
+    ```cpp
+    class Solution
+    {
+    private:
+        pair<int, TreeNode *> dfs(TreeNode *root)
+        {
+            /***
+            * pair<int, TreeNode *>
+            * <最大深度，包含所有最大深度叶节点的root节点>
+            */
+            if (root)
+            {
+                auto left = dfs(root->left), right = dfs(root->right);
+                int maxDepth = max(left.first, right.first) + 1;
+                TreeNode *parent = left.first == right.first ? root : (left.first > right.first ? left.second : right.second);
+                return make_pair(maxDepth, parent);
+            }
+            return make_pair(0, nullptr); // 空节点深度为0
+        }
+
+    public:
+        TreeNode *subtreeWithAllDeepest(TreeNode *root)
+        {
+            return dfs(root).second;
+        }
+    };
+    ```
+
 - [874](https://leetcode.com/problems/walking-robot-simulation/)
 
     用坐标$(0,1)-north,(1,0)-east,(0,-1)-north,(-1,0)-west$来表示四个方向模拟机器人行走过程即可，注意题目要求返回的是机器人在行走过程中距离原点的最远距离，而不是机器人结束行走后距离原点的最终距离。

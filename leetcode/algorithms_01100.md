@@ -172,6 +172,50 @@
 	}
     ```
 
+- [1006. 笨阶乘](https://leetcode-cn.com/problems/clumsy-factorial/)
+
+    - 模拟计算，时间复杂度$O(N)$
+
+    ```cpp
+	int clumsy(int N)
+	{
+		vector<int> suffixes{0, 1, 2, 6};
+		int ret = suffixes[N % 4];
+		if (N >= 4)
+		{
+			ret += N * (N - 1) / (N - 2) + (N - 3);
+			N -= 4;
+			while (N >= 4)
+			{
+				ret += -(N * (N - 1) / (N - 2)) + (N - 3);
+				N -= 4;
+			}
+            ret -= suffixes[N] * 2;
+		}
+		return ret;
+	}
+    ```
+
+    - 数学推导，时间复杂度$O(1)$
+
+    ```cpp
+	int clumsy(int N)
+	{
+		vector<int> suffixes{1, 2, 2, -1};
+		vector<int> prefixes{0, 1, 2, 6, 7};
+		int ret;
+		if (N > 4)
+		{
+			ret = N + suffixes[N % 4];
+		}
+		else
+		{
+			ret = prefixes[N];
+		}
+		return ret;
+	}
+    ```
+
 - [1008](https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/)
 
     从二叉搜索树BST的先序遍历preorder开始重建BST

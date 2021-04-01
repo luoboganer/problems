@@ -261,6 +261,38 @@
 	}
     ```
 
+- [1123. 最深叶节点的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-deepest-leaves/)
+
+    递归检查左右子树的最大深度，如果左右子树深度相同在返回root节点，如果左右子树深度不同则返回深度更深的子树，时间复杂度$O(n)$，其中n为给定树的节点总数
+
+    ```cpp
+    class Solution
+    {
+    private:
+        pair<int, TreeNode *> dfs(TreeNode *root)
+        {
+            /***
+            * pair<int, TreeNode *>
+            * <最大深度，包含所有最大深度叶节点的root节点>
+            */
+            if (root)
+            {
+                auto left = dfs(root->left), right = dfs(root->right);
+                int maxDepth = max(left.first, right.first) + 1;
+                TreeNode *parent = left.first == right.first ? root : (left.first > right.first ? left.second : right.second);
+                return make_pair(maxDepth, parent);
+            }
+            return make_pair(0, nullptr); // 空节点深度为0
+        }
+
+    public:
+        TreeNode* lcaDeepestLeaves(TreeNode* root)
+        {
+            return dfs(root).second;
+        }
+    };
+    ```
+
 - [1128](https://leetcode.com/problems/number-of-equivalent-domino-pairs/)
 
     - brute force[$O(n^2)$]

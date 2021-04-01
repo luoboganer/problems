@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-13 15:52:22
+ * @LastEditTime: 2021-04-01 11:26:56
  * @Software: Visual Studio Code
  * @Description: 剑指Offer:名企面试官精讲典型编程题
 -->
@@ -187,6 +187,33 @@
 		}
 		return dp.back().back();
 	}
+    ```
+
+- [剑指 Offer 26. 树的子结构](https://leetcode-cn.com/problems/shu-de-zi-jie-gou-lcof/)
+
+    递归解决，首先判定B为空时不是任何树的子结构，当B为非空时递归盘点B是A的一部分/B是A的左子树的子结构/B是A的右子树的子结构
+
+    **判定B是以A为根节点的一部分时满足以下条件之一即可**
+    - A和B均为空节点
+    - A和B均为非空节点且节点值相同，且：
+        - B有左子树时A的左子树与B的左子树递归相同
+        - B有右子树时A的右子树与B的右子树递归相同
+
+    ```cpp
+    class Solution
+    {
+    private:
+        bool subTreeNodeA(TreeNode *a, TreeNode *b)
+        {
+            return (!a && !b) || (a && b && a->val == b->val && ((!b->left && !b->right) || (subTreeNodeA(a->left, b->left) && !b->right) || (!b->left && subTreeNodeA(a->right, b->right)) || (b->left && b->right && subTreeNodeA(a->left, b->left) && subTreeNodeA(a->right, b->right))));
+        }
+
+    public:
+        bool isSubStructure(TreeNode *A, TreeNode *B)
+        {
+            return (A && B) && (subTreeNodeA(A, B) || isSubStructure(A->left, B) || isSubStructure(A->right, B));
+        }
+    };
     ```
 
 - [剑指 Offer 30. 包含min函数的栈](https://leetcode-cn.com/problems/bao-han-minhan-shu-de-zhan-lcof/)

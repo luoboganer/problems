@@ -893,6 +893,106 @@
 	};
 	```
 
+    - Trie字典树实现
+
+    ```cpp
+    class MagicDictionary
+    {
+    private:
+        struct TrieNode
+        {
+            bool is_word;
+            TrieNode *next[26];
+
+            TrieNode()
+            {
+                is_word = false;
+                for (int i = 0; i < 26; i++)
+                {
+                    next[i] = nullptr;
+                }
+            }
+        };
+
+        class TrieTree
+        {
+        private:
+            TrieNode *dictionary;
+
+        public:
+            TrieTree()
+            {
+                dictionary = new TrieNode();
+            }
+            void insert(string &word)
+            {
+                TrieNode *cur = dictionary;
+                for (auto &ch : word)
+                {
+                    int idx = static_cast<int>(ch - 'a');
+                    if (!cur->next[idx])
+                    {
+                        cur->next[idx] = new TrieNode();
+                    }
+                    cur = cur->next[idx];
+                }
+                cur->is_word = true;
+            }
+            bool search(string word)
+            {
+                TrieNode *cur = dictionary;
+                const int n = word.length();
+                for (int i = 0; i < n; i++)
+                {
+                    int idx = static_cast<int>(word[i] - 'a');
+                    if (cur->next[idx] == nullptr)
+                    {
+                        return false;
+                    }
+                    cur = cur->next[idx];
+                }
+                return cur->is_word;
+            }
+        };
+
+        TrieTree *dictionary;
+
+    public:
+        /** Initialize your data structure here. */
+        MagicDictionary()
+        {
+            this->dictionary = new TrieTree();
+        }
+
+        void buildDict(vector<string> dictionary)
+        {
+            for (auto &word : dictionary)
+            {
+                this->dictionary->insert(word);
+            }
+        }
+
+        bool search(string searchWord)
+        {
+            const int length = 26, n = searchWord.length();
+            for (int i = 0; i < n; i++)
+            {
+                char ch = searchWord[i];
+                for (char c = 'a'; c <= 'z'; c++)
+                {
+                    searchWord[i] = c;
+                    if (c != ch && this->dictionary->search(searchWord))
+                    {
+                        return true;
+                    }
+                }
+                searchWord[i] = ch; // 回溯
+            }
+            return false;
+        }
+    };
+    ```
+
 - [679. 24 Game](https://leetcode.com/problems/24-game/)
 
 	DFS深度优先搜索 + 回溯
