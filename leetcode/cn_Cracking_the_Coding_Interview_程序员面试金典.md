@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-22 21:34:20
+ * @LastEditTime: 2021-04-02 09:35:52
  * @Software: Visual Studio Code
  * @Description: 程序员面试金典
 -->
@@ -2077,6 +2077,33 @@
 			{
 				ret = min(ret, abs(a - b));
 			}
+		}
+		return ret;
+	}
+	```
+
+- [面试题 17.21. 直方图的水量](https://leetcode-cn.com/problems/volume-of-histogram-lcci/)
+
+	扫描各个柱子高度的过程中维护一个单调降序栈，时间复杂度$O(n)$
+
+	```cpp
+	int trap(vector<int> &height)
+	{
+		const int n = height.size();
+		stack<int> st; // 维护一个单调递减栈
+		int ret = 0;
+		for (int i = 0; i < n; ++i)
+		{
+			while (!st.empty() && height[i] > height[st.top()])
+			{
+				int top = st.top();
+				st.pop();
+				if (!st.empty())
+				{
+					ret += (min(height[i], height[st.top()]) - height[top]) * (i - st.top() - 1);
+				}
+			}
+			st.push(i); // 当前值入栈
 		}
 		return ret;
 	}
