@@ -500,6 +500,174 @@
 
     本题和[442](https://leetcode.com/problems/find-all-duplicates-in-an-array/)很像，在遍历数组的过程中可以简单的用一个bool数组来标记每个下标是否出现即可，在不使用额外空间的情况下，可以用正负标记来代替true和false的bool标记在原数组中标记，只不过每次读取原数组的时候取绝对值即可。
 
+- [449. 序列化和反序列化二叉搜索树](https://leetcode-cn.com/problems/serialize-and-deserialize-bst/)
+
+    - 按照普通二叉树序列化/反序列化
+
+    ```cpp
+    class Codec
+    {
+    private:
+        vector<string> stringToTokens(string sentence, char delim)
+        {
+            vector<string> ret;
+            if (sentence.size() > 0)
+            {
+                sentence.push_back(delim); // for the last token
+                string token;
+                for (auto &&ch : sentence)
+                {
+                    if (ch == delim)
+                    {
+                        if (!token.empty())
+                        {
+                            ret.push_back(token);
+                            token.clear();
+                        }
+                    }
+                    else
+                    {
+                        token.push_back(ch);
+                    }
+                }
+            }
+            return ret;
+        }
+
+    public:
+        // Encodes a tree to a single string.
+        string serialize(TreeNode *root)
+        {
+            vector<string> tokens;
+            queue<TreeNode *> bfs{{root}};
+            while (!bfs.empty())
+            {
+                TreeNode *cur = bfs.front();
+                bfs.pop();
+                if (cur)
+                {
+                    tokens.emplace_back(to_string(cur->val));
+                    bfs.push(cur->left);
+                    bfs.push(cur->right);
+                }
+                else
+                {
+                    tokens.emplace_back("NULL");
+                }
+            }
+            int right = tokens.size() - 1;
+            while (right >= 0 && tokens[right].compare("NULL") == 0)
+            {
+                right--;
+            }
+            string ret;
+            for (int i = 0; i <= right; i++)
+            {
+                ret += tokens[i] + ',';
+            }
+            return '[' + ret.substr(0, ret.length() - 1) + ']';
+        }
+
+        // Decodes your encoded data to tree.
+        TreeNode *deserialize(string data)
+        {
+            vector<string> tokens = stringToTokens(data.substr(1, data.length() - 2), ',');
+            TreeNode *auxiliary = new TreeNode(0);
+            queue<TreeNode *> bfs{{auxiliary}};
+            int count = 1;
+            for (auto token : tokens)
+            {
+                if (isdigit(token[0]))
+                {
+                    TreeNode *temp = new TreeNode(stoi(token));
+                    count == 0 ? bfs.front()->left = temp : bfs.front()->right = temp;
+                    bfs.push(temp);
+                }
+                count++;
+                if (count == 2)
+                {
+                    bfs.pop();
+                    count = 0;
+                }
+            }
+            return auxiliary->right;
+        }
+    };
+    ```
+
+    - 利用二叉搜索树的特性
+
+    ```cpp
+    class Codec
+    {
+    private:
+        vector<int> stringToIntegerVector(string input)
+        {
+            vector<int> output;
+            input = input.substr(1, input.length() - 2);
+            stringstream ss;
+            ss.str(input);
+            string item;
+            char delim = ',';
+            while (getline(ss, item, delim))
+            {
+                output.push_back(stoi(item));
+            }
+            return output;
+        }
+        TreeNode *dfs(vector<int> &nums, int left, int right)
+        {
+            TreeNode *root = nullptr;
+            if (left <= right)
+            {
+                root = new TreeNode(nums[left]);
+                int i = left + 1;
+                while (i <= right && nums[i] < nums[left])
+                {
+                    i++;
+                }
+                root->left = dfs(nums, left + 1, i - 1);
+                root->right = dfs(nums, i, right);
+            }
+            return root;
+        }
+
+    public:
+        // Encodes a tree to a single string.
+        string serialize(TreeNode *root)
+        {
+            string ret;
+            stack<TreeNode *> st;
+            TreeNode *cur = root;
+            while (cur || !st.empty())
+            {
+                if (cur)
+                {
+                    ret += to_string(cur->val) + ',';
+                    if (cur->right)
+                    {
+                        st.push(cur->right);
+                    }
+                    cur = cur->left;
+                }
+                else
+                {
+                    cur = st.top();
+                    st.pop();
+                }
+            }
+            return root ? '[' + ret.substr(0, ret.length() - 1) + ']' : "[]";
+        }
+
+        // Decodes your encoded data to tree.
+        TreeNode *deserialize(string data)
+        {
+            vector<int> nums = stringToIntegerVector(data);
+            return dfs(nums, 0, nums.size() - 1);
+        }
+    };
+    ```
+
 - [451. 根据字符出现频率排序](https://leetcode-cn.com/problems/sort-characters-by-frequency/)
 
     统计每个字符出现的频率，降序排序，将每个字符加入结果字符串中
