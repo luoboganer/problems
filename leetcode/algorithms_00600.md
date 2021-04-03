@@ -122,64 +122,48 @@
 	}
     ```    
 
-- [508. Most Frequent Subtree Sum](https://leetcode.com/problems/most-frequent-subtree-sum/)
+- [508. 出现次数最多的子树元素和](https://leetcode-cn.com/problems/most-frequent-subtree-sum/)
 
     递归地或者非递归自底向上的求所有节点的和，然后用hashmap统计每个值出现的频率，求频率最大的值
 
     ```cpp
-    void sumOfNodes(TreeNode *root, unordered_map<int, int> &count)
+    class Solution
     {
-        if (root)
+    private:
+        int dfs(TreeNode *root, unordered_map<int, int> &count)
         {
-            int v = root->val;
-            if (root->left)
+            int val = 0;
+            if (root)
             {
-                sumOfNodes(root->left, count);
-                v += root->left->val;
+                val = root->val + dfs(root->left, count) + dfs(root->right, count);
+                count[val]++;
             }
-            if (root->right)
-            {
-                sumOfNodes(root->right, count);
-                v += root->right->val;
-            }
-            root->val = v;
-            if (count.find(v) != count.end())
-            {
-                count[v]++;
-            }
-            else
-            {
-                count[v] = 1;
-            }
+            return val;
         }
-    }
-    vector<int> findFrequentTreeSum(TreeNode *root)
-    {
-        unordered_map<int, int> count;
-        sumOfNodes(root, count);
-        vector<int> ans;
-        int frequency;
-        for (auto &&item : count)
+
+    public:
+        vector<int> findFrequentTreeSum(TreeNode *root)
         {
-            if (ans.empty())
+            unordered_map<int, int> count;
+            count[dfs(root, count)]++;
+            vector<int> ret;
+            int max_freq = 0;
+            for (auto &[v, freq] : count)
             {
-                ans.push_back(item.first), frequency = item.second;
-            }
-            else
-            {
-                if (item.second == frequency)
+                if (freq > max_freq)
                 {
-                    ans.push_back(item.first);
+                    max_freq = freq;
+                    ret.clear();
+                    ret.emplace_back(v);
                 }
-                else if (item.second > frequency)
+                else if (freq == max_freq)
                 {
-                    ans.clear();
-                    ans.push_back(item.first), frequency = item.second;
+                    ret.emplace_back(v);
                 }
             }
+            return ret;
         }
-        return ans;
-    }
+    };
     ```
 
 - [509](https://leetcode.com/problems/fibonacci-number/)
