@@ -1099,6 +1099,28 @@
     }
     ```
 
+- [781. 森林中的兔子](https://leetcode-cn.com/problems/rabbits-in-forest/)
+
+    hashmap统计兔子答案的种类数，其中答案为0没有其它兔子颜色和自己相同，答案为v的至少有$v+1$只兔子和自己颜色相同，答案为v的兔子数量超过$v+1$则另有一组数量为$v+1$的兔子，时间复杂度$O(n)$
+
+    ```cpp
+	int numRabbits(vector<int> &answers)
+	{
+		unordered_map<int, int> count;
+		int ret = 0;
+		for (auto &v : answers)
+		{
+			// v == 0 则没有和回答问题的兔子颜色相同的其它兔子
+			v == 0 ? ret++ : count[v]++;
+		}
+		for (auto &[v, freq] : count)
+		{
+			ret += ceil(1.0 * freq / (v + 1)) * (v + 1);
+		}
+		return ret;
+	}
+    ```
+
 - [783. 二叉搜索树节点最小距离](https://leetcode-cn.com/problems/minimum-distance-between-bst-nodes/)
 
     本题与[530. 二叉搜索树的最小绝对差](https://leetcode-cn.com/problems/minimum-absolute-difference-in-bst/)完全相同，对二叉搜索树BST进行中序遍历即可
