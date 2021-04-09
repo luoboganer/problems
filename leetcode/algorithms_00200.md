@@ -1594,6 +1594,8 @@
 
 	寻找排序数组(**有重复值，duplicated**)旋转后的基准点(最小值)，binary search，平均时间复杂度$O(log(n))$，在最坏的情况下(整个数组所有数字全部相同)，会退化到$O(nlog(n))$，
 
+    - 递归写法
+
 	```cpp
 	class Solution
 	{
@@ -1627,6 +1629,32 @@
 		}
 	};
 	```
+
+    - 非递归写法
+
+    ```cpp
+	int findMin(vector<int> &nums)
+	{
+		int left = 0, right = nums.size() - 1;
+		while (left < right)
+		{
+			int mid = left + ((right - left) >> 1);
+			if (nums[mid] > nums[right])
+			{
+				left = mid + 1;
+			}
+			else if (nums[mid] < nums[right])
+			{
+				right = mid;
+			}
+			else
+			{
+				right--;
+			}
+		}
+		return nums[left];
+	}
+    ```
 
     - some test cases
 
