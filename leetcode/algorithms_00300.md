@@ -1834,6 +1834,29 @@
 	return (n - 1) % 9 + 1
     ```
 
+- [263. 丑数](https://leetcode-cn.com/problems/ugly-number/)
+
+    对于正整数，直接去除所有可能的素因子${2,3,5}$，然后判断是否为1，注意非正整数不是丑数
+
+    ```cpp
+	bool isUgly(int n)
+	{
+		if (n > 0)
+		{
+			vector<int> factors{2, 3, 5};
+			for (auto f : factors)
+			{
+				while (n % f == 0)
+				{
+					n /= f;
+				}
+			}
+			return n == 1;
+		}
+		return false;
+	}
+    ```
+
 - [264](https://leetcode.com/problems/ugly-number-ii/)
 
     定义：素因子只有2,3,5的数正整数成为ugly数，1是特殊的ugly数。
