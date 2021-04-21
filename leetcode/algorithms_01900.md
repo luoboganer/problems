@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-28 21:52:04
+ * @LastEditTime: 2021-04-21 12:02:23
  * @Software: Visual Studio Code
  * @Description: 1801-1900
 -->
@@ -86,5 +86,99 @@
 		return ret;
 	}
     ```
+
+- [1813. 句子相似性 III](https://leetcode-cn.com/problems/sentence-similarity-iii/)
+
+	将句子转化为单词序列后，从左右两侧逼近，时间复杂度$O(n)$
+
+	```cpp
+	class Solution
+	{
+	private:
+		vector<string> stringToTokens(string sentence, char delim)
+		{
+			vector<string> ret;
+			if (sentence.size() > 0)
+			{
+				sentence.push_back(delim); // for the last token
+				string token;
+				for (auto &&ch : sentence)
+				{
+					if (ch == delim)
+					{
+						if (!token.empty())
+						{
+							ret.push_back(token);
+							token.clear();
+						}
+					}
+					else
+					{
+						token.push_back(ch);
+					}
+				}
+			}
+			return ret;
+		}
+		bool match(vector<string> &a, vector<string> &b)
+		{
+			if (a.size() < b.size())
+			{
+				return match(b, a);
+			}
+			int left = 0, right1 = a.size() - 1, right2 = b.size() - 1;
+			int right = min(right1, right2);
+			while (left <= right && a[left].compare(b[left]) == 0)
+			{
+				left++;
+			}
+			while (left <= right && a[right1].compare(b[right2]) == 0)
+			{
+				right1--, right2--;
+				right--;
+			}
+			return left > right2;
+		}
+
+	public:
+		bool areSentencesSimilar(string sentence1, string sentence2)
+		{
+			vector<string> words1 = stringToTokens(sentence1, ' ');
+			vector<string> words2 = stringToTokens(sentence2, ' ');
+			return match(words1, words2);
+		}
+	};
+	```
+
+- [1817. 查找用户活跃分钟数](https://leetcode-cn.com/problems/finding-the-users-active-minutes/)
+
+	排序+数组扫描统计，时间复杂度$O(nlog(n))$
+
+	```cpp
+	vector<int> findingUsersActiveMinutes(vector<vector<int>> &logs, int k)
+	{
+		vector<int> answer(k, 0);
+		const int n = logs.size();
+		sort(logs.begin(), logs.end(), [](const auto &a, const auto &b) -> bool { return a[0] < b[0] || (a[0] == b[0] && a[1] < b[1]); });
+		logs.emplace_back(vector<int>{logs.back()[0] + 1, -1}); // 哨兵
+		for (int i = 1, count = 1; i <= n; i++)
+		{
+			if (logs[i][0] != logs[i - 1][0])
+			{
+				// 非同一个用户
+				answer[count - 1]++;
+				count = 1;
+			}
+			else
+			{
+				if (logs[i][1] != logs[i - 1][1])
+				{
+					count++;
+				}
+			}
+		}
+		return answer;
+	}
+	```
 
 - [...](123)

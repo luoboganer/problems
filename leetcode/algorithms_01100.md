@@ -908,6 +908,25 @@
     }
     ```
 
+- [1701. 平均等待时间](https://leetcode-cn.com/problems/average-waiting-time/)
+
+    顺序扫描，计算每位顾客的等待时间后取平均值即可，时间复杂度$O(n)$
+
+    ```cpp
+	double averageWaitingTime(vector<vector<int>> &customers)
+	{
+		const int n = customers.size();
+		double auxiliary_n = n, ret = 0;
+		int current_time = 0;
+		for (auto &customer : customers)
+		{
+			current_time = max(customer[0], current_time) + customer[1];
+			ret += (current_time - customer[0]) / auxiliary_n;
+		}
+		return ret;
+	}
+    ```
+
 - [1072. Flip Columns For Maximum Number of Equal Rows](https://leetcode.com/problems/flip-columns-for-maximum-number-of-equal-rows/)
 
 	- 假设$ith row$在flip之后与$jth row$完全一样，在flip之前也是完全一样的，假设$ith row$在flip之后与$kth row$完全相反，则在flip之前也是完全相反的，因此问题转化为寻找与$ith row$完全相反或完全相同的行的数量，时间复杂度$O(m^2*n)$，leetcode评测机$\color{red}{TLE}$
