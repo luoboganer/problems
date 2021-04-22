@@ -934,6 +934,56 @@
 	
     ```
 
+- [363. 矩形区域不超过 K 的最大数值和](https://leetcode-cn.com/problems/max-sum-of-rectangle-no-larger-than-k/)
+
+    固定矩形区域的宽度，然后在宽度范围内沿着列方向计算前缀和，使用有序集合存储并查找和不超过k的部分，时间复杂度$O(n^2mlog(m))$，其中$m,n$为给定矩阵的高和宽
+
+    ```cpp
+	int maxSumSubmatrix(vector<vector<int>> &matrix, int k)
+	{
+		int ret = 0;
+		if (matrix.size() > 0 && matrix[0].size() > 0)
+		{
+			ret = numeric_limits<int>::min();
+			const int rows = matrix.size(), cols = matrix[0].size();
+			// 计算矩阵每一行的前缀和
+			vector<vector<int>> prefixSumRow(rows, vector<int>(cols + 1, 0));
+			for (int i = 0; i < rows; i++)
+			{
+				for (int j = 0; j < cols; j++)
+				{
+					prefixSumRow[i][j + 1] = matrix[i][j] + prefixSumRow[i][j];
+				}
+			}
+			// 固定矩形区域的宽度
+			for (int width = 1; width <= cols; width++)
+			{
+				for (int left = 0, right = width; right <= cols; left++, right++)
+				{
+					vector<int> nums(rows, 0);
+					for (int i = 0; i < rows; i++)
+					{
+						nums[i] = prefixSumRow[i][right] - prefixSumRow[i][left];
+					}
+					int prefixSum = 0;
+					set<int> numsSums{0}; // 有序集合
+					for (auto &v : nums)
+					{
+						prefixSum += v;
+						auto lb = numsSums.lower_bound(prefixSum - k); // s-k<=lb，则有k>=s-lb
+						if (lb != numsSums.end())
+						{
+							ret = max(ret, prefixSum - (*lb));
+						}
+                        numsSums.insert(prefixSum);
+					}
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
 - [367](https://leetcode.com/problems/valid-perfect-square/)
 
     线性时间内判断一个数是否是完全平方数而不用开方函数，代码如下：
