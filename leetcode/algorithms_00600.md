@@ -755,6 +755,32 @@
 	};
 	```
 
+- [554. 砖墙](https://leetcode-cn.com/problems/brick-wall/)
+
+    使用HashMap统计每一块砖的右边缘（缝隙处）的长度数量即可，时间复杂度$O(n*m)$，其中$n*m$是所有砖块的总量
+
+    ```cpp
+	int leastBricks(vector<vector<int>> &wall)
+	{
+		unordered_map<int, int> count;
+		for (auto &row : wall)
+		{
+			const int n = row.size() - 1;
+			for (int i = 0, base = 0; i < n; i++)
+			{
+				base += row[i];
+				count[base]++;
+			}
+		}
+		int max_count = 0;
+		for (auto &[r, freq] : count)
+		{
+			max_count = max(max_count, freq);
+		}
+		return wall.size() - max_count;
+	}
+    ```
+
 - [560. Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/)
 
     在给定数组nums中，求其和为K的子数组的数量，如果数组中不含有负数，可以使用滑动窗口计算

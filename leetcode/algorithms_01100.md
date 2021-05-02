@@ -298,6 +298,38 @@
     }
     ```
 
+- [1011. 在 D 天内送达包裹的能力](https://leetcode-cn.com/problems/capacity-to-ship-packages-within-d-days/)
+
+    确定需要的船体载重最大值和最小值，然后在中间二分搜索，转化为判定问题，时间复杂度$O(nlog(\sum_{i=0}^{n-1}w_i))$
+
+    ```cpp
+	int shipWithinDays(vector<int> &weights, int D)
+	{
+		int left = 0, right = 0;
+		for (auto &w : weights)
+		{
+			left = max(left, w), right += w;
+		}
+		while (left < right)
+		{
+			int mid = left + ((right - left) >> 1);
+			// 转化为船的载重为mid时是否可以完成任务（判定问题）
+			int count = 1, cur_capacity = mid;
+			for (auto &w : weights)
+			{
+				if (cur_capacity < w)
+				{
+					count++;
+					cur_capacity = mid;
+				}
+				cur_capacity -= w;
+			}
+			count <= D ? right = mid : left = mid + 1;
+		}
+		return left;
+	}
+    ```
+
 - [1014. Best Sightseeing Pair](https://leetcode.com/problems/best-sightseeing-pair/)
 
     对于给定数组中的所有数对$A[i],A[j]$求$max(A[i]+A[j]+i-j)$

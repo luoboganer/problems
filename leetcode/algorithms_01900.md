@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-04-21 12:02:23
+ * @LastEditTime: 2021-04-26 15:19:18
  * @Software: Visual Studio Code
  * @Description: 1801-1900
 -->
@@ -178,6 +178,23 @@
 			}
 		}
 		return answer;
+	}
+	```
+
+- [1837. K 进制表示下的各位数字总和](https://leetcode-cn.com/problems/sum-of-digits-in-base-k/)
+
+	进制转换，短除法
+
+	```cpp
+	int sumBase(int n, int k)
+	{
+		int ret = 0;
+		while (n)
+		{
+			ret += n % k;
+			n /= k;
+		}
+		return ret;
 	}
 	```
 
