@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-04-26 15:19:18
+ * @LastEditTime: 2021-05-05 16:34:51
  * @Software: Visual Studio Code
  * @Description: 1801-1900
 -->
@@ -196,6 +196,39 @@
 		}
 		return ret;
 	}
+	```
+
+- [1845. 座位预约管理系统](https://leetcode-cn.com/problems/seat-reservation-manager/)
+
+	使用优先队列完成最小值的弹出，座位的预约与退回时间复杂度均为$O(log(n))$，其中$n$是座位总数
+
+	```cpp
+	class SeatManager
+	{
+	private:
+		priority_queue<int, vector<int>, less()> canReverse;
+
+	public:
+		SeatManager(int n)
+		{
+			for (int i = 0; i < n; i++)
+			{
+				canReverse.push(i);
+			}
+		}
+
+		int reserve()
+		{
+			int ret = canReverse.top();
+			canReverse.pop();
+			return ret;
+		}
+
+		void unreserve(int seatNumber)
+		{
+			canReverse.push(seatNumber);
+		}
+	};
 	```
 
 - [...](123)

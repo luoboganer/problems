@@ -743,6 +743,31 @@
     }
     ```
 
+- [740. 删除并获得点数](https://leetcode-cn.com/problems/delete-and-earn/)
+
+    类似于“打家劫舍”类的动态规划问题，时间复杂度$O(n+m)$，其中$n$是给定点的数量，$m$是给定点的最大值
+
+    ```cpp
+	int deleteAndEarn(vector<int> &nums)
+	{
+		const int max_value = *max_element(nums.begin(), nums.end());
+		vector<int> count(max_value + 1, 0);
+		for (auto v : nums)
+		{
+			count[v] += v;
+		}
+		if (max_value >= 1)
+		{
+			count[1] = max(count[0], count[1]);
+		}
+		for (int i = 2; i <= max_value; i++)
+		{
+			count[i] = max(count[i] + count[i - 2], count[i - 1]);
+		}
+		return *max_element(count.begin(), count.end());
+	}
+    ```
+
 - [744](https://leetcode.com/problems/find-smallest-letter-greater-than-target/)
 
     在给定的有序（升序）小写字母序列letters中寻找第一个大于target的字母

@@ -2383,6 +2383,31 @@
 	}
     ```
 
+- [198. 打家劫舍](https://leetcode-cn.com/problems/house-robber/)
+
+    动态规划，时间复杂度$O(n)$
+
+    ```cpp
+	int rob(vector<int> &nums)
+	{
+		int ret = 0, n = nums.size();
+		if (n == 1)
+		{
+			ret = nums[0];
+		}
+		else if (n > 1)
+		{
+			nums[1] = max(nums[0], nums[1]);
+			for (int i = 2; i < n; i++)
+			{
+				nums[i] = max(nums[i - 2] + nums[i], nums[i - 1]);
+			}
+			ret = nums.back();
+		}
+		return ret;
+	}
+    ```
+
 - [200](https://leetcode.com/problems/number-of-islands/submissions/)
 
     统计岛屿数量，典型的DFS应用，每当发现一个unvisited陆地标记('1')的时候，岛屿数量加1，递归地将其四个方向的陆地('1')全部标记为visited即可。
