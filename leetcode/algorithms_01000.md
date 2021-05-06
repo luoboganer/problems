@@ -1152,6 +1152,48 @@
 	};
 	```
 
+- [953. 验证外星语词典](https://leetcode-cn.com/problems/verifying-an-alien-dictionary/)
+
+    字符串比较，时间复杂度$O(n*m)$，其中$n=words.size(),m=max_{i=0}^{n-1}words[i].length()$
+
+    ```cpp
+	bool isAlienSorted(vector<string> &words, string order)
+	{
+		const int length = 26, n = words.size();
+		vector<int> order_int(length);
+		for (int i = 0; i < length; i++)
+		{
+			order_int[static_cast<int>(order[i] - 'a')] = i;
+		}
+		auto cmp_less = [order_int](const string &a, const string &b) {
+			const int length_a = a.length(), length_b = b.length();
+			const int length_ab = min(length_a, length_b);
+			for (int j = 0; j < length_ab; j++)
+			{
+				int x = order_int[static_cast<int>(a[j] - 'a')];
+				int y = order_int[static_cast<int>(b[j] - 'a')];
+				if (x > y)
+				{
+					return false;
+				}
+				else if (x < y)
+				{
+					return true;
+				}
+			}
+			return length_a <= length_b;
+		};
+		for (int i = 1; i < n; i++)
+		{
+			if (!cmp_less(words[i - 1], words[i]))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+    ```
+
 - [955. Delete Columns to Make Sorted II](https://leetcode.com/problems/delete-columns-to-make-sorted-ii/)
 
 	贪心算法，遍历每一列是否会删除，如果不删除标记将会造成那些行符合字典序要求（标记的这些行将不参与之后列的判断），时间复杂度$O(rows*cols)$
@@ -1492,6 +1534,30 @@
         }
         return ret;
     }
+    ```
+
+- [970. 强整数](https://leetcode-cn.com/problems/powerful-integers/)
+
+    枚举所有$x^i + y^j <= bound$的值即可，注意x和y值为1的特殊情况
+
+    ```cpp
+	vector<int> powerfulIntegers(int x, int y, int bound)
+	{
+		unordered_set<int> nums;
+		for (int a = 1, i = 0; a < bound && i < 20; a *= x, i++)
+		{
+			for (int b = 1, j = 0; a + b <= bound && j < 20; b *= y, j++)
+			{
+				nums.insert(a + b);
+			}
+		}
+		vector<int> ret;
+		for (auto v : nums)
+		{
+			ret.emplace_back(v);
+		}
+		return ret;
+	}
     ```
 
 - [973. 最接近原点的 K 个点](https://leetcode-cn.com/problems/k-closest-points-to-origin/)
