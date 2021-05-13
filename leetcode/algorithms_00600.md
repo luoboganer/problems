@@ -596,7 +596,50 @@
     }
     ```
 
-- [542](https://leetcode.com/problems/01-matrix/)
+- [540. 有序数组中的单一元素](https://leetcode-cn.com/problems/single-element-in-a-sorted-array/)
+
+    - 用逐个异或的办法消除重复的数字，时间复杂度$O(n)$
+
+    ```cpp
+	int singleNonDuplicate(vector<int> &nums)
+	{
+		int ret = 0;
+		for (auto &v : nums)
+		{
+			ret ^= v;
+		}
+		return ret;
+	}
+    ```
+
+    - 二分法查找只出现一次的那个数字，时间复杂度$O(log(n))$
+
+    ```cpp
+	int singleNonDuplicate(vector<int> &nums)
+	{
+		int left = 0, right = nums.size() - 1;
+		while (left < right - 1)
+		{
+			// 此时至少有三个数字
+			int mid = left + ((right - left) >> 1);
+			if (nums[mid] == nums[mid - 1] && nums[mid] < nums[mid + 1])
+			{
+				(mid - left) % 2 == 0 ? right = mid : left = mid + 1;
+			}
+			else if (nums[mid] > nums[mid - 1] && nums[mid] == nums[mid + 1])
+			{
+				(right - mid) % 2 == 0 ? left = mid : right = mid - 1;
+			}
+			else
+			{
+				return nums[mid];
+			}
+		}
+		return nums[left]; // 理论上不会执行到这里，除非数组只有一个数
+	}
+    ```
+
+- [542. 01 矩阵](https://leetcode-cn.com/problems/01-matrix/)
 
     给定一个0/1矩阵，寻找每个1位置距离最近的0的距离，两种思路，一是以每个1为中心BFS遍历，第一次出现0的层深即为距离，二是典型的DP思维，每个1到0的最近距离是它的四个邻居（上下左右）到最近的0的距离的最小值加一。
 

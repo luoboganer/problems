@@ -1050,6 +1050,31 @@
     }
     ```
 
+- [1269. 停在原地的方案数](https://leetcode-cn.com/problems/number-of-ways-to-stay-in-the-same-place-after-some-steps/)
+
+    动态规划，注意可能走到的最右侧位置不会超过总步长的一半，否则没有足够的步数返回，时间复杂度$O(arrLen^2)$
+
+    ```cpp
+	int numWays(int steps, int arrLen)
+	{
+		arrLen = min(arrLen, (steps >> 1) + 1);
+		// 因为最远不会超过总步数的一半，否则就走不回来了
+		vector<int> prev(arrLen + 2, 0), next(arrLen + 2, 0);
+		prev[1] = 1; // 初始位置
+		long long v, mode = 1e9 + 7;
+		for (int s = 1; s <= steps; s++)
+		{
+			for (int p = 1; p <= arrLen; p++)
+			{
+				v = static_cast<long long>(prev[p - 1]) + prev[p] + prev[p + 1];
+				next[p] = v % mode;
+			}
+			prev = next;
+		}
+		return prev[1];
+	}
+    ```
+
 - [1277. Count Square Submatrices with All Ones](https://leetcode.com/problems/count-square-submatrices-with-all-ones/)
 
     求一个0和1组成的矩阵中由1表示的正方形的个数，动态规划

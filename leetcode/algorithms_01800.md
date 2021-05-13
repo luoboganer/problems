@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-03-04 14:46:52
+ * @LastEditTime: 2021-05-11 14:09:04
  * @Software: Visual Studio Code
  * @Description: 1701-1800
 -->
@@ -176,7 +176,33 @@
 	}
 	```
 
-<<<<<<< HEAD
+- [1734. 解码异或后的排列](https://leetcode-cn.com/problems/decode-xored-permutation/)
+
+	使用1到n之间的所有数字逐个异或和encode中奇数下标位置的所有数字逐个异或确定perm数组的首位，然后在encode中逐个异或即可，时间复杂度$O(n)$
+
+	```cpp
+	vector<int> decode(vector<int> &encoded)
+	{
+		const int n = encoded.size() + 1;
+		vector<int> perm(n);
+		int x = 0;
+		for (int v = 1; v <= n; v++)
+		{
+			x ^= v;
+		}
+		for (int i = 1; i <= n - 2; i += 2)
+		{
+			x ^= encoded[i];
+		}
+		perm[0] = x;
+		for (int i = 1; i < n; i++)
+		{
+			perm[i] = perm[i - 1] ^ encoded[i - 1];
+		}
+		return perm;
+	}
+	```
+
 - [1769. 移动所有球到每个盒子所需的最小操作数](https://leetcode-cn.com/problems/minimum-number-of-operations-to-move-all-balls-to-each-box/)
 
 	用数组前缀和的方法分别计算将$ith$位置左侧、右侧的小球全部移动到该位置的花费，左右求和即可，时间复杂度$O(n)$
@@ -203,140 +229,6 @@
 			}
 		}
 		return ret;
-=======
-- [1745. 回文串分割 IV](https://leetcode-cn.com/problems/palindrome-partitioning-iv/)
-
-	- 枚举a和b两个分割点，分别检查$s[0,a-1],s[a,b-1],s[b,n-1]$这三段是否均为回文序列，时间复杂度$O(n^3)$，LeetCode评测机$\color{red}{TLE}$
-
-	```cpp
-	class Solution
-	{
-	private:
-		bool check(string s, int left, int right)
-		{
-			int i = left, j = right;
-			while (i < j && s[i] == s[j])
-			{
-				i++, j--;
-			}
-			return i >= j;
-		}
-
-	public:
-		bool checkPartitioning(string s)
-		{
-			const int n = s.length();
-			if (n >= 3)
-			{
-				for (int a = 1; a + 2 <= n; a++)
-				{
-					// 首先检查s[0,a)是回文的
-					if (check(s, 0, a - 1))
-					{
-						// 再检查s[a,n)是否可以分成两部分回味
-						for (int b = 1; a + b + 1 <= n; b++)
-						{
-							if (check(s, a, a + b - 1) && check(s, a + b, n - 1))
-							{
-								return true;
-							}
-						}
-					}
-				}
-			}
-			return false;
-		}
-	};
-	```
-
-	- 用动态规划的方式实现记忆化递归，减少检查子串是否回文过程中的重复计算，时间复杂度$O(n^2)$，LeetCode评测机$\%52$
-
-	```cpp
-	bool checkPartitioning(string s)
-	{
-		const int n = s.length();
-		if (n >= 3)
-		{
-			// dp[i][j]表示s[i-j]是否回文
-			vector<vector<bool>> dp(n, vector<bool>(n, false));
-			for (int k = 0; k < n; k++)
-			{
-				dp[k][k] = true;
-				for (int i = k - 1, j = k + 1; i >= 0 && j < n; i--, j++)
-				{
-					// 奇数长度的回文串
-					if (dp[i + 1][j - 1] && s[i] == s[j])
-					{
-						dp[i][j] = true;
-					}
-				}
-				if (k > 0 && s[k - 1] == s[k])
-				{
-					dp[k - 1][k] = true;
-					for (int i = k - 2, j = k + 1; i >= 0 && j < n; i--, j++)
-					{
-						// 偶数长度的回文串
-						if (dp[i + 1][j - 1] && s[i] == s[j])
-						{
-							dp[i][j] = true;
-						}
-					}
-				}
-			}
-			for (int a = 0; a + 2 < n; a++)
-			{
-				for (int b = a + 1; b + 1 < n; b++)
-				{
-					if (dp[0][a] && dp[a + 1][b] && dp[b + 1][n - 1])
-					{
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-	```
-
-	- 记忆化递归中的剪枝与常数优化，时间复杂度$O(n^2)$，LeetCode评测机$\%82$
-
-	```cpp
-	bool checkPartitioning(string s)
-	{
-		const int n = s.length();
-		if (n >= 3)
-		{
-			// dp[i][j]表示s[i-j]是否回文
-			vector<vector<bool>> dp(n, vector<bool>(n, false));
-			for (int k = 0; k < n; k++)
-			{
-				dp[k][k] = true; // 奇数长度的回文串
-				for (int i = k - 1, j = k + 1; i >= 0 && j < n && s[i] == s[j]; i--, j++)
-				{
-					dp[i][j] = true;
-				}
-				if (k > 0 && s[k - 1] == s[k])
-				{
-					dp[k - 1][k] = true; // 偶数长度的回文串
-					for (int i = k - 2, j = k + 1; i >= 0 && j < n && s[i] == s[j]; i--, j++)
-					{
-						dp[i][j] = true;
-					}
-				}
-			}
-			for (int a = 0; a + 2 < n; a++)
-			{
-				for (int b = a + 1; dp[0][a] && b + 1 < n; b++)
-				{
-					if (dp[a + 1][b] && dp[b + 1][n - 1])
-					{
-						return true;
-					}
-				}
-			}
-		}
-		return false;
->>>>>>> eb9fa1430d094f8aa022cca0a4cdb20795bcc7af
 	}
 	```
 
