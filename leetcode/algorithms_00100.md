@@ -512,9 +512,103 @@
     }
     ```
 
-- [13](https://leetcode.com/problems/roman-to-integer/)
+- [12. 整数转罗马数字](https://leetcode-cn.com/problems/integer-to-roman/)
 
-    罗马数字转阿拉伯数字，主要是思想是对罗马数字字符序列从右到左扫描，注意IXC的位置和表示的数字有关即可。
+    ```cpp
+	string intToRoman(int num)
+	{
+		string ret;
+		// 每一千用 M 表示
+		int thousands = num / 1000;
+		num %= 1000;
+		if (thousands)
+		{
+			for (int i = 0; i < thousands; i++)
+			{
+				ret.push_back('M');
+			}
+		}
+		auto bitProcess = [&ret](int v, char a, char b, char c) -> void {
+			if (v == 9)
+			{
+				ret.push_back(c);
+				ret.push_back(a);
+			}
+			else if (v == 8 || v == 7 || v == 6)
+			{
+				ret.push_back(b);
+				for (int i = 6; i <= v; i++)
+				{
+					ret.push_back(c);
+				}
+			}
+			else if (v == 5)
+			{
+				ret.push_back(b);
+			}
+			else if (v == 4)
+			{
+				ret.push_back(c);
+				ret.push_back(b);
+			}
+			else
+			{
+				for (int i = 1; i <= v; i++)
+				{
+					ret.push_back(c);
+				}
+			}
+		};
+		bitProcess(num / 100, 'M', 'D', 'C');
+		num %= 100;
+		bitProcess(num / 10, 'C', 'L', 'X');
+		num %= 10;
+		bitProcess(num, 'X', 'V', 'I');
+		return ret;
+	}
+    ```
+
+- [13. 罗马数字转整](https://leetcode-cn.com/problems/roman-to-integer/submissions/)
+
+    罗马数字转阿拉伯数字，对罗马数字字符序列从右到左扫描，注意IXC的位置和表示的数字有关即可，时间复杂度$O(n)$
+
+    ```cpp
+	int romanToInt(string s)
+	{
+		int ret = 0;
+		const int n = s.length();
+		for (int i = 0; i < n; i++)
+		{
+			switch (s[i])
+			{
+			case 'I':
+				ret += (i + 1 < n && (s[i + 1] == 'V' || s[i + 1] == 'X')) ? -1 : 1;
+				break;
+			case 'V':
+				ret += 5;
+				break;
+			case 'X':
+				ret += (i + 1 < n && (s[i + 1] == 'L' || s[i + 1] == 'C')) ? -10 : 10;
+				break;
+			case 'L':
+				ret += 50;
+				break;
+			case 'C':
+				ret += (i + 1 < n && (s[i + 1] == 'D' || s[i + 1] == 'M')) ? -100 : 100;
+				break;
+			case 'D':
+				ret += 500;
+				break;
+			case 'M':
+				ret += 1000;
+				break;
+			default:
+				break;
+			}
+		}
+		return ret;
+	}
+    ```
 
 - [18. 四数之和](https://leetcode-cn.com/problems/4sum/)
 

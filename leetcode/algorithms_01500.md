@@ -587,6 +587,89 @@
 	}
     ```
 
+- [1442. 形成两个异或相等数组的三元组数目](https://leetcode-cn.com/problems/count-triplets-that-can-form-two-arrays-of-equal-xor/)
+
+    - 三重循环暴力枚举，时间复杂度$O(n^3)$
+
+    ```cpp
+	int countTriplets(vector<int> &arr)
+	{
+		const int n = arr.size();
+		vector<int> xor_arr(n + 1);
+		xor_arr[0] = 0;
+		for (int i = 0; i < n; i++)
+		{
+			xor_arr[i + 1] = xor_arr[i] ^ arr[i];
+		}
+		int ret = 0;
+		for (int i = 1; i <= n; i++)
+		{
+			for (int j = i + 1; j <= n; j++)
+			{
+				for (int k = j; k <= n; k++)
+				{
+					if (xor_arr[j - 1] ^ xor_arr[i - 1] == xor_arr[k] ^ xor_arr[j - 1])
+					{
+						ret++;
+					}
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - 前缀序列的相等异或值枚举，时间复杂度$O(n^2)$
+
+    ```cpp
+	int countTriplets(vector<int> &arr)
+	{
+		const int n = arr.size();
+		vector<int> xor_arr(n + 1);
+		xor_arr[0] = 0;
+		for (int i = 0; i < n; i++)
+		{
+			xor_arr[i + 1] = xor_arr[i] ^ arr[i];
+		}
+		int ret = 0;
+		for (int i = 1; i <= n; i++)
+		{
+			for (int k = i + 1; k <= n; k++)
+			{
+				if (xor_arr[i - 1] == xor_arr[k])
+				{
+					ret += k - i;
+				}
+			}
+		}
+		return ret;
+	}
+    ```
+
+    - HashMap记录前缀异或值的频率，时间复杂度$O(n)$
+
+    ```cpp
+	int countTriplets(vector<int> &arr)
+	{
+		const int n = arr.size();
+		int ret = 0;
+		unordered_map<int, int> count_freq, sum_idxs;
+		for (int base = 0, k = 0; k < n; k++)
+		{
+			int next_base = base ^ arr[k];
+			auto it = count_freq.find(next_base);
+			if (it != count_freq.end())
+			{
+				ret += it->second * k - sum_idxs[next_base];
+			}
+			count_freq[base]++;
+			sum_idxs[base] += k;
+			base = next_base;
+		}
+		return ret;
+	}
+    ```
+
 - [1449. Form Largest Integer With Digits That Add up to Target](https://leetcode.com/problems/form-largest-integer-with-digits-that-add-up-to-target/)
 
     1-9的每个数字需要消耗的weight是cost数组，在相同的cost下优先选择值更大的数字v，然后使用DP方法动态规划背包容量为target时的最大结果，这里注意不超过背包容量的最优解和恰好装满背包的最优解（需要从target=0开始使用，所有值初始化为inf，最优解为max时inf为max，最优解为min时inf为min，然后dp[0]=0），时间复杂度$O(target)$

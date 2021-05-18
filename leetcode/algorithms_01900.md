@@ -5,7 +5,7 @@
  * @Github: https://github.com/luoboganer
  * @Date: 2020-09-05 11:29:59
  * @LastEditors: shifaqiang
- * @LastEditTime: 2021-05-05 16:34:51
+ * @LastEditTime: 2021-05-16 16:19:12
  * @Software: Visual Studio Code
  * @Description: 1801-1900
 -->
@@ -229,6 +229,34 @@
 			canReverse.push(seatNumber);
 		}
 	};
+	```
+
+- [1854. 人口最多的年份](https://leetcode-cn.com/problems/maximum-population-year/)
+
+	扫描线，时间复杂度$O(n)$
+
+	```cpp
+	int maximumPopulation(vector<vector<int>> &logs)
+	{
+		const int max_age = 100, start = 1950;
+		vector<int> running_count(max_age + 1, 0);
+		for (auto &p : logs)
+		{
+			running_count[p[0] - start]++;
+			running_count[p[1] - start]--;
+		}
+		int year = start, popuplation = running_count[0];
+		for (int i = 1; i <= max_age; i++)
+		{
+			running_count[i] += running_count[i - 1];
+			if (running_count[i] > popuplation)
+			{
+				popuplation = running_count[i];
+				year = start + i;
+			}
+		}
+		return year;
+	}
 	```
 
 - [...](123)
