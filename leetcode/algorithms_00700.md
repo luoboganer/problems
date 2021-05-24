@@ -574,6 +574,40 @@
     [0,null,0,null,0,null,***] repeat 10000
     ```
 
+- [664. 奇怪的打印机](https://leetcode-cn.com/problems/strange-printer/)
+
+    动态规划，时间复杂度$O(n^3)$
+
+    ```cpp
+	int strangePrinter(string s)
+	{
+		const int n = s.length();
+		vector<vector<int>> dp(n, vector<int>(n, 0));
+		for (int i = n - 1; i >= 0; i--)
+		{
+			dp[i][i] = 1; // 打印长度为1的字符只需要一次
+			for (int j = i + 1; j < n; j++)
+			{
+				if (s[i] == s[j])
+				{
+					dp[i][j] = dp[i][j - 1];
+					// 此时打印完成s[i,j-1]即可完成s[i,j]
+				}
+				else
+				{
+					int v = numeric_limits<int>::max();
+					for (int k = i; k < j; k++)
+					{
+						v = min(v, dp[i][k] + dp[k + 1][j]);
+					}
+					dp[i][j] = v;
+				}
+			}
+		}
+		return dp[0][n - 1];
+	}
+    ```
+
 - [665. Non-decreasing Array](https://leetcode.com/problems/non-decreasing-array/)
 
     - 朴素方法，判断在最多修改一个数字的条件下是否给定数组可以成为非严格升序的，时间复杂度$O(n)$，注意在第一次遇到$nums[i]>nums[i+1]$的情况下，判断是否可以通过修改$nums[i]$来保证数组非严格升序，如果可以则按照符合条件的修改办法更新数组，第二次遇到$nums[i]>nums[i+1]$则直接返回$False$

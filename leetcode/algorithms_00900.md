@@ -152,6 +152,27 @@
     };
     ```
 
+- [810. 黑板异或游戏](https://leetcode-cn.com/problems/chalkboard-xor-game/)
+
+    数学证明，时间复杂度$O(n)$
+
+    ```cpp
+	bool xorGame(vector<int> &nums)
+	{
+		if (nums.size() % 2 == 0)
+		{
+			// 偶数个元素先手必胜
+			return true;
+		}
+		int xor_result = 0;
+		for (auto &v : nums)
+		{
+			xor_result ^= v;
+		}
+		return xor_result == 0;
+	}
+    ```
+
 - [811. 子域名访问计数](https://leetcode-cn.com/problems/subdomain-visit-count/)
 
     字符串处理与hashmap，时间复杂度$O(n*m)$，其中$n=cpdomains.size(),m=max(cpdomains[i].length())$

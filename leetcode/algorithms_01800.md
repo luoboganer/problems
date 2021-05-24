@@ -203,6 +203,29 @@
 	}
 	```
 
+- [1738. 找出第 K 大的异或坐标值](https://leetcode-cn.com/problems/find-kth-largest-xor-coordinate-value/)
+
+	二维前缀和求给定矩阵中每个位置的异或值，然后排序，时间复杂度$O(m*n+log(m*n))$
+
+	```cpp
+	int kthLargestValue(vector<vector<int>> &matrix, int k)
+	{
+		const int rows = matrix.size(), cols = matrix[0].size();
+		vector<int> xor_arr(rows * cols);
+		vector<vector<int>> prefix2D(rows + 1, vector<int>(cols + 1, 0));
+		for (int i = 1, k = 0; i <= rows; i++)
+		{
+			for (int j = 1; j <= cols; j++)
+			{
+				prefix2D[i][j] = prefix2D[i - 1][j] ^ prefix2D[i][j - 1] ^ prefix2D[i - 1][j - 1] ^ matrix[i - 1][j - 1];
+				xor_arr[k++] = prefix2D[i][j];
+			}
+		}
+		sort(xor_arr.begin(), xor_arr.end(), greater<int>());
+		return xor_arr[k - 1];
+	}
+	```
+
 - [1769. 移动所有球到每个盒子所需的最小操作数](https://leetcode-cn.com/problems/minimum-number-of-operations-to-move-all-balls-to-each-box/)
 
 	用数组前缀和的方法分别计算将$ith$位置左侧、右侧的小球全部移动到该位置的花费，左右求和即可，时间复杂度$O(n)$
